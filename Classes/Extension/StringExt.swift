@@ -1,0 +1,128 @@
+//
+//  String+Range.swift
+//  collection
+//
+//  Created by william on 16/05/2017.
+//  Copyright © 2017 william. All rights reserved.
+//
+
+import Foundation
+
+private let idcardWi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
+private let idcardMod = ["1", "0", "x", "9", "8", "7", "6", "5", "4", "3", "2"]
+
+public extension String {
+    var intValue: Int {
+        return Int(self) ?? 0
+    }
+    
+    var doubleValue: Double {
+        return Double(self) ?? 0
+    }
+    
+    var utf8Data: Data {
+        return self.data(using: .utf8)!
+    }
+    
+    var URLEncoded: String {
+        return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+    }
+    
+    func trim() -> String {
+        return trimmingCharacters(in: CharacterSet.whitespaces)
+    }
+    
+    func range(from nsRange: NSRange) -> Range<String.Index>? {
+        guard
+            let from16 = utf16.index(utf16.startIndex, offsetBy: nsRange.location, limitedBy: utf16.endIndex),
+            let to16 = utf16.index(from16, offsetBy: nsRange.length, limitedBy: utf16.endIndex),
+            let from = String.Index(from16, within: self),
+            let to = String.Index(to16, within: self)
+            else { return nil }
+        return from ..< to
+    }
+    
+    func ranges(of search: String, options: NSString.CompareOptions = []) -> [Range<String.Index>]? {
+        var ranges: [Range<String.Index>]?
+        var searchIndex = self.startIndex
+        
+        while searchIndex < self.endIndex {
+            if let range = self.range(of: search, options: options, range: searchIndex..<self.endIndex) {
+                if ranges == nil {
+                    ranges = []
+                }
+                
+                ranges!.append(range)
+
+                searchIndex = range.upperBound
+            } else {
+                break
+            }
+        }
+        
+        return ranges
+    }
+    
+    func toDict() -> [String: Any]? {
+        return self.utf8Data.toDictionary()
+    }
+    
+    func toJSONObject() -> Any? {
+        return self.utf8Data.toJSONObject()
+    }
+    
+    // MARK: - encoding
+    func base64Encoded() -> String {
+        return utf8Data.base64EncodedString()
+    }
+    
+    func base64Decoded() -> String? {
+        guard let data = Data(base64Encoded: self) else {
+            return nil
+        }
+        return String(data: data, encoding: .utf8)
+    }
+    
+    
+    
+    // MARK: - Validator
+    func isMatch(regex: String) -> Bool {
+        return range(of: regex, options: .regularExpression, range: nil, locale: nil) != nil
+    }
+    
+    func isPhone() -> Bool {
+        return isMatch(regex: "^0{0,1}1[0-9]{10}$")
+    }
+    
+    func isIdcard() -> Bool {
+        guard count == 18 else {
+            return false
+        }
+        
+        let text = lowercased()
+        
+        //初步校验
+        let result = text.isMatch(regex: "^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|x)$")
+        if !result {
+            return false
+        }
+        
+        //计算并比对校验位
+        var sum: Int = 0
+        for i in 0..<17 {
+            sum += idcardWi[i] * String(text[i]).intValue
+        }
+        let mod = sum % 11
+        return idcardMod[mod] == String(text[17])
+    }
+}
+
+extension String {
+    subscript (i: Int) -> Character {
+        return self[index(startIndex, offsetBy: i)]
+    }
+    
+    subscript(i: Int, length: Int) -> Substring {
+        return self[index(startIndex, offsetBy: i)..<index(startIndex, offsetBy: i+length)]
+    }
+}
