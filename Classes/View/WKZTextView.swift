@@ -9,7 +9,7 @@
 import UIKit
 
 open class WKZTextView: UITextView {
-    var placeholder: String? {
+    public var placeholder: String? {
         
         didSet {
             if let placeholder = self.placeholder {
@@ -19,7 +19,7 @@ open class WKZTextView: UITextView {
             }
         }
     }
-    var placeholderAttribute: [NSAttributedString.Key : Any]?
+    public var placeholderAttribute: [NSAttributedString.Key : Any]?
     private var attributes: [NSAttributedString.Key : Any] {
         get {
             var attribute = self.placeholderAttribute ?? [:]

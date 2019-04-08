@@ -18,6 +18,7 @@ public class AppTheme {
         case promptText
         case subText
         case border
+        case disabled
         
         var defaultColor: UIColor {
             switch self {
@@ -30,7 +31,9 @@ public class AppTheme {
             case .promptText: return UIColor(hex: 0x888888)
             case .subText: return UIColor(hex: 0xbbbbbb)
             case .border: return UIColor(hex: 0xe0e0e0)
+            case .disabled: return UIColor(hex: 0xcacaca)
             }
+            
         }
     }
     

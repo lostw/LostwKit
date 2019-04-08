@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ZZTriangleView: ZZShapeView {
+public class ZZTriangleView: ZZShapeView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,7 +23,7 @@ class ZZTriangleView: ZZShapeView {
         
     }
     
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         
         if self.backedLayer.path == nil {

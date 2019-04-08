@@ -9,7 +9,7 @@
 import UIKit
 
 
-@objc protocol OptionDropViewDelegate: AnyObject {
+@objc public protocol OptionDropViewDelegate: AnyObject {
     func numberOfSectionsInDropView(_ view: OptionDropView) -> Int
     func dropView(_ view: OptionDropView, defaultIndexForSection section: Int) -> Int
     func dropView(_ view: OptionDropView, titleAt indexPath: IndexPath) -> String
@@ -20,7 +20,7 @@ import UIKit
     @objc optional func showDropView()
 }
 
-class OptionSectionView: UIView {
+public class OptionSectionView: UIView {
     fileprivate let titleLabel = UILabel()
     fileprivate let triangle = CAShapeLayer()
     var title: String? {
@@ -40,7 +40,7 @@ class OptionSectionView: UIView {
             }
         }
     }
-    override var frame: CGRect {
+    override public var frame: CGRect {
         didSet {
             self.updateLayout()
         }
@@ -92,9 +92,9 @@ class OptionSectionView: UIView {
     }
 }
 
-class OptionDropView: UIView {
+public class OptionDropView: UIView {
     static let identifier = "cellIdentifier"
-    weak var delegate: OptionDropViewDelegate?
+    weak public var delegate: OptionDropViewDelegate?
     var rowHeight: CGFloat = 42
     fileprivate var sectionViews = [OptionSectionView]()
     fileprivate var currentSection = -1
@@ -102,7 +102,7 @@ class OptionDropView: UIView {
         let view = UIView()
         view.isHidden = true
         view.backgroundColor = UIColor(hex: 0x000000, alpha: 0.6)
-        view.bindTouchAction({ [unowned self] (tap) in
+        view.onTouch({ [unowned self] (tap) in
             self.touchSection(atIndex: -1)
         })
         return view
@@ -119,7 +119,7 @@ class OptionDropView: UIView {
         return view
     }()
     
-    override var bounds: CGRect {
+    override public var bounds: CGRect {
         didSet {
             self.updateLayout()
         }
@@ -133,7 +133,7 @@ class OptionDropView: UIView {
         super.init(coder: aDecoder)
     }
     
-    func reloadData() {
+    public func reloadData() {
         guard let delegate = self.delegate else {
             return
         }
@@ -157,7 +157,7 @@ class OptionDropView: UIView {
             self.sectionViews.append(sectionView)
         }
         
-        self.bindTouchAction { [unowned self] (tap) in
+        self.onTouch { [unowned self] (tap) in
             let point = tap.location(in: self)
             for (idx, item) in self.sectionViews.enumerated() {
                 if item.frame.contains(point) {
@@ -274,7 +274,7 @@ class OptionDropView: UIView {
 }
 
 extension OptionDropView: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let delegate = self.delegate else {
             return 0
         }
@@ -286,7 +286,7 @@ extension OptionDropView: UITableViewDelegate, UITableViewDataSource {
         return self.rowHeight
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: OptionDropView.identifier)
         if cell == nil {
             cell = UITableViewCell.init(style: .default, reuseIdentifier: OptionDropView.identifier)

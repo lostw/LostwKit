@@ -8,20 +8,19 @@
 
 import UIKit
 
-@objcMembers
-class ZZTextField: UITextField {
+public class ZZTextField: UITextField {
     var gap: CGFloat = 0
-    var disableAction = false
+    public var disableAction = false
     
-    override func textRect(forBounds bounds: CGRect) -> CGRect {
+    override public func textRect(forBounds bounds: CGRect) -> CGRect {
         return super.textRect(forBounds: bounds).insetBy(dx: gap, dy: 0)
     }
     
-    override func editingRect(forBounds bounds: CGRect) -> CGRect {
+    override public func editingRect(forBounds bounds: CGRect) -> CGRect {
         return super.textRect(forBounds: bounds).insetBy(dx: gap, dy: 0)
     }
     
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+    override public func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if self.disableAction {
             if action == #selector(paste(_:)) {
                 return false

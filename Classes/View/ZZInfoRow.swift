@@ -22,9 +22,9 @@ open class ZZInfoRow: UIView {
         })
         return view
     }()
-    @objc var iconView: UIImageView?
+    var iconView: UIImageView?
     
-    @objc static func menuRow(title: String) -> ZZInfoRow {
+    public static func menuRow(title: String) -> ZZInfoRow {
         let row = ZZInfoRow()
         row.titleLabel.zText(title).zFontSize(15)
         row.valueLabel.font = UIFont.systemFont(ofSize: 15)
@@ -51,13 +51,13 @@ open class ZZInfoRow: UIView {
         super.init(coder: aDecoder)
     }
     
-    @objc public override func bindTouchAction(_ action: UIViewTapAction?) {
-        super.bindTouchAction(action)
+    @objc public override func onTouch(_ action: UIViewTapAction?) {
+        super.onTouch(action)
         
         self.toggleIndicatorView((action == nil ? false : true))
     }
     
-    @objc func toggleIndicatorView(_ show: Bool, adjust: Bool = true) {
+    @objc public func toggleIndicatorView(_ show: Bool, adjust: Bool = true) {
         self.indicatorView.isHidden = !show
         if adjust {
             self.valueLabel.snp.updateConstraints({ (make) in

@@ -51,7 +51,7 @@ class ZZPickerToolbar: UIView {
     }
 }
 
-typealias PickerCallback = (Int, String) -> String?
+public typealias PickerCallback = (Int, String) -> String?
 open class ZZPickerRow: UIView {
     static let pickerView: UIPickerView = {
         let view = UIPickerView()
@@ -60,12 +60,12 @@ open class ZZPickerRow: UIView {
     }()
     static let toolbar = ZZPickerToolbar(frame: CGRect.make(0, 0, SCREEN_WIDTH, 44))
     
-    var field: UITextField!
-    var titleLabel: UILabel!
-    var valueLabel: UILabel!
+    public var field: UITextField!
+    public var titleLabel: UILabel!
+    public var valueLabel: UILabel!
     private var indicatorView: UIImageView!
     
-    var willPickAction: PickerCallback?
+    public var willPickAction: PickerCallback?
     open var placeholder: String? {
         didSet {
             if let value = placeholder {
@@ -79,7 +79,7 @@ open class ZZPickerRow: UIView {
     }
     var selectedIndex: Int = 0
     var selectedText: String?
-    var options: [String] = [] {
+    public var options: [String] = [] {
         didSet {
             if field.isFirstResponder {
                 let picker = type(of: self).pickerView
@@ -88,7 +88,7 @@ open class ZZPickerRow: UIView {
             }
         }
     }
-    var isEnabled = true {
+    public var isEnabled = true {
         didSet {
             self.indicatorView.isHidden = !isEnabled
             self.isUserInteractionEnabled = isEnabled
@@ -138,7 +138,7 @@ open class ZZPickerRow: UIView {
             make.right.equalToSuperview().offset(-12)
         }
         
-        valueLabel.bindTouchAction { [unowned self] (_) in
+        valueLabel.onTouch { [unowned self] (_) in
             if self.options.count > 0 {
                 guard !self.field.isFirstResponder else {
                     return

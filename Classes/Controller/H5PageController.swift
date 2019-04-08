@@ -44,7 +44,7 @@ class WebBackView: AlignmentRectView {
 }
 
 open class H5PageController: UIViewController {
-    var webView: WKWebView!
+    public var webView: WKWebView!
     @objc var progressEnabled = true
     fileprivate var progressBar: UIProgressView?
     
@@ -100,7 +100,7 @@ open class H5PageController: UIViewController {
         //        }
     }
     
-    func loadURLString() {
+    open func loadURLString() {
         self.webView.load(URLRequest(url: URL(string: self.URLString!)!))
     }
     
@@ -113,11 +113,11 @@ open class H5PageController: UIViewController {
         }
     }
     
-    func didFinishPage() {
+    open func didFinishPage() {
         
     }
     
-    func commonInitView() {
+    open func commonInitView() {
         self.view.backgroundColor = AppTheme.shared[.background]
         
         self.addWebView()
@@ -167,7 +167,7 @@ open class H5PageController: UIViewController {
         }
     }
     
-    func asyncCallH5Function(name: String, params: String? = nil) {
+    public func asyncCallH5Function(name: String, params: String? = nil) {
         DispatchQueue.main.async {
             var js = ""
             if let param = params  {
@@ -261,7 +261,7 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
 }
 
 class H5PageWKHandler:NSObject, WKScriptMessageHandler {
-    unowned var owner: H5PageController
+    unowned public var owner: H5PageController
     
     init(owner: H5PageController) {
         self.owner = owner

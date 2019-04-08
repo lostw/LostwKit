@@ -13,8 +13,8 @@ class WKZCacheItem: NSObject {
     var expire: TimeInterval!
 }
 
-class WKZCache: NSObject {
-    @objc static let shared = WKZCache()
+public class WKZCache: NSObject {
+    @objc public static let shared = WKZCache()
     
     let cache = NSCache<NSString, AnyObject>()
     
@@ -51,18 +51,18 @@ class WKZCache: NSObject {
     
     
     // MARK: - file cache
-    @objc func isExistFileNamed(_ name: String) -> Bool {
+    public func isExistFileNamed(_ name: String) -> Bool {
         var url = self.fileCacheURL()
         url.appendPathComponent(name)
         
         return FileManager.default.fileExists(atPath: url.path)
     }
     
-    @objc func imageNamed(_ name: String) -> UIImage? {
+    @objc public func imageNamed(_ name: String) -> UIImage? {
         return UIImage(contentsOfFile: self.fileURLByName(name).path)
     }
     
-    @objc func cacheData(_ data: Data, withName name: String) {
+    @objc public func cacheData(_ data: Data, withName name: String) {
         var url = self.fileCacheURL()
         url.appendPathComponent(name)
         try? data.write(to: url)
@@ -77,7 +77,7 @@ class WKZCache: NSObject {
         }
     }
     
-    func files() -> [URL]?{
+    public func files() -> [URL]?{
         let url = self.fileCacheURL()
         let result = try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: [], options: [])
         return result
@@ -90,7 +90,7 @@ class WKZCache: NSObject {
         }
     }
     
-    func fileCacheURL() -> URL {
+    public func fileCacheURL() -> URL {
         let fileManager = FileManager.default
         
         var cacheDir = try! fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)

@@ -10,8 +10,8 @@ import UIKit
 import SnapKit
 
 public class ZZInfoCell: UIView {
-    var titleLabel: UILabel!
-    var valueLabel: UILabel!
+    public var titleLabel: UILabel!
+    public var valueLabel: UILabel!
     
     private var gapConstraint: Constraint!
     
@@ -24,7 +24,7 @@ public class ZZInfoCell: UIView {
         super.init(coder: aDecoder)
     }
     
-    func adjustGap(_ gap: CGFloat) {
+    public func adjustGap(_ gap: CGFloat) {
         self.gapConstraint.update(offset: gap)
     }
     

@@ -8,10 +8,9 @@
 
 import UIKit
 
-@objcMembers
-class ZZInputRow: UIView {
-    let field: UITextField = ZZTextField()
-    let titleLabel = UILabel()
+public class ZZInputRow: UIView {
+    public let field: UITextField = ZZTextField()
+    public let titleLabel = UILabel()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -22,7 +21,7 @@ class ZZInputRow: UIView {
         super.init(coder: aDecoder)
     }
     
-    func setPlaceholder(_ p: String?) {
+    public func setPlaceholder(_ p: String?) {
         if let p = p {
             self.field.attributedPlaceholder = NSMutableAttributedString(string: p, attributes: [.foregroundColor: AppTheme.shared[.promptText]])
         } else {

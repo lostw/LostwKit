@@ -8,7 +8,7 @@
 
 import UIKit
 
-typealias WKZRequestHandler = (@escaping (Bool)->Void) -> Void
+public typealias WKZRequestHandler = (@escaping (Bool)->Void) -> Void
 open class WKZScrollController: UIViewController {
     public let scrollView:UIScrollView = {
         let scroll = UIScrollView()
@@ -27,7 +27,7 @@ open class WKZScrollController: UIViewController {
     var bottomInputView: UIView?
     var fixedBottomView: UIView?
     
-    var isLoadingViewEnabled: Bool = false {
+    public var isLoadingViewEnabled: Bool = false {
         didSet {
             if isLoadingViewEnabled {
                 self.isLoadingViewShown = true
@@ -36,7 +36,7 @@ open class WKZScrollController: UIViewController {
             }
         }
     }
-    var isLoadingViewShown: Bool = false {
+    public var isLoadingViewShown: Bool = false {
         didSet {
             self.contentView.isHidden = isLoadingViewShown
             if isLoadingViewShown {
@@ -47,7 +47,7 @@ open class WKZScrollController: UIViewController {
             }
         }
     }
-    let noDataMananger = WKZEmptySetManager()
+    public let noDataMananger = WKZEmptySetManager()
     
     
     
@@ -62,7 +62,7 @@ open class WKZScrollController: UIViewController {
         }
     }
     var tap: UITapGestureRecognizer?
-    var isKeyboardShow = false
+    public var isKeyboardShow = false
     
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -206,7 +206,7 @@ extension WKZScrollController: UIGestureRecognizerDelegate {
         return false
     }
     
-    func addFixedBottomView(_ bottomView: UIView, isInput: Bool = false, animateIn: Bool = false) {
+    public func addFixedBottomView(_ bottomView: UIView, isInput: Bool = false, animateIn: Bool = false) {
         self.view.addSubview(bottomView)
     
         self.fixedBottomView = bottomView
@@ -305,7 +305,7 @@ extension WKZScrollController {
         lastFetchDate = nil
     }
     
-    func configureRequest(fetchNow: Bool = true, refresh: Bool = true, requestInterval: TimeInterval = 0, handler: WKZRequestHandler? = nil) {
+    public func configureRequest(fetchNow: Bool = true, refresh: Bool = true, requestInterval: TimeInterval = 0, handler: WKZRequestHandler? = nil) {
         self.requestHandler = handler
         self.requestInterval = requestInterval
         if handler == nil {

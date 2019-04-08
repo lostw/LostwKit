@@ -14,7 +14,7 @@ protocol WKZTabBar where Self: UIView {
     var didTouchButtonCallback: WKZTabBarTouchAction? {get set}
 }
 
-class WKZDefaultTabBar: UIView, WKZTabBar {
+public class WKZDefaultTabBar: UIView, WKZTabBar {
     private var barItems =  [UITabBarItem]()
     private var barButtons = [UIButton]()
     private var indicatorLine: UIView!
@@ -23,7 +23,7 @@ class WKZDefaultTabBar: UIView, WKZTabBar {
     
     var highlightedColor = UIColor.black
     var animate = true
-    override var bounds: CGRect {
+    override public var bounds: CGRect {
         didSet {
             self.updateLayout()
         }
@@ -117,18 +117,19 @@ class WKZDefaultTabBar: UIView, WKZTabBar {
         indicatorLine.frame = CGRect.make(itemWidth * 0.15, self.bounds.height - 2, itemWidth, 2)
     }
     
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         self.updateLayout()
     }
 }
 
-class WKZTabBarController: UIViewController {
-    var tabBar: WKZDefaultTabBar = WKZDefaultTabBar()
+open class WKZTabBarController: UIViewController {
+    public var tabView: UIView = UIView()
+    public var tabBar: WKZDefaultTabBar = WKZDefaultTabBar()
     var contentView: UIView = UIView()
-    var controllers = [UIViewController]()
+    public var controllers = [UIViewController]()
     
-    var selectedIndex: Int = 0 {
+    public var selectedIndex: Int = 0 {
         didSet {
             guard selectedIndex < controllers.count else {
                 selectedIndex = 0
@@ -143,13 +144,13 @@ class WKZTabBarController: UIViewController {
         return controllers[selectedIndex]
     }
     
-    override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         self.commonInitView()
         // Do any additional setup after loading the view.
     }
 
-    func setupControllers(_ controllers: [UIViewController], selectedIndex: Int = 0) {
+    public func setupControllers(_ controllers: [UIViewController], selectedIndex: Int = 0) {
         self.controllers = controllers
         
         var items = [UITabBarItem]()
@@ -164,37 +165,48 @@ class WKZTabBarController: UIViewController {
         self.displayController(selectedController)
     }
     
-    func commonInitView() {
+    open func commonInitView() {
         self.edgesForExtendedLayout = []
         self.view.backgroundColor = AppTheme.shared[.background]
         self.configureLayout()
     }
     
     func configureLayout() {
-        tabBar.frame = CGRect.make(0, 0, view.bounds.width, 40)
-        tabBar.highlightedColor = AppTheme.shared[.majorText]
-        view.addSubview(tabBar)
+        self.view.addSubview(tabView)
+        tabView.snp.makeConstraints { (make) in
+            make.edges.equalToSuperview()
+        }
+        
+        tabBar.highlightedColor = AppTheme.shared[.majorText] 
         tabBar.didTouchButtonCallback = { [unowned self] idx in
             self.selectedIndex = idx
         }
+        tabView.addSubview(tabBar)
+        tabBar.snp.makeConstraints { (make) in
+            make.left.top.right.equalToSuperview()
+            make.height.equalTo(40)
+        }
         
-        contentView.frame = CGRect.make(0, 40, view.bounds.width, view.bounds.height - 40)
-        view.addSubview(contentView)
+        tabView.addSubview(contentView)
+        contentView.snp.makeConstraints { (make) in
+            make.top.equalTo(tabBar.snp.bottom)
+            make.left.right.bottom.equalToSuperview()
+        }
     }
     
-    override func viewWillLayoutSubviews() {
+    override open func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         contentView.frame = CGRect.make(0, 40, view.bounds.width, view.bounds.height - 40)
     }
     
-    func displayController(_ c: UIViewController) {
+    open func displayController(_ c: UIViewController) {
         self.addChild(c)
         c.view.frame = contentView.bounds
         contentView.addSubview(c.view)
         c.didMove(toParent: self)
     }
     
-    func hideController(_ c: UIViewController) {
+    open func hideController(_ c: UIViewController) {
         guard c.parent != nil else {
             return
         }

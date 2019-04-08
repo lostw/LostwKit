@@ -31,54 +31,13 @@ public func isPhoneX() -> Bool {
 }
 
 postfix operator ~
-postfix func ~ (value: CGFloat) -> CGFloat {
+public postfix func ~ (value: CGFloat) -> CGFloat {
     return value / 375 * SCREEN_WIDTH
 }
 
-func maskText(_ text: String, range: Range<Int>, charactor: Character = "*") -> String {
-    guard range.upperBound <= text.count - 1 else {
-        return text
-    }
-    
-    let indexRange = text.index(text.startIndex, offsetBy: range.lowerBound)..<text.index(text.startIndex, offsetBy: range.upperBound)
-    let replace = String(repeating: charactor, count: range.count)
-    return text.replacingCharacters(in: indexRange, with: replace)
-}
 
-func maskText(_ text: String, range: Range<String.Index>, charactor: Character = "*") -> String {
-    guard range.upperBound <= text.endIndex else {
-        return text
-    }
-    let count = text.distance(from: range.lowerBound, to: range.upperBound)
-    let replace = String(repeating: charactor, count: count)
-    return text.replacingCharacters(in: range, with: replace)
-    
-}
 
-func maskName(_ name: String) -> String {
-    guard name.count >= 2 else {
-        return name
-    }
-    
-    var range: Range<Int>!
-    if name.count == 2 {
-        range = 1..<2
-    } else {
-        range = 1..<(name.count - 1)
-    }
-    
-    return maskText(name, range: range)
- }
-
-func maskMobile(_ mobile: String) -> String {
-    return maskText(mobile, range: 3..<7)
-}
-
-func maskIdcard(_ text: String) -> String {
-    return maskText(text, range: 8..<16)
-}
-
-func genderTextByIdcard(_ idcard: String?) -> String {
+public func genderTextByIdcard(_ idcard: String?) -> String {
     guard let idcard = idcard else {
         return ""
     }
@@ -106,7 +65,7 @@ func genderTextByIdcard(_ idcard: String?) -> String {
 //    return link
 //}
 
-func toCurrency(_ value: Double) -> String {
+public func toCurrency(_ value: Double) -> String {
     let formatter = NumberFormatter()
     
     formatter.positiveFormat = "###,###,###,###,##0.00;"
@@ -127,7 +86,16 @@ func toCurrency(_ value: Int, decimal: Bool = true) -> String {
     return formatter.string(from: NSNumber(value: value)) ?? ""
 }
 
-func isVersion(_ a: String, olderThan b: String) -> Bool {
+public func currencyStyle(_ value: Double) -> String {
+    let formatter = NumberFormatter()
+    formatter.positiveFormat = "###,###,##0.00;"
+    formatter.roundingMode = .halfUp
+    formatter.positivePrefix = "¥"
+    formatter.negativePrefix = "-¥"
+    return formatter.string(from: NSNumber(value: value)) ?? ""
+}
+
+public func isVersion(_ a: String, olderThan b: String) -> Bool {
     if a == b {
         return false
     }
@@ -147,7 +115,7 @@ func swiftClassFromString(_ className: String) -> AnyClass! {
     return cls;
 }
 
-func getIdcardAge(_ idcard: String) -> Int {
+public func getIdcardAge(_ idcard: String) -> Int {
     let year = Int(idcard[6, 4])!
     let month = Int(idcard[10, 2])!
     let day = Int(idcard[12, 2])!
@@ -161,7 +129,7 @@ func getIdcardAge(_ idcard: String) -> Int {
     return age
 }
 
-func qrcode(_ content: String, imageWidth: CGFloat) -> UIImage {
+public func qrcode(_ content: String, imageWidth: CGFloat) -> UIImage {
     //创建一个二维码的滤镜
     let qrFilter = CIFilter(name: "CIQRCodeGenerator")
     

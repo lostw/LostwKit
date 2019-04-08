@@ -8,12 +8,12 @@
 
 import UIKit
 
-class ZZShapeView: UIView {
-    override class var layerClass: AnyClass {
+open class ZZShapeView: UIView {
+    override open class var layerClass: AnyClass {
         return CAShapeLayer.self
     }
     
-    var backedLayer: CAShapeLayer {
+    public var backedLayer: CAShapeLayer {
         return self.layer as! CAShapeLayer
     }
     

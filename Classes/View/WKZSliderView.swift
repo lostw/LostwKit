@@ -38,8 +38,8 @@ public class WKZSliderViewCell: UIView {
 }
 
 public class WKZSliderView: UIView {
-    let pageControl = UIPageControl()
-    let scrollView = UIScrollView()
+    public let pageControl = UIPageControl()
+    public let scrollView = UIScrollView()
     public var placeholderView: UIImageView?
     public var configImageViewAction: ((UIImageView)->Void)?
     var timer: Timer?
@@ -106,7 +106,7 @@ public class WKZSliderView: UIView {
         self.pageControl.hidesForSinglePage = true
         self.addSubview(self.pageControl)
         
-        self.bindTouchAction { [unowned self] tap in
+        self.onTouch { [unowned self] tap in
             guard let links = self.links else {
                 return
             }

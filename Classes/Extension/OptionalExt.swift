@@ -17,7 +17,7 @@ public extension Optional where Wrapped == String {
         }
     }
     
-    func intValue() -> Int {
+    var intValue: Int {
         switch self {
         case .none:
             return 0
@@ -26,7 +26,7 @@ public extension Optional where Wrapped == String {
         }
     }
     
-    func doubleValue() -> Double {
+    var doubleValue: Double {
         switch self {
         case .none:
             return 0

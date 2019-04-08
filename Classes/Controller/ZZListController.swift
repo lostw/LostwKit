@@ -67,32 +67,38 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
     
     public typealias ConfigureCellCallback = (C, M, IndexPath) -> Void
     public typealias DidSelectItemCallback = (M, IndexPath) -> Void
-    class ModelParser<T: Mapable> {
+    public typealias WillLoadTableCallback = () -> Void
+    public typealias DidFetchData = ([String : Any]) -> Void
+    public class ModelParser<T: Mapable> {
         func parse(_ item: [String: Any]) -> T? {
             return T.deserialize(from: item)
         }
     }
     
-    private var parameters = [String: Any]()
+    public var parameters = [String: Any]()
     
     public var list = [M]()
     public let tableView = UITableView()
     public var page: Int = 0
-    var pageSize: Int = 15
-    let cellIdentifier = defaultCellIdentifier
+    public var pageSize: Int = 15
+    public let cellIdentifier = defaultCellIdentifier
     public var sourceHandler: ((Int, @escaping PageableCompletionCallback) -> Void)?;
-    var isError = false
-    var parser = ModelParser<M>()
+    public var isError = false
+    public var parser = ModelParser<M>()
     public var isDataFetched: Bool = false
     public var configCell: ConfigureCellCallback?
     public var didSelectItem: DidSelectItemCallback?
+    public var willLoadTable: WillLoadTableCallback?
+    public var didFetchData: DidFetchData?
     public var autoParse = true
+    
+    var requestType = 0
     
     var forPager: Bool {
         return true
     }
     var indicatorNoMoreData = false
-    var noDataManager = WKZEmptySetManager()
+    public var noDataManager = WKZEmptySetManager()
     
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -101,7 +107,7 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         self.noDataManager.pageKey = .loading
     }
     
-    func commonInitView() {
+    open func commonInitView() {
         self.edgesForExtendedLayout = []
         
         self.tableView.tableFooterView = UIView()
@@ -137,7 +143,7 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         return self.cellIdentifier
     }
     
-    func addFixedBottomView(_ bottomView: UIView, animateIn: Bool = false) {
+    public func addFixedBottomView(_ bottomView: UIView, animateIn: Bool = false) {
         self.view.addSubview(bottomView)
         
         if animateIn {
@@ -190,7 +196,6 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         
         self.configCell?(cell as! C, self.list[indexPath.row], indexPath)
         
-        //        cell.textLabel?.text = self.list[indexPath.row]["title"]
         return cell
     }
     
@@ -205,9 +210,10 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.1
     }
-
+    
     // MARK: - Pageable
     public func parseItem(_ item: Any) -> M? {
+        
         if !autoParse {
             return item as? M
         }
@@ -239,6 +245,7 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
     }
     
     @objc open func didLoadData(at page: Int) {
+        self.willLoadTable?()
         self.isDataFetched = true
         if isError {
             self.noDataManager.visible = true
@@ -259,4 +266,5 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         self.tableView.reloadData()
     }
 }
+
 

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ZZPopView: UIView {
+open class ZZPopView: UIView {
     static var queue = [ZZPopView]()
     static func nextView() {
         guard !self.queue.isEmpty else {
@@ -24,47 +24,47 @@ class ZZPopView: UIView {
         view.show()
     }
     
-    enum Position {
+    public enum Position {
         case center, onethird, bottom, top, point(CGPoint)
     }
     
-    enum AnimationType {
+    public enum AnimationType {
         case none, fade, push, scale, custom
     }
     
-    enum AnimationPushType {
+    public enum AnimationPushType {
         case fromTop, fromBottom, fromLeft, fromRight
     }
     
     weak var moveToView: UIView?
     fileprivate var dismissCallback: (()->Void)?
-    lazy var coverView: UIView = {
+    public lazy var coverView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black
         return view
     }()
     
-    var dismissOnBackground = false {
+    public var dismissOnBackground = false {
         didSet {
             if dismissOnBackground {
-                coverView.bindTouchAction({ [unowned self](tap) in
+                coverView.onTouch({ [unowned self](tap) in
                     self.dismiss()
                 })
             } else {
-               coverView.bindTouchAction(nil)
+               coverView.onTouch(nil)
             }
         }
     }
-    var animationType:AnimationType = .fade
-    var animationPushType:AnimationPushType = .fromTop
-    var delayTransform: CGAffineTransform?
+    public var animationType:AnimationType = .fade
+    public var animationPushType:AnimationPushType = .fromTop
+    public var delayTransform: CGAffineTransform?
     
-    override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         self.commonInitView()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -72,7 +72,7 @@ class ZZPopView: UIView {
         self.show(inView: UIApplication.shared.keyWindow!)
     }
     
-    func show(inView superview: UIView, position: Position = .center, size: CGSize? = nil) {
+    public func show(inView superview: UIView, position: Position = .center, size: CGSize? = nil) {
         if let size = size {
             self.bounds = CGRect(origin: .zero, size: size)
         }
@@ -139,11 +139,11 @@ class ZZPopView: UIView {
        
     }
     
-    @objc func close() {
+    @objc public func close() {
         self.dismiss()
     }
     
-    func dismiss(completion: (()->Void)? = nil) {
+    public func dismiss(completion: (()->Void)? = nil) {
         self.dismissCallback = completion
         
         switch self.animationType {
@@ -160,7 +160,7 @@ class ZZPopView: UIView {
         }
     }
     
-    func cleanup() {
+    public func cleanup() {
         self.coverView.removeFromSuperview()
         self.removeFromSuperview()
         if let callback = self.dismissCallback {
@@ -257,7 +257,7 @@ class ZZPopView: UIView {
         }
     }
     
-    func commonInitView() {
+    open func commonInitView() {
         self.layer.cornerRadius = 5
         self.layer.backgroundColor = UIColor.white.cgColor
     }

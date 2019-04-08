@@ -8,8 +8,8 @@
 
 import UIKit
 
-typealias ZZLaunchViewCallback = ()->Void
-class ZZLaunchView: UIView {
+public typealias ZZLaunchViewCallback = ()->Void
+public class ZZLaunchView: UIView {
     private var imageView: UIImageView!
     private var skipLabel: UILabel?
     private var animationProgress: CAShapeLayer?
@@ -36,7 +36,7 @@ class ZZLaunchView: UIView {
         super.init(coder: aDecoder)
     }
     
-    override func didMoveToSuperview() {
+    override public func didMoveToSuperview() {
         super.didMoveToSuperview()
         if self.showSkip {
             self.showCountDownAnimation()
@@ -45,14 +45,14 @@ class ZZLaunchView: UIView {
         }
     }
     
-    func showInView(_ view: UIView, image: UIImage, countSeconds: Int = 3, enableSkip: Bool = true, touchAction: ZZLaunchViewCallback? = nil) {
+    public func showInView(_ view: UIView, image: UIImage, countSeconds: Int = 3, enableSkip: Bool = true, touchAction: ZZLaunchViewCallback? = nil) {
         self.frame = view.bounds
         self.imageView.image = image
         self.countSeconds = countSeconds
         self.showSkip = enableSkip
         self.touchAction = touchAction
         if touchAction != nil {
-            imageView.bindTouchAction { [unowned self] _ in
+            imageView.onTouch { [unowned self] _ in
                 self.hide(self.touchAction)
             }
         }
@@ -111,7 +111,7 @@ class ZZLaunchView: UIView {
             label.snp.makeConstraints { (make) in
                 make.edges.equalToSuperview()
             }
-            label.bindTouchAction { [unowned self] (_) in
+            label.onTouch { [unowned self] (_) in
                 self.skip()
             }
             skipLabel = label

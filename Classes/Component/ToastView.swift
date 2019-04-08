@@ -8,8 +8,8 @@
 
 import UIKit
 
-class ToastView: UIView {
-    enum Style {
+public class ToastView: UIView {
+    public enum Style {
         case normal, success
     }
     

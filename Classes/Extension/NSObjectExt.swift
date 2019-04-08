@@ -58,7 +58,7 @@ extension NSObject {
         return observer
     }
     
-    func zUnObserve(_ observer: NSObjectProtocol) {
+    public func offNotification(_ observer: NSObjectProtocol) {
         self.observeManager.remove(observer)
     }
     
@@ -136,7 +136,7 @@ extension NSObject {
         self.keyValueManager.add(target, for: keyPath, callback: callback)
     }
     
-    func zUnObserveKeyPath(_ target: NSObject, for keyPath: String) {
+    public func zUnObserveKeyPath(_ target: NSObject, for keyPath: String) {
         self.keyValueManager.remove(target, for: keyPath)
     }
     

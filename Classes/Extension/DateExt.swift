@@ -26,7 +26,7 @@ public enum WKZDateFormatStyle {
     
 }
 
-extension Date {
+public extension Date {
     public enum Scale {
         case second, minute, hour, day
     }

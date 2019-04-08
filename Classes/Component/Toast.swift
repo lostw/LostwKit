@@ -268,7 +268,7 @@ public extension UIView {
     
      @param position The toast's position
      */
-    @objc func showIndicator(loadingText: String? = nil) {
+    func showIndicator(loadingText: String? = nil) {
         self.activityCount += 1
         if self.activityCount > 0 {
             if self.activityView == nil {
@@ -286,7 +286,7 @@ public extension UIView {
     /**
      Dismisses the active toast activity indicator view.
      */
-    @objc func hideIndicator() {
+    func hideIndicator() {
         self.activityCount -= 1
         if self.activityCount <= 0 {
             if let view = self.activityView, view.superview != nil {
@@ -298,6 +298,11 @@ public extension UIView {
                 }
             }
         }
+    }
+    
+    func hideAllIndicator() {
+        self.activityCount = 0
+        self.hideIndicator()
     }
     
     

@@ -8,12 +8,12 @@
 
 import UIKit
 
-class ZZGradientView: UIView {
-    override class var layerClass: AnyClass {
+open class ZZGradientView: UIView {
+    override open class var layerClass: AnyClass {
         return CAGradientLayer.self
     }
     
-    var backedLayer: CAGradientLayer {
+    public var backedLayer: CAGradientLayer {
         return self.layer as! CAGradientLayer
     }
     

@@ -27,7 +27,7 @@ public extension UIView {
     }
 }
 
-extension UIView {
+public extension UIView {
     
     /// 删除所有的subview
     @objc func removeSubviews() {
@@ -52,18 +52,19 @@ extension UIView {
         return line
     }
 //
-//    func addTopLine(color: UIColor = themeColor[.Border,] left: CGFloat = 0, right: CGFloat = 0) {
-//        let line = UIView()
-//        line.backgroundColor = color
-//        self.addSubview(line)
-//        line.snp.makeConstraints { (make) in
-//            make.top.equalToSuperview().offset(1-ONE_PX_ADJUST)
-//            make.left.equalToSuperview().offset(left)
-//            make.right.equalToSuperview().offset(-right)
-//            make.height.equalTo(ONE_PX)
-//        }
-//    }
-//    
+    func addTopLine(color: UIColor? = nil, left: CGFloat = 0, right: CGFloat = 0) {
+        let color = color ?? AppTheme.shared[.border]
+        let line = UIView()
+        line.backgroundColor = color
+        self.addSubview(line)
+        line.snp.makeConstraints { (make) in
+            make.top.equalToSuperview().offset(1-ONE_PX_ADJUST)
+            make.left.equalToSuperview().offset(left)
+            make.right.equalToSuperview().offset(-right)
+            make.height.equalTo(ONE_PX)
+        }
+    }
+//
 //    func insertLine(color: UIColor = themeColor[.Border,] left: CGFloat = 0, right: CGFloat = 0, below view:UIView) {
 //        guard view.superview == self else {
 //            return
@@ -151,7 +152,7 @@ extension UIView {
 
 private var badgeLabelKey: UInt8 = 0
 private var dotBadgeLayerKey: UInt8 = 0
-extension UIView {
+public extension UIView {
     fileprivate var dotLayer: CALayer {
         var layer: CALayer! = objc_getAssociatedObject(self, &dotBadgeLayerKey) as? CALayer
         if layer == nil {
@@ -256,7 +257,7 @@ extension UIView {
         }
     }
     
-    @objc public func bindTouchAction(_ action: UIViewTapAction?) {
+    @objc public func onTouch(_ action: UIViewTapAction?) {
         self.isUserInteractionEnabled = true
         
         if action == nil {
@@ -267,15 +268,10 @@ extension UIView {
             self.wkz_handler = TouchHandler(target: self, action: action!)
         }
     }
-    
-    @available(*, deprecated)
-    func bindTapGestureAction(_ action: UIViewTapAction?) {
-        self.bindTouchAction(action)
-    }
 }
 
 // MARK: - animation
-extension UIView {
+public extension UIView {
     @objc func shake() {
         let animation = CAKeyframeAnimation()
         animation.keyPath = "position.x"

@@ -32,14 +32,14 @@ public struct NavConfig {
     }
 }
 
-extension UIViewController {
+public extension UIViewController {
     
     convenience public init(withParams params: Dictionary<String, Any>) {
         self.init()
         self.setValuesForKeys(params)
     }
     
-    public func showController(_ controller: UIViewController, present: Bool = false, animated: Bool = true) {
+    func showController(_ controller: UIViewController, present: Bool = false, animated: Bool = true) {
         if present {
             self.present(controller, animated: animated, completion: nil)
         } else {
@@ -60,7 +60,7 @@ extension UIViewController {
         self.navToController(controller, config: NavConfig(animationType: (animated ? .default : .none), step: -1))
     }
     
-    public func navToController(_ controller: UIViewController, config: NavConfig = NavConfig()) {
+    func navToController(_ controller: UIViewController, config: NavConfig = NavConfig()) {
         guard let nav = self.navigationController else {
             return
         }
@@ -116,7 +116,7 @@ extension UIViewController {
         }
     }
     
-    @objc public func close() {
+    @objc func close() {
         self.dismiss(animated: true)
     }
     
@@ -124,7 +124,7 @@ extension UIViewController {
         self.navBack()
     }
     
-    public func navBack(delay: TimeInterval = 0) {
+    func navBack(delay: TimeInterval = 0) {
         if delay > 0 {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(1)) {
                 self.navigationController?.popViewController(animated: true)
@@ -134,7 +134,7 @@ extension UIViewController {
         }
     }
     
-    public func navBack(step: Int) {
+    func navBack(step: Int) {
         if step <= 0 {
             return
         }
@@ -148,15 +148,15 @@ extension UIViewController {
     }
     
     
-    public func alertConfirm(title: String? = "提示", message: String) {
+    func alertConfirm(title: String? = "提示", message: String) {
         self.alert(title: title, message: message, buttonTitles: nil, style: .alert, callback: nil)
     }
     
-    public func alertPrompt(title: String = "提示", message: String, buttonTitles: [String]? = nil,  callback: AlertCallback? = nil) {
+    func alertPrompt(title: String = "提示", message: String, buttonTitles: [String]? = nil,  callback: AlertCallback? = nil) {
         self.alert(title: title, message: message, buttonTitles: buttonTitles, style: .prompt, callback: callback)
     }
     
-    public func alert(title: String? = nil, message: String, buttonTitles: [String]? = nil, style: AlertStyle = .alert, callback: AlertCallback? = nil) {
+    func alert(title: String? = nil, message: String, buttonTitles: [String]? = nil, style: AlertStyle = .alert, callback: AlertCallback? = nil) {
         var confirmTitle = "确认"
         var cancelTitle = "取消"
         if let titles = buttonTitles {

@@ -115,9 +115,52 @@ public extension String {
         let mod = sum % 11
         return idcardMod[mod] == String(text[17])
     }
+    
+    // MARK: - 脱敏
+    func mask(range: Range<Int>, charactor: Character = "*") -> String {
+        guard range.upperBound <= self.count - 1 else {
+            return self
+        }
+        
+        let indexRange = index(self.startIndex, offsetBy: range.lowerBound)..<index(self.startIndex, offsetBy: range.upperBound)
+        let replace = String(repeating: charactor, count: range.count)
+        return self.replacingCharacters(in: indexRange, with: replace)
+    }
+    
+    func mask(range: Range<String.Index>, charactor: Character = "*") -> String {
+        guard range.upperBound <= self.endIndex else {
+            return self
+        }
+        let count = self.distance(from: range.lowerBound, to: range.upperBound)
+        let replace = String(repeating: charactor, count: count)
+        return self.replacingCharacters(in: range, with: replace)
+    }
+    
+    func asMaskedName() -> String {
+        guard count >= 2 else {
+            return self
+        }
+        
+        var range: Range<Int>!
+        if count == 2 {
+            range = 1..<2
+        } else {
+            range = 1..<(count - 1)
+        }
+        
+        return mask(range: range)
+    }
+    
+    func asMaskedMobile() -> String {
+        return mask(range: 3..<7)
+    }
+    
+    func asMaskedIdcard() -> String {
+        return mask(range: 8..<16)
+    }
 }
 
-extension String {
+public extension String {
     subscript (i: Int) -> Character {
         return self[index(startIndex, offsetBy: i)]
     }

@@ -8,28 +8,32 @@
 
 import UIKit
 
-class ZZPlaceholderView: UIView {
-    struct Style {
-        var imageSize: CGSize?
-        var titleMarginTop: CGFloat = 20
-        var titleColor: UIColor = UIColor(hex: 0x7b888e)
-        var titleFont: UIFont = UIFont.systemFont(ofSize: 16)
+public class ZZPlaceholderView: UIView {
+    public struct Style {
+        public var imageSize: CGSize?
+        public var titleMarginTop: CGFloat = 20
+        public var titleColor: UIColor = UIColor(hex: 0x7b888e)
+        public var titleFont: UIFont = UIFont.systemFont(ofSize: 16)
         
-        var buttonSize: CGSize?
-        var configButton: ((UIButton)->Void) = { button in
+        public var buttonSize: CGSize?
+        public var configButton: ((UIButton)->Void) = { button in
             button.titleLabel!.font = UIFont.systemFont(ofSize: 16)
             button.titleLabel!.textColor = UIColor(hex: 0x333333)
         }
+        
+        public init() {}
     }
     
-    struct DataSource {
-        var indicator = false
-        var images: [String]?
-        var title: String?
-        var actionTitle: String?
-        var action: ((UIButton)->Void)?
+    public struct DataSource {
+        public var indicator = false
+        public var images: [String]?
+        public var title: String?
+        public var actionTitle: String?
+        public var action: ((UIButton)->Void)?
         
-        var style = Style()
+        public var style = Style()
+        
+        public init() {}
     }
     
     var imageView: UIImageView?

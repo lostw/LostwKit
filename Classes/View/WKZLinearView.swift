@@ -39,7 +39,7 @@ extension UIView {
     }
 }
 
-public class WKZLinearView: UIView {
+open class WKZLinearView: UIView {
     public var viewHeight: CGFloat = 44
     public var padding = UIEdgeInsets.zero
     public var ignoreFirstTopMargin = true
@@ -180,7 +180,7 @@ public class WKZLinearView: UIView {
         self.setNeedsUpdateConstraints()
     }
     
-    override public func updateConstraints() {
+    override open func updateConstraints() {
         defer {
             super.updateConstraints()
         }
@@ -264,7 +264,7 @@ public class WKZLinearView: UIView {
         self.setNeedsUpdateConstraints()
     }
     
-    override public func layoutSubviews() {
+    override open func layoutSubviews() {
         super.layoutSubviews()
         
         if self.enableSeperatorLine {

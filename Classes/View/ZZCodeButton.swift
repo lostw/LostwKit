@@ -25,7 +25,8 @@ public class ZZCounterdownController {
         }
     }
     var timer: Timer?
-    var duration: Int = 60
+    public var duration: Int = 60
+    public var isReady = true
     var remain: Int = 0
     public var state: CounterState = .ready {
         didSet {            

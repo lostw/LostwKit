@@ -8,12 +8,12 @@
 
 import Foundation
 import UIKit
-extension CGRect {
+public extension CGRect {
     init(_ x: CGFloat, _ y: CGFloat, _ width: CGFloat, _ height: CGFloat) {
         self.init(x: x, y: y, width: width, height: height)
     }
     
-    public static func make(_ x: CGFloat, _ y: CGFloat, _ width: CGFloat, _ height: CGFloat) -> CGRect {
+    static func make(_ x: CGFloat, _ y: CGFloat, _ width: CGFloat, _ height: CGFloat) -> CGRect {
         return CGRect(x: x, y: y, width: width, height: height)
     }
     
@@ -25,19 +25,19 @@ extension CGRect {
     }
 }
 
-extension UIEdgeInsets {
+public extension UIEdgeInsets {
     public static func make(_ top: CGFloat, _ left: CGFloat, _ bottom: CGFloat, _ right: CGFloat) -> UIEdgeInsets {
         return UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
     }
 }
 
-extension CGSize {
+public extension CGSize {
     static func make(_ width: CGFloat, _ height: CGFloat) -> CGSize {
         return CGSize(width: width, height: height)
     }
 }
 
-extension CGPoint {
+public extension CGPoint {
     static func make(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
         return CGPoint(x: x, y: y)
     }

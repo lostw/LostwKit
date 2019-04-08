@@ -10,7 +10,7 @@ import UIKit
 
 open class WKZTableCell: UITableViewCell {
 
-    weak var owner: UIViewController?
+    weak public var owner: UIViewController?
 
     override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -23,9 +23,11 @@ open class WKZTableCell: UITableViewCell {
     }
     
     open func commonInitView() {}
+    
+    open func bindData(_ data: Any, indexPath: IndexPath) {}
 }
 
-class WKZCollectionCell: UICollectionViewCell {
+open class WKZCollectionCell: UICollectionViewCell {
     
     weak var owner: UIViewController?
 
@@ -34,13 +36,13 @@ class WKZCollectionCell: UICollectionViewCell {
         self.commonInitView()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func commonInitView() {}
+    open func commonInitView() {}
     
-    func bindData(_ data: Any, indexPath: IndexPath) {
+    open func bindData(_ data: Any, indexPath: IndexPath) {
         fatalError("实现bindData方法")
     }
 }
@@ -52,16 +54,16 @@ open class WKZListController: UIViewController {
     public var page: Int = 0
     let cellIdentifier = defaultCellIdentifier
     public var sourceHandler: ((Int, @escaping PageableCompletionCallback) -> Void)?;
-    var isError = false
+    public var isError = false
     var parser: WKZViewModelParser?
     var entityClass: AnyClass?
     public var isDataFetched: Bool = false 
     
-    var forPager: Bool {
+    open var forPager: Bool {
         return true
     }
     var indicatorNoMoreData = false
-    var noDataManager = WKZEmptySetManager()
+    public var noDataManager = WKZEmptySetManager()
     
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -70,7 +72,7 @@ open class WKZListController: UIViewController {
         self.noDataManager.pageKey = .loading
     }
     
-    func commonInitView() {
+    open func commonInitView() {
         self.edgesForExtendedLayout = []
         
         self.view.addSubview(self.tableView)
@@ -94,6 +96,15 @@ open class WKZListController: UIViewController {
         self.refreshPage()
     }
     
+    public func resetList() {
+        self.list = []
+        self.tableView.reloadData()
+        self.noDataManager.visible = true
+        self.noDataManager.setErrorText("")
+        self.noDataManager.pageKey = .loading
+        self.tableView.removePushRefresh()
+    }
+    
     open func didSelectItem(_ item: Any, at indexPath: IndexPath) {
         
     }
@@ -102,11 +113,11 @@ open class WKZListController: UIViewController {
         self.tableView.register(cellClass, forCellReuseIdentifier: self.cellIdentifier)
     }
 
-    func cellIdentifier(at indexPath: IndexPath) -> String {
+    public func cellIdentifier(at indexPath: IndexPath) -> String {
         return self.cellIdentifier
     }
     
-    func addFixedBottomView(_ bottomView: UIView, animateIn: Bool = false) {
+    public func addFixedBottomView(_ bottomView: UIView, animateIn: Bool = false) {
         self.view.addSubview(bottomView)
         
         if animateIn {
@@ -146,7 +157,7 @@ open class WKZListController: UIViewController {
 }
 
 extension WKZListController: Pagable {
-    @objc public func parseItem(_ item: Any) -> Any? {
+    @objc open func parseItem(_ item: Any) -> Any? {
         if let parser = self.parser {
             return parser.parse(item)
         }
