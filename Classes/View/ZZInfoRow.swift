@@ -57,7 +57,7 @@ open class ZZInfoRow: UIView {
         self.toggleIndicatorView((action == nil ? false : true))
     }
     
-    @objc public func toggleIndicatorView(_ show: Bool, adjust: Bool = true) {
+    public func toggleIndicatorView(_ show: Bool, adjust: Bool = true) {
         self.indicatorView.isHidden = !show
         if adjust {
             self.valueLabel.snp.updateConstraints({ (make) in
@@ -66,7 +66,7 @@ open class ZZInfoRow: UIView {
         }
     }
     
-    @objc func showIcon(_ icon: UIImage) {
+    func showIcon(_ icon: UIImage) {
         if self.iconView == nil {
             let iconView = UIImageView()
             self.addSubview(iconView)

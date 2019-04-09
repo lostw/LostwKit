@@ -25,7 +25,7 @@ public class ZZLaunchView: UIView {
             }
         }
     }
-    var touchAction: ZZLaunchViewCallback?
+    var onTouch: ZZLaunchViewCallback?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -45,15 +45,15 @@ public class ZZLaunchView: UIView {
         }
     }
     
-    public func showInView(_ view: UIView, image: UIImage, countSeconds: Int = 3, enableSkip: Bool = true, touchAction: ZZLaunchViewCallback? = nil) {
+    public func showInView(_ view: UIView, image: UIImage, countSeconds: Int = 3, enableSkip: Bool = true, onTouch: ZZLaunchViewCallback? = nil) {
         self.frame = view.bounds
         self.imageView.image = image
         self.countSeconds = countSeconds
         self.showSkip = enableSkip
-        self.touchAction = touchAction
-        if touchAction != nil {
+        self.onTouch = onTouch
+        if onTouch != nil {
             imageView.onTouch { [unowned self] _ in
-                self.hide(self.touchAction)
+                self.hide(self.onTouch)
             }
         }
         view.addSubview(self)
@@ -119,7 +119,7 @@ public class ZZLaunchView: UIView {
             let animationLayer = CAShapeLayer()
             animationLayer.strokeColor = AppTheme.shared[.majorText].cgColor
             animationLayer.fillColor = UIColor.clear.cgColor
-            animationLayer.frame = CGRect.make(0, 0, 40, 40)
+            animationLayer.frame = CGRect(0, 0, 40, 40)
             animationLayer.path = UIBezierPath(arcCenter: CGPoint(x: 20, y: 20), radius: 18.5, startAngle: -CGFloat.pi / 2, endAngle: CGFloat.pi * 1.5, clockwise: true).cgPath
             animationLayer.strokeStart = 0
             animationLayer.strokeEnd = 0

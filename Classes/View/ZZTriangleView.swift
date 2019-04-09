@@ -9,7 +9,8 @@
 import UIKit
 
 public class ZZTriangleView: ZZShapeView {
-    
+    /// 确认三角行的3个点，顺时针
+    public var points: [CGPoint] = []
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.commonInitView()
@@ -26,27 +27,23 @@ public class ZZTriangleView: ZZShapeView {
     override public func layoutSubviews() {
         super.layoutSubviews()
         
+        guard self.points.count >= 3 else {
+            return
+        }
+        
         if self.backedLayer.path == nil {
             self.backedLayer.path = self.trianglePath().cgPath
         }
     }
     
     private func trianglePath() -> UIBezierPath {
-        let height:CGFloat = self.frame.height
-        let width:CGFloat = self.frame.width
         
         let path = UIBezierPath()
-        path.move(to: CGPoint.zero)
-        path.addLine(to: CGPoint.make(width, 0))
-        path.addLine(to: CGPoint.make(width / 2, height))
+        path.move(to: points[0].scaled(to: bounds.size))
+        path.addLine(to: points[1].scaled(to: bounds.size))
+        path.addLine(to: points[2].scaled(to: bounds.size))
         path.close()
         
         return path
     }
-    
-    /*
-    override func layoutSubviews() {
-        super.layoutSubviews()
-    }
-    */
 }

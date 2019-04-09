@@ -37,7 +37,7 @@ class ZZPickerToolbar: UIView {
         
         let confirmButton = UIButton()
         confirmButton.zColor(UIColor(hex: 0x528bd2)).zFontSize(14).zText("确定")
-        confirmButton.contentEdgeInsets = UIEdgeInsets.make(8, 10, 8, 10)
+        confirmButton.contentEdgeInsets = UIEdgeInsets(8, 10, 8, 10)
         self.addSubview(confirmButton)
         confirmButton.snp.makeConstraints { (make) in
             make.right.equalToSuperview().offset(-12)
@@ -58,14 +58,14 @@ open class ZZPickerRow: UIView {
         view.backgroundColor = .white
         return view
     }()
-    static let toolbar = ZZPickerToolbar(frame: CGRect.make(0, 0, SCREEN_WIDTH, 44))
+    static let toolbar = ZZPickerToolbar(frame: CGRect(0, 0, SCREEN_WIDTH, 44))
     
     public var field: UITextField!
     public var titleLabel: UILabel!
     public var valueLabel: UILabel!
     private var indicatorView: UIImageView!
     
-    public var willPickAction: PickerCallback?
+    public var onValueChange: PickerCallback?
     open var placeholder: String? {
         didSet {
             if let value = placeholder {
@@ -77,8 +77,8 @@ open class ZZPickerRow: UIView {
             }
         }
     }
-    var selectedIndex: Int = 0
-    var selectedText: String?
+    public var selectedIndex: Int = 0
+    public var selectedText: String?
     public var options: [String] = [] {
         didSet {
             if field.isFirstResponder {
@@ -188,7 +188,7 @@ extension ZZPickerRow: UIPickerViewDelegate, UIPickerViewDataSource, ZZPickerToo
     func willResignPicker() {
         let targetIndex = type(of: self).pickerView.selectedRow(inComponent: 0)
         let targetText = self.options[targetIndex]
-        if let callback = self.willPickAction {
+        if let callback = self.onValueChange {
             let result = callback(targetIndex, targetText)
             if result != nil {
                 self.valueLabel.text = result

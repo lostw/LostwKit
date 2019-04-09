@@ -9,7 +9,7 @@
 import UIKit
 
 public class ZZTextField: UITextField {
-    var gap: CGFloat = 0
+    public var gap: CGFloat = 0
     public var disableAction = false
     
     override public func textRect(forBounds bounds: CGRect) -> CGRect {

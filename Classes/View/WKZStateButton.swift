@@ -9,13 +9,13 @@
 import UIKit
 
 open class WKZStateButton: UIButton {
-    var normalColor: UIColor {
+    public var normalColor: UIColor {
         didSet {
             self.layer.backgroundColor = self.normalColor.cgColor
         }
     }
-    var highlightedColor: UIColor
-    var disabledColor: UIColor
+    public var highlightedColor: UIColor
+    public var disabledColor: UIColor
     
     var percentCornerRadius: CGFloat?
     
@@ -24,13 +24,28 @@ open class WKZStateButton: UIButton {
             guard self.isEnabled else {
                 return
             }
-            self.layer.backgroundColor = self.isHighlighted ? self.highlightedColor.cgColor : self.normalColor.cgColor
+            
+            if self.isHighlighted {
+                layer.backgroundColor = self.highlightedColor.cgColor
+            } else {
+                if self.isSelected {
+                    layer.backgroundColor = self.highlightedColor.cgColor
+                } else {
+                    layer.backgroundColor = self.normalColor.cgColor
+                }
+            }
         }
     }
     
     override open var isEnabled: Bool {
         didSet {
-            self.layer.backgroundColor = self.isEnabled ? self.normalColor.cgColor : self.disabledColor.cgColor
+            setupColor()
+        }
+    }
+    
+    override open var isSelected: Bool {
+        didSet {
+            setupColor()
         }
     }
     
@@ -58,6 +73,16 @@ open class WKZStateButton: UIButton {
     
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupColor() {
+        if !isEnabled {
+            layer.backgroundColor = disabledColor.cgColor
+        } else if isSelected {
+            layer.backgroundColor = highlightedColor.cgColor
+        } else {
+            layer.backgroundColor = normalColor.cgColor
+        }
     }
     
     override open func layoutSubviews() {

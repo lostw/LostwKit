@@ -12,14 +12,30 @@ public class WKZLinearLayout {
     public enum JustifyContent {
         case start, center, end, stretch
     }
-    public var height: CGFloat = 0
-    public var ratioToWidth: CGFloat = 0
-    public var useContainerHeight = false  //使用容器高度
+    
+    public enum Height {
+        case auto //自约束
+        case manual(FloatLiteralType) //手动设置高度
+        case ratioToWidth(CGFloat) //与宽度成比例
+        case containerHeight //使用容器设置的行高
+    }
+    
+    public var height: Height = .auto
     public var disableTopLine = false
     public var inFlow = true       // 是否在布局流中
     public var justifyContent: JustifyContent = .stretch
     public var margin = UIEdgeInsets.zero
     public var isDirty = true  // 用于是否需要重新计算布局
+}
+
+extension WKZLinearLayout.Height: ExpressibleByFloatLiteral, ExpressibleByIntegerLiteral {
+    public init(floatLiteral value: FloatLiteralType) {
+        self = .manual(value)
+    }
+    
+    public init(integerLiteral value: IntegerLiteralType) {
+        self = .manual(Double(value))
+    }
 }
 
 
@@ -239,13 +255,22 @@ open class WKZLinearView: UIView {
                 
                 
                 //默认view自约束高度
-                if layout.ratioToWidth > 0 {
-                    make.height.equalTo(view.snp.width).multipliedBy(layout.ratioToWidth)
-                } else if layout.height > 0 {
-                    make.height.equalTo(layout.height)
-                } else if layout.useContainerHeight {
+                switch layout.height {
+                case .auto: break;
+                case .containerHeight:
                     make.height.equalTo(self.viewHeight)
+                case .manual(let value):
+                    make.height.equalTo(value)
+                case .ratioToWidth(let value):
+                    make.height.equalTo(view.snp.width).multipliedBy(value)
                 }
+//                if layout.ratioToWidth > 0 {
+//                    make.height.equalTo(view.snp.width).multipliedBy(layout.ratioToWidth)
+//                } else if layout.height > 0 {
+//                    make.height.equalTo(layout.height)
+//                } else if layout.useContainerHeight {
+//                    make.height.equalTo(self.viewHeight)
+//                }
                 
                 if (idx == self.views.count - 1) {
                     make.bottom.equalToSuperview().offset(-margin.bottom-self.padding.bottom)

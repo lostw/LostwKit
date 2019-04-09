@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension UIImage {
+public extension UIImage {
     static func getFaceData(_ imageData: Data) -> UIImage? {
         let faceDetector: CIDetector = CIDetector(ofType: CIDetectorTypeFace, context: CIContext(), options: [CIDetectorAccuracy: CIDetectorAccuracy])!
         let ciImage = CIImage(data: imageData)!

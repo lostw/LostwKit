@@ -157,7 +157,7 @@ public extension UIView {
         var layer: CALayer! = objc_getAssociatedObject(self, &dotBadgeLayerKey) as? CALayer
         if layer == nil {
             layer = CALayer()
-            layer.frame = CGRect.make(self.bounds.width - 4, 0, 6, 6)
+            layer.frame = CGRect(self.bounds.width - 4, 0, 6, 6)
             layer.cornerRadius = 3
             layer.backgroundColor = UIColor.red.cgColor
             layer.zPosition = 100
@@ -178,7 +178,7 @@ public extension UIView {
 //        var label: UILabel! = objc_getAssociatedObject(self, &badgeLabelKey) as? UILabel
 //        if label == nil {
 //            label = UILabel()
-//            label.frame = CGRect.make(self.bounds.width - 14, 0, 14, 14)
+//            label.frame = CGRect(self.bounds.width - 14, 0, 14, 14)
 //            label.layer.cornerRadius = 7
 //            label.layer.backgroundColor = UIColor.red.cgColor
 //            label.zFontSize(10).zAlign(.center).zColor(UIColor.white)

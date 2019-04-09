@@ -29,7 +29,7 @@ public class ZZInputRow: UIView {
         }
     }
     
-    func disableFieldAction() {
+    public func disableFieldAction() {
         (self.field as! ZZTextField).disableAction = true
     }
     

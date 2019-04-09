@@ -8,12 +8,12 @@
 
 import Foundation
 
-extension Data {
-    public func toJSONObject() -> Any? {
+public extension Data {
+    func toJSONObject() -> Any? {
         return try? JSONSerialization.jsonObject(with: self, options: .allowFragments)
     }
     
-    public func toDictionary() -> [String: Any]? {
+    func toDictionary() -> [String: Any]? {
         return self.toJSONObject() as? [String: Any]
     }
 }

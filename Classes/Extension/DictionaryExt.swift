@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Dictionary {
+public extension Dictionary {
     func toQuery() -> String {
         var query = ""
         for (key, value) in self {
@@ -22,7 +22,7 @@ extension Dictionary {
         return query
     }
     
-    public func toJsonString(pretty: Bool = false) -> String? {
+    func toJsonString(pretty: Bool = false) -> String? {
         var options:JSONSerialization.WritingOptions = []
         if pretty {
             options.insert(.prettyPrinted)

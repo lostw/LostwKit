@@ -15,6 +15,8 @@ public typealias WKZAttributedStringMakerBlock = (_ make: WKZAttributedStringMak
 open class WKZAttributedStringMaker {
     var text: String
     var attributes = [WKZAttribute]()
+    var attachment: NSTextAttachment?
+    var attachmentPosition: Int = 0
     init(text: String) {
         self.text = text
     }
@@ -24,12 +26,23 @@ open class WKZAttributedStringMaker {
         return self.generate()
     }
     
-    fileprivate func generate() -> NSAttributedString {
+    public func generate() -> NSAttributedString {
         let result = NSMutableAttributedString(string: self.text)
-        
+
         for attribute in self.attributes {
             for range in attribute.ranges {
                 result.addAttributes(attribute.attrs, range: NSRange(range))
+            }
+        }
+        
+        if let attachment = self.attachment {
+            let attachmentAttr = NSAttributedString(attachment: attachment)
+            if attachmentPosition == 0 {
+                result.insert(attachmentAttr, at: 0)
+                result.insert(NSAttributedString(string: " "), at: 1)
+            } else {
+                result.append(NSAttributedString(string: " "))
+                result.append(attachmentAttr)
             }
         }
         
@@ -98,6 +111,26 @@ open class WKZAttributedStringMaker {
         self.attributes.append(attribute)
         
         return attribute
+    }
+    
+    public func prepend(icon: UIImage, adjustY: CGFloat = 0) -> Self {
+        let attachment = NSTextAttachment()
+        attachment.image = icon
+        attachment.bounds = CGRect(x: 0, y: adjustY, width: icon.size.width, height: icon.size.height)
+        
+        self.attachment = attachment
+        self.attachmentPosition = 0
+        return self
+    }
+    
+    public func append(icon: UIImage, adjustY: CGFloat = 0) -> Self {
+        let attachment = NSTextAttachment()
+        attachment.image = icon
+        attachment.bounds = CGRect(x: 0, y: adjustY, width: icon.size.width, height: icon.size.height)
+        
+        self.attachment = attachment
+        self.attachmentPosition = 1
+        return self
     }
 }
 

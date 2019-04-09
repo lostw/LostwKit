@@ -82,10 +82,10 @@ public class WKZDefaultTabBar: UIView, WKZTabBar {
         let itemWidth = self.bounds.width / CGFloat(titles.count)
         let itemHeight = self.bounds.height
         for (idx, button) in barButtons.enumerated() {
-            button.frame = CGRect.make(CGFloat(idx) * itemWidth, 0, itemWidth, itemHeight)
+            button.frame = CGRect(CGFloat(idx) * itemWidth, 0, itemWidth, itemHeight)
         }
         
-        self.indicatorLine.frame = CGRect.make(itemWidth * 0.15 + CGFloat(selectedIndex) * itemWidth, self.bounds.height - 2, itemWidth * 0.7, 2)
+        self.indicatorLine.frame = CGRect(itemWidth * 0.15 + CGFloat(selectedIndex) * itemWidth, self.bounds.height - 2, itemWidth * 0.7, 2)
     }
     
     func commonInitView() {
@@ -97,7 +97,7 @@ public class WKZDefaultTabBar: UIView, WKZTabBar {
         let itemHeight = self.bounds.height
         for (idx, item) in titles.enumerated() {
             let button = UIButton()
-            button.frame = CGRect.make(CGFloat(idx) * itemWidth, 0, itemWidth, itemHeight)
+            button.frame = CGRect(CGFloat(idx) * itemWidth, 0, itemWidth, itemHeight)
             button.setTitleColor(UIColor(hex: 0x555555), for: .normal)
             button.setTitleColor(highlightedColor, for: .selected)
             button.setTitle(item, for: .normal)
@@ -114,7 +114,7 @@ public class WKZDefaultTabBar: UIView, WKZTabBar {
         indicatorLine.backgroundColor = highlightedColor
         indicatorLine.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(indicatorLine)
-        indicatorLine.frame = CGRect.make(itemWidth * 0.15, self.bounds.height - 2, itemWidth, 2)
+        indicatorLine.frame = CGRect(itemWidth * 0.15, self.bounds.height - 2, itemWidth, 2)
     }
     
     override public func layoutSubviews() {
@@ -196,7 +196,7 @@ open class WKZTabBarController: UIViewController {
     
     override open func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        contentView.frame = CGRect.make(0, 40, view.bounds.width, view.bounds.height - 40)
+        contentView.frame = CGRect(0, 40, view.bounds.width, view.bounds.height - 40)
     }
     
     open func displayController(_ c: UIViewController) {

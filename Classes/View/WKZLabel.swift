@@ -8,10 +8,10 @@
 
 import UIKit
 
-open class WKZLabel: UILabel {
+public class WKZLabel: UILabel {
     public var padding = UIEdgeInsets.zero
     
-    override open func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int) -> CGRect {
+    override public func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int) -> CGRect {
         var rect = super.textRect(forBounds: bounds.inset(by: self.padding), limitedToNumberOfLines: numberOfLines)
         
         rect.origin.x -= self.padding.left
@@ -22,7 +22,7 @@ open class WKZLabel: UILabel {
         return rect
     }
     
-    override open func drawText(in rect: CGRect) {
+    override public func drawText(in rect: CGRect) {
         super.drawText(in: rect.inset(by: self.padding))
     }
 }
