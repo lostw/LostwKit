@@ -140,7 +140,7 @@ public class ZZLaunchView: UIView {
 }
 
 extension ZZLaunchView: CAAnimationDelegate {
-    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+    public func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         self.animationProgress?.removeAnimation(forKey: "progress")
         self.hide()
     }

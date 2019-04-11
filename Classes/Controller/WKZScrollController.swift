@@ -194,7 +194,7 @@ extension WKZScrollController: UIGestureRecognizerDelegate {
         }
     }
     
-    private func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard gestureRecognizer == self.tap else {
             return true
         }

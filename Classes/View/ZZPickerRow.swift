@@ -177,7 +177,7 @@ extension ZZPickerRow: UIPickerViewDelegate, UIPickerViewDataSource, ZZPickerToo
         return options.count
     }
     
-    private func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+    public func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
         return options[row].styled.make {$0.range().fontSize(14)}
     }
     

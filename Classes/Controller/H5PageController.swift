@@ -182,7 +182,7 @@ open class H5PageController: UIViewController {
 }
 
 extension H5PageController: WKNavigationDelegate, WKUIDelegate {
-    private func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         var policy = WKNavigationActionPolicy.allow
         let urlStr = navigationAction.request.url?.absoluteString ?? ""
         if urlStr.starts(with: "alipays://") || urlStr.starts(with: "alipay://") {
@@ -204,12 +204,12 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
         decisionHandler(policy)
     }
     
-    private func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         self.progressBar?.isHidden = false
         self.progressBar?.progress = 0
     }
     
-    private func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         if self.fixedTitle == nil {
             self.title = webView.title
         }
@@ -241,7 +241,7 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
         self.didFinishPage()
     }
     
-    private func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         if navigationAction.targetFrame == nil || !navigationAction.targetFrame!.isMainFrame {
             webView.load(navigationAction.request)
         }

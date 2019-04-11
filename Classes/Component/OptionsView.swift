@@ -282,7 +282,7 @@ extension OptionDropView: UITableViewDelegate, UITableViewDataSource {
         return delegate.dropView(self, numberOfRowsInSection: self.currentSection)
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return self.rowHeight
     }
     
@@ -315,7 +315,7 @@ extension OptionDropView: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
         if let delegate = self.delegate {
