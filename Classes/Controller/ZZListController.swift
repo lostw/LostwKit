@@ -71,7 +71,7 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
     public typealias DidFetchData = ([String : Any]) -> Void
     public class ModelParser<T: Mapable> {
         func parse(_ item: [String: Any]) -> T? {
-            return T.deserialize(from: item)
+            return T.from(dict: item)
         }
     }
     

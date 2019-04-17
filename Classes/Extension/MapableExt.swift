@@ -12,10 +12,13 @@ public protocol Mapable: Codable {
     static func deserialize(from dict: [String: Any]) -> Self?
     
     func toDict() -> [String: Any]?
+    
+    static func from(dict: [String: Any]) -> Self?
+    static func from(string: String) -> Self?
 }
 
 extension Mapable {
-    public static func deserialize(from dict: [String: Any]) -> Self? {
+    public static func from(dict: [String: Any]) -> Self? {
         guard let data = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
             return nil
         }
@@ -29,8 +32,8 @@ extension Mapable {
         }
     }
     
-    public static func deserialize(from jsonString: String) -> Self? {
-        guard let data = jsonString.data(using: .utf8) else {
+    public static func from(string: String) -> Self? {
+        guard let data = string.data(using: .utf8) else {
             return nil
         }
         
@@ -41,6 +44,11 @@ extension Mapable {
             print(err)
             return nil
         }
+    }
+    
+    @available(*, deprecated, message: "use from(dict:) instead")
+    public static func deserialize(from dict: [String: Any]) -> Self? {
+        return from(dict: dict)
     }
     
     public func toDict() -> [String: Any]? {

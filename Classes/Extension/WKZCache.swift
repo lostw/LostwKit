@@ -8,32 +8,32 @@
 
 import Foundation
 
-class WKZCacheItem: NSObject {
-    var content: Any!
-    var expire: TimeInterval!
-}
-
 public class WKZCache: NSObject {
-    @objc public static let shared = WKZCache()
+    class WKZCacheItem {
+        var content: Any!
+        var expire: TimeInterval!
+    }
     
-    let cache = NSCache<NSString, AnyObject>()
+    public static let shared = WKZCache()
+    
+    let cache = NSCache<NSString, WKZCacheItem>()
     
     override init() {
         super.init()
         self.createCacheDir()
     }
     
-    @objc func object(forKey key: String) -> Any? {
-        if let item = self.cache.object(forKey: key as NSString) as? WKZCacheItem {
+    public func object<T>(forKey key: String) -> T? {
+        if let item = self.cache.object(forKey: key as NSString) {
             if item.expire > Date().timeIntervalSince1970 {
-                return item.content
+                return item.content as? T
             }
         }
         
         return nil
     }
     
-    @objc func setObject(_ obj: Any, forKey key: String, expiredAt: TimeInterval = Double.infinity) {
+    public func setObject<T>(_ obj: T, forKey key: String, expiredAt: TimeInterval = Double.infinity) {
         if expiredAt <= 0 {
             return
         }
@@ -43,6 +43,15 @@ public class WKZCache: NSObject {
         item.expire = expiredAt
         
         self.cache.setObject(item, forKey: key as NSString)
+    }
+    
+    public func setObject<T>(_ obj: T, forKey key: String, duration: TimeInterval) {
+        if duration <= 0 {
+            return
+        }
+        
+        let expired = Date().timeIntervalSince1970 + duration
+        self.setObject(obj, forKey: key, expiredAt: expired)
     }
     
     @objc func clear() {
