@@ -17,7 +17,7 @@ open class WKZStateButton: UIButton {
     public var highlightedColor: UIColor
     public var disabledColor: UIColor
     
-    var percentCornerRadius: CGFloat?
+    public var percentCornerRadius: CGFloat?
     
     override open var isHighlighted: Bool {
         didSet {

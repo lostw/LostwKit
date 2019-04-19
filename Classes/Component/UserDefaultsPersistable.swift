@@ -17,6 +17,10 @@ public protocol UserDefaultsPersistable: AnyObject {
 }
 
 public extension UserDefaultsPersistable {
+    subscript(key: String) -> String? {
+        return info[key] as? String
+    }
+    
     func persist() {
         UserDefaults.standard.set(info.toJsonString(), forKey: key)
     }

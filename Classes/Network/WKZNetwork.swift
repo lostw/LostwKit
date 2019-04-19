@@ -36,8 +36,8 @@ public protocol ZZApiResponse {
 
 
 public struct ZZApiError: Error, LocalizedError {
-    var code: String
-    var message: String
+    public var code: String
+    public var message: String
     
     public init(code: String = "-1", message: String = "未知错误") {
         self.code = code

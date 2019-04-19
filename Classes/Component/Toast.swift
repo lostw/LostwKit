@@ -283,6 +283,12 @@ public extension UIView {
         }
     }
     
+    func replaceIndicator(loadingText: String? = nil) {
+        if self.activityCount > 0  {
+            self.activityView?.setTitle(loadingText)
+        }
+    }
+    
     /**
      Dismisses the active toast activity indicator view.
      */
