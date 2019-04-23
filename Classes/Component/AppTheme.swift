@@ -19,7 +19,7 @@ public class AppTheme {
         case subText
         case border
         case disabled
-        
+
         var defaultColor: UIColor {
             switch self {
             case .background: return UIColor(hex: 0xF5F5F5)
@@ -33,17 +33,17 @@ public class AppTheme {
             case .border: return UIColor(hex: 0xe0e0e0)
             case .disabled: return UIColor(hex: 0xcacaca)
             }
-            
+
         }
     }
-    
+
     public static let shared = AppTheme()
     var colorDict = [ColorType: UIColor]()
-    
+
     public subscript(key: ColorType) -> UIColor {
         return colorDict[key] ?? key.defaultColor
     }
-    
+
     public func configColor(key: ColorType, color: UIColor) {
         colorDict[key] = color
     }

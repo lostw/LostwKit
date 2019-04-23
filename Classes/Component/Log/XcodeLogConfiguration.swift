@@ -9,8 +9,7 @@
 /**
  A `LogConfiguration` optimized for use when running within Xcode.
 */
-open class XcodeLogConfiguration: ConsoleLogConfiguration
-{
+open class XcodeLogConfiguration: ConsoleLogConfiguration {
     /**
      Initializes a new `XcodeLogConfiguration` instance.
      
@@ -47,8 +46,7 @@ open class XcodeLogConfiguration: ConsoleLogConfiguration
      - parameter filters: The `LogFilter`s to use when deciding whether a given
      `LogEntry` should be passed along for recording.
     */
-    public init(minimumSeverity: LogSeverity = .info, debugMode: Bool = false, verboseDebugMode: Bool = false, stdStreamsMode: StandardStreamsMode = .useAsFallback, mimicOSLogOutput: Bool = true, showCallSite: Bool = true, filters: [LogFilter] = [])
-    {
+    public init(minimumSeverity: LogSeverity = .info, debugMode: Bool = false, verboseDebugMode: Bool = false, stdStreamsMode: StandardStreamsMode = .useAsFallback, mimicOSLogOutput: Bool = true, showCallSite: Bool = true, filters: [LogFilter] = []) {
         let origFormatter = XcodeLogFormatter(showCallSite: showCallSite)
 
         let stdoutFormatters: [LogFormatter]
@@ -57,7 +55,7 @@ open class XcodeLogConfiguration: ConsoleLogConfiguration
         } else {
             stdoutFormatters = [FieldBasedLogFormatter(fields: [.timestamp(.default), .delimiter(.spacedPipe), .callingThread(.hex), .delimiter(.space), .custom(origFormatter)])]
         }
-        
+
         super.init(minimumSeverity: minimumSeverity, debugMode: debugMode, verboseDebugMode: verboseDebugMode, stdStreamsMode: stdStreamsMode, filters: filters, osLogFormatters: [origFormatter], stdoutFormatters: stdoutFormatters)
     }
 }

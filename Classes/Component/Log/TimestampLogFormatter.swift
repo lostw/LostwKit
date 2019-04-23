@@ -12,8 +12,7 @@ import Foundation
  Encapsulates the various formatting styles that can be used by the
  `TimestampLogFormatter`.
  */
-public enum TimestampStyle
-{
+public enum TimestampStyle {
     /** Specifies a timestamp style that uses the date format string
      "yyyy-MM-dd HH:mm:ss.SSS zzz". */
     case `default`
@@ -26,8 +25,7 @@ public enum TimestampStyle
     case custom(String)
 }
 
-extension TimestampStyle
-{
+extension TimestampStyle {
     fileprivate var dateFormat: String? {
         switch self {
         case .default:          return "yyyy-MM-dd HH:mm:ss.SSS xxx"
@@ -47,8 +45,7 @@ extension TimestampStyle
     }
 
     fileprivate func string(from date: Date, using formatter: DateFormatter?)
-        -> String
-    {
+        -> String {
         switch self {
         case .unix:     return String(describing: date.timeIntervalSince1970)
         default:        return formatter!.string(from: date)
@@ -63,8 +60,7 @@ extension TimestampStyle
  This is typically combined with other `LogFormatter`s within a
  `ConcatenatingLogFormatter`.
  */
-public struct TimestampLogFormatter: LogFormatter
-{
+public struct TimestampLogFormatter: LogFormatter {
     /** The `TimestampStyle` that determines how the receiver will format
      its output. */
     public let style: TimestampStyle
@@ -78,8 +74,7 @@ public struct TimestampLogFormatter: LogFormatter
      - parameter style: A `TimestampStyle` value that will govern the output
      of the `format(_:)` function.
      */
-    public init(style: TimestampStyle = .default)
-    {
+    public init(style: TimestampStyle = .default) {
         self.style = style
         self.formatter = style.formatter
     }
@@ -93,8 +88,7 @@ public struct TimestampLogFormatter: LogFormatter
      - returns: The formatted result; never `nil`.
      */
     public func format(_ entry: LogEntry)
-        -> String?
-    {
+        -> String? {
         return style.string(from: entry.timestamp, using: formatter)
     }
 }

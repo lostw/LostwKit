@@ -13,8 +13,7 @@
  This is typically combined with other `LogFormatter`s within a
  `ConcatenatingLogFormatter`.
  */
-public struct LiteralLogFormatter: LogFormatter
-{
+public struct LiteralLogFormatter: LogFormatter {
     /** The literal string used as the return value of the receiver's 
      `format(_:)` function. */
     public let literal: String
@@ -24,8 +23,7 @@ public struct LiteralLogFormatter: LogFormatter
      
      - parameter string: The literal string.
      */
-    public init(_ string: String)
-    {
+    public init(_ string: String) {
         literal = string
     }
 
@@ -37,8 +35,7 @@ public struct LiteralLogFormatter: LogFormatter
      - returns: The value of the receiver's `literal` property; never `nil`.
      */
     public func format(_ entry: LogEntry)
-        -> String?
-    {
+        -> String? {
         return literal
     }
 }

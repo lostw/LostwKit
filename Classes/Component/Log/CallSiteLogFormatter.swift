@@ -16,8 +16,7 @@ import Foundation
  This is typically combined with other `LogFormatter`s within a
  `ConcatenatingLogFormatter`.
  */
-public struct CallSiteLogFormatter: LogFormatter
-{
+public struct CallSiteLogFormatter: LogFormatter {
     /** The initializer. */
     public init() {}
 
@@ -29,8 +28,7 @@ public struct CallSiteLogFormatter: LogFormatter
      - returns: The formatted result; never `nil`.
      */
     public func format(_ entry: LogEntry)
-        -> String?
-    {
+        -> String? {
         let file = (entry.callingFilePath as NSString).pathComponents.last ?? "redacted"
         return "\(file):\(entry.callingFileLine)"
     }

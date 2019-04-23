@@ -12,8 +12,7 @@
  This is typically combined with other `LogFormatter`s within a
  `ConcatenatingLogFormatter`.
  */
-public struct StackFrameLogFormatter: LogFormatter
-{
+public struct StackFrameLogFormatter: LogFormatter {
     /** The initializer. */
     public init() {}
 
@@ -26,8 +25,7 @@ public struct StackFrameLogFormatter: LogFormatter
      - returns: The formatted result; never `nil`.
      */
     public func format(_ entry: LogEntry)
-        -> String?
-    {
+        -> String? {
         return entry.callingStackFrame
     }
 }

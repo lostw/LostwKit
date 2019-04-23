@@ -16,7 +16,7 @@ public extension Optional where Wrapped == String {
             return value.isEmpty ? defaultValue : value
         }
     }
-    
+
     var intValue: Int {
         switch self {
         case .none:
@@ -25,7 +25,7 @@ public extension Optional where Wrapped == String {
             return value.intValue
         }
     }
-    
+
     var doubleValue: Double {
         switch self {
         case .none:
@@ -35,4 +35,3 @@ public extension Optional where Wrapped == String {
         }
     }
 }
-

@@ -10,8 +10,7 @@
  Governs how a `CallingThreadLogFormatter` will represent a `LogEntry`'s 
  `callingThreadID`.
  */
-public enum CallingThreadStyle
-{
+public enum CallingThreadStyle {
     /** Renders the `callingThreadID` as a hex string.  */
     case hex
 
@@ -19,11 +18,9 @@ public enum CallingThreadStyle
     case integer
 }
 
-extension CallingThreadStyle
-{
+extension CallingThreadStyle {
     fileprivate func format(_ callingThreadID: UInt64)
-        -> String
-    {
+        -> String {
         switch self {
         case .hex:      return String(format: "%08X", callingThreadID)
         case .integer:  return String(describing: callingThreadID)
@@ -38,18 +35,16 @@ extension CallingThreadStyle
  This is typically combined with other `LogFormatter`s within a
  `ConcatenatingLogFormatter`.
  */
-public struct CallingThreadLogFormatter: LogFormatter
-{
+public struct CallingThreadLogFormatter: LogFormatter {
     /** Governs how the receiver represents `callingThreadID`s. */
     public let style: CallingThreadStyle
-    
+
     /** 
      The `CallingThreadLogFormatter` initializer.
      
      - parameter style: The style to use for representing `callingThreadID`s.
      */
-    public init(style: CallingThreadStyle = .hex)
-    {
+    public init(style: CallingThreadStyle = .hex) {
         self.style = style
     }
 
@@ -63,8 +58,7 @@ public struct CallingThreadLogFormatter: LogFormatter
      - returns: The formatted result; never `nil`.
      */
     public func format(_ entry: LogEntry)
-        -> String?
-    {
+        -> String? {
         return style.format(entry.callingThreadID)
     }
 }

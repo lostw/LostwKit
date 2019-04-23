@@ -19,8 +19,7 @@
  
  Each of these settings can be overridden during instantiation.
  */
-open class ParsableLogFormatter: StandardLogFormatter
-{
+open class ParsableLogFormatter: StandardLogFormatter {
     /**
      Initializes a new `ParsableLogFormatter` instance.
 
@@ -40,8 +39,7 @@ open class ParsableLogFormatter: StandardLogFormatter
      - parameter showCallSite: If `true`, the source file and line indicating
      the call site of the log request will be added to formatted log messages.
      */
-    public override init(timestampStyle: TimestampStyle? = .unix, severityStyle: SeverityStyle? = .numeric, delimiterStyle: DelimiterStyle? = .tab, callingThreadStyle: CallingThreadStyle? = .hex, showCallSite: Bool = true)
-    {
+    public override init(timestampStyle: TimestampStyle? = .unix, severityStyle: SeverityStyle? = .numeric, delimiterStyle: DelimiterStyle? = .tab, callingThreadStyle: CallingThreadStyle? = .hex, showCallSite: Bool = true) {
         super.init(timestampStyle: timestampStyle, severityStyle: severityStyle, delimiterStyle: delimiterStyle, callingThreadStyle: callingThreadStyle, showCallSite: showCallSite)
     }
 }

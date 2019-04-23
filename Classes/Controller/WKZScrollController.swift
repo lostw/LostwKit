@@ -8,25 +8,25 @@
 
 import UIKit
 
-public typealias WKZRequestHandler = (@escaping (Bool)->Void) -> Void
+public typealias WKZRequestHandler = (@escaping (Bool) -> Void) -> Void
 open class WKZScrollController: UIViewController {
-    public let scrollView:UIScrollView = {
+    public let scrollView: UIScrollView = {
         let scroll = UIScrollView()
         scroll.showsVerticalScrollIndicator = false
         scroll.showsHorizontalScrollIndicator = false
         scroll.alwaysBounceVertical = true
-        
+
         return scroll
     }()
     public let contentView = WKZLinearView()
     var requestHandler: WKZRequestHandler?
     var lastFetchDate: Date?
     var requestInterval: TimeInterval = 0
-    var willFetchAction: (()->Void)?
-    
+    var willFetchAction: (() -> Void)?
+
     var bottomInputView: UIView?
     var fixedBottomView: UIView?
-    
+
     public var isLoadingViewEnabled: Bool = false {
         didSet {
             if isLoadingViewEnabled {
@@ -48,9 +48,7 @@ open class WKZScrollController: UIViewController {
         }
     }
     public let noDataMananger = WKZEmptySetManager()
-    
-    
-    
+
     fileprivate var keyboardObserved = false
     public var isObserveKeyboard = false {
         didSet {
@@ -63,7 +61,7 @@ open class WKZScrollController: UIViewController {
     }
     var tap: UITapGestureRecognizer?
     public var isKeyboardShow = false
-    
+
     override open func viewDidLoad() {
         super.viewDidLoad()
         self.commonInitView()
@@ -76,19 +74,19 @@ open class WKZScrollController: UIViewController {
         if self.isObserveKeyboard {
             self.addKeyboardObserver()
         }
-        
+
     }
-    
+
     override open func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if self.isObserveKeyboard {
             self.removeKeyboardObserver()
         }
     }
-    
+
     open func commonInitView() {
         self.edgesForExtendedLayout = []
-        
+
         self.view.addSubview(self.scrollView)
         self.scrollView.backgroundColor = AppTheme.shared[.background]
         self.scrollView.snp.makeConstraints { (make) in
@@ -116,99 +114,98 @@ open class WKZScrollController: UIViewController {
     }
 }
 
-//  MARK: - handle keyboard event
+// MARK: - handle keyboard event
 extension WKZScrollController: UIGestureRecognizerDelegate {
     func addKeyboardObserver() {
         guard !self.keyboardObserved else {
             return
         }
-        
+
         self.keyboardObserved = true
         NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardFrameChange(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-        
+
         self.tap = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         self.tap?.delegate = self
         self.view.addGestureRecognizer(self.tap!)
     }
-    
+
     func removeKeyboardObserver() {
         guard self.keyboardObserved else {
             return
         }
-        
+
         self.keyboardObserved = false
 
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-        
+
         if let tap = self.tap {
             self.view.removeGestureRecognizer(tap)
         }
-        
+
     }
-    
+
     @objc func hideKeyboard() {
         self.view.endEditing(true)
     }
 
-    
     @objc func onKeyboardFrameChange(_ notification: Notification) {
         self.isKeyboardShow = true
 
         let userInfo = notification.userInfo!
-        
+
         let rect = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
         self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: rect!.height, right: 0)
-        
+
         if let inputView = self.bottomInputView {
             let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double
             let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! Int
-            let optionCurve = curve<<16;
-            UIView.animate(withDuration: duration, delay: 0, options: UIView.AnimationOptions.init(rawValue: UInt(optionCurve)), animations: { 
+            let optionCurve = curve<<16
+            UIView.animate(withDuration: duration, delay: 0, options: UIView.AnimationOptions.init(rawValue: UInt(optionCurve)), animations: {
                 inputView.snp.updateConstraints { (make) in
                     make.bottom.equalToSuperview().offset(-rect!.height + (isPhoneX() ? 34 : 0))
                 }
-                
+
                 self.view.layoutIfNeeded()
             }, completion: nil)
         }
     }
-    
+
     @objc func onKeyboardHide(_ notification: Notification) {
         self.isKeyboardShow = false
         self.scrollView.contentInset = UIEdgeInsets.zero
-        
+
         if let inputView = self.bottomInputView {
             let userInfo = notification.userInfo!
             let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double
             let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! Int
-            let optionCurve = curve<<16;
+            let optionCurve = curve<<16
             UIView.animate(withDuration: duration, delay: 0, options: UIView.AnimationOptions.init(rawValue: UInt(optionCurve)), animations: {
                 inputView.snp.updateConstraints { (make) in
                     make.bottom.equalToSuperview().offset(0)
                 }
-                
+
                 self.view.layoutIfNeeded()
             }, completion: nil)
         }
     }
-    
+
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard gestureRecognizer == self.tap else {
             return true
         }
-        
+
         if self.isKeyboardShow {
             return true
         }
-        
+
         return false
     }
-    
+
     public func addFixedBottomView(_ bottomView: UIView, isInput: Bool = false, animateIn: Bool = false) {
         self.view.addSubview(bottomView)
-    
+
         self.fixedBottomView = bottomView
         if isInput {
             self.bottomInputView = bottomView
@@ -221,52 +218,52 @@ extension WKZScrollController: UIGestureRecognizerDelegate {
                 make.height.equalTo(isPhoneX() ? 83 : 49)
                 make.bottom.equalToSuperview().offset(isPhoneX() ? 83 : 49)
             }
-            
+
             self.view.layoutIfNeeded()
-            
+
             DispatchQueue.main.async {
                 UIView.animate(withDuration: 0.3, animations: {
                     bottomView.snp.updateConstraints({ (make) in
                         make.bottom.equalToSuperview()
                     })
-                    
+
                     self.scrollView.snp.updateConstraints { (make) in
                         make.bottom.equalToSuperview().offset(isPhoneX() ? -83 : -49)
                     }
-                    
+
                     self.view.layoutIfNeeded()
                 }, completion: nil)
             }
-            
+
         } else {
             bottomView.snp.makeConstraints { (make) in
                 make.left.right.bottom.equalToSuperview()
                 make.height.equalTo(isPhoneX() ? 83 : 49)
             }
-            
+
             self.scrollView.snp.updateConstraints { (make) in
                 make.bottom.equalToSuperview().offset(isPhoneX() ? -83 : -49)
             }
         }
     }
-    
+
     func removeFixedBottomView(animateIn: Bool = false) {
         guard let bottomView = self.fixedBottomView else {
             return
         }
-        
+
         if animateIn {
             UIView.animate(withDuration: 0.3, animations: {
                 bottomView.snp.updateConstraints({ (make) in
                     make.bottom.equalToSuperview().offset(isPhoneX() ? 83 : 49)
                 })
-                
+
                 self.scrollView.snp.updateConstraints { (make) in
                     make.bottom.equalToSuperview().offset(0)
                 }
-                
+
                 self.view.layoutIfNeeded()
-            }, completion: { finshed in
+            }, completion: { _ in
                 bottomView.removeFromSuperview()
             })
         } else {
@@ -275,8 +272,7 @@ extension WKZScrollController: UIGestureRecognizerDelegate {
                 make.bottom.equalToSuperview().offset(0)
             }
         }
-        
-        
+
     }
 }
 
@@ -284,13 +280,13 @@ extension WKZScrollController: UIGestureRecognizerDelegate {
 extension WKZScrollController {
     func fetch(lazyMode: Bool = false) {
         self.willFetchAction?()
-        
+
         if lazyMode {
             if let date = lastFetchDate, date.timeIntervalSinceNow + requestInterval > 0 {
                 return
             }
         }
-        
+
         if let request = self.requestHandler {
             request { [weak self] success in
                 if success {
@@ -300,11 +296,11 @@ extension WKZScrollController {
             }
         }
     }
-    
+
     func invalidateRequestDate() {
         lastFetchDate = nil
     }
-    
+
     public func configureRequest(fetchNow: Bool = true, refresh: Bool = true, requestInterval: TimeInterval = 0, handler: WKZRequestHandler? = nil) {
         self.requestHandler = handler
         self.requestInterval = requestInterval
@@ -316,12 +312,10 @@ extension WKZScrollController {
                     self.fetch()
                 }
             }
-            
+
             if fetchNow {
                 self.fetch()
             }
         }
     }
 }
-
-

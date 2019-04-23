@@ -14,8 +14,7 @@ import Dispatch
  log messages to the standard error stream ("`stderr`") of the running
  process.
  */
-open class StandardErrorLogRecorder: OutputStreamLogRecorder
-{
+open class StandardErrorLogRecorder: OutputStreamLogRecorder {
     /**
      Initializes a `StandardErrorLogRecorder` instance to use the specified
      `LogFormatter`s for formatting log messages.
@@ -23,9 +22,7 @@ open class StandardErrorLogRecorder: OutputStreamLogRecorder
      - parameter queue: The `DispatchQueue` to use for the recorder. If `nil`,
      a new queue will be created.
      */
-    public init(formatters: [LogFormatter], queue: DispatchQueue? = nil)
-    {
+    public init(formatters: [LogFormatter], queue: DispatchQueue? = nil) {
         super.init(stream: stderr, formatters: formatters, queue: queue)
     }
 }
-

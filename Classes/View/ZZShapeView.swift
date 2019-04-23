@@ -12,11 +12,11 @@ open class ZZShapeView: UIView {
     override open class var layerClass: AnyClass {
         return CAShapeLayer.self
     }
-    
+
     public var backedLayer: CAShapeLayer {
         return self.layer as! CAShapeLayer
     }
-    
+
     /*
     override func layoutSubviews() {
         super.layoutSubviews()

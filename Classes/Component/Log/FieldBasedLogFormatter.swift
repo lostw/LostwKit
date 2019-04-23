@@ -27,8 +27,7 @@
                                                  .payload])
  ```
  */
-open class FieldBasedLogFormatter: ConcatenatingLogFormatter
-{
+open class FieldBasedLogFormatter: ConcatenatingLogFormatter {
     /**
      The individual `Field` declarations for the `FieldBasedLogFormatter`.
      */
@@ -59,10 +58,10 @@ open class FieldBasedLogFormatter: ConcatenatingLogFormatter
 
         /** Represents the name of the currently executing process. */
         case processName
-        
+
         /** Represents the ID of the currently executing process. */
         case processID
-        
+
         /** Represents a text delimiter. The `DelimiterStyle` specifies the
          content of the delimiter string. */
         case delimiter(DelimiterStyle)
@@ -75,8 +74,7 @@ open class FieldBasedLogFormatter: ConcatenatingLogFormatter
         case custom(LogFormatter)
 
         fileprivate func createLogFormatter()
-            -> LogFormatter
-        {
+            -> LogFormatter {
             switch self {
             case .timestamp(let style):     return TimestampLogFormatter(style: style)
             case .severity(let style):      return SeverityLogFormatter(style: style)
@@ -106,9 +104,8 @@ open class FieldBasedLogFormatter: ConcatenatingLogFormatter
      is `true`, _all_ of the `formatters` must return strings; if _any_
      formatter returns `nil`, the receiver _also_ returns `nil`.
      */
-    public init(fields: [Field], hardFail: Bool = false)
-    {
-        super.init(formatters: fields.map{ $0.createLogFormatter() }, hardFail: hardFail)
+    public init(fields: [Field], hardFail: Bool = false) {
+        super.init(formatters: fields.map { $0.createLogFormatter() }, hardFail: hardFail)
     }
 
     /**
@@ -125,8 +122,7 @@ open class FieldBasedLogFormatter: ConcatenatingLogFormatter
      is `true`, _all_ of the `formatters` must return strings; if _any_
      formatter returns `nil`, the receiver _also_ returns `nil`.
      */
-    public override init(formatters: [LogFormatter], hardFail: Bool = false)
-    {
+    public override init(formatters: [LogFormatter], hardFail: Bool = false) {
         super.init(formatters: formatters, hardFail: hardFail)
     }
 }

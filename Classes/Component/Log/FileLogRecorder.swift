@@ -18,8 +18,7 @@ import Dispatch
  file. Use a `RotatingLogFileRecorder` instead if you'd rather not have to
  concern yourself with such details.
  */
-open class FileLogRecorder: LogRecorderBase
-{
+open class FileLogRecorder: LogRecorderBase {
     /** The path of the file to which log entries will be written. */
     public let filePath: String
 
@@ -42,8 +41,7 @@ open class FileLogRecorder: LogRecorderBase
      yield a non-`nil` value will be recorded. If every formatter returns `nil`,
      the log entry is silently ignored and not recorded.
      */
-    public init?(filePath: String, formatters: [LogFormatter])
-    {
+    public init?(filePath: String, formatters: [LogFormatter]) {
         let f = fopen(filePath, "a")
         guard f != nil else {
             return nil
@@ -79,8 +77,7 @@ open class FileLogRecorder: LogRecorderBase
      - parameter synchronousMode: If `true`, the recording is being done in
      synchronous mode, and the recorder should act accordingly.
     */
-    open override func record(message: String, for entry: LogEntry, currentQueue: DispatchQueue, synchronousMode: Bool)
-    {
+    open override func record(message: String, for entry: LogEntry, currentQueue: DispatchQueue, synchronousMode: Bool) {
         var addNewline = true
         if !message.isEmpty {
             let lastChar = message[message.index(before: message.endIndex)]
@@ -96,4 +93,3 @@ open class FileLogRecorder: LogRecorderBase
         fflush(file)
     }
 }
-

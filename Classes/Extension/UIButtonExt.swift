@@ -29,7 +29,7 @@ public extension UIButton {
         //获取文字的宽和高
         let labelWidth  = titleL.intrinsicContentSize.width
         let labelHeight = titleL.intrinsicContentSize.height
-        
+
         var imageEdgeInsets = UIEdgeInsets.zero
         var labelEdgeInsets = UIEdgeInsets.zero
         //UIButton同时有图像和文字的正常状态---左图像右文字，间距为0
@@ -45,7 +45,7 @@ public extension UIButton {
         case .top:
             //切换位置--上图像下文字
             imageEdgeInsets = UIEdgeInsets(top: -(labelHeight + space) * 0.5, left: labelWidth * 0.5, bottom: (labelHeight + space) * 0.5, right: -labelWidth * 0.5)
-            labelEdgeInsets = UIEdgeInsets(top: (imageHeight + space) * 0.5, left: -imageWidth * 0.5, bottom:-(imageHeight + space) * 0.5, right:imageWidth * 0.5)
+            labelEdgeInsets = UIEdgeInsets(top: (imageHeight + space) * 0.5, left: -imageWidth * 0.5, bottom: -(imageHeight + space) * 0.5, right: imageWidth * 0.5)
         case .bottom:
             //切换位置--下图像上文字
             imageEdgeInsets = UIEdgeInsets(top: (labelHeight + space) * 0.5, left: labelWidth * 0.5, bottom: -(labelHeight + space) * 0.5, right: -labelWidth * 0.5)

@@ -8,12 +8,12 @@
 
 import UIKit
 
-public typealias ZZLaunchViewCallback = ()->Void
+public typealias ZZLaunchViewCallback = () -> Void
 public class ZZLaunchView: UIView {
     private var imageView: UIImageView!
     private var skipLabel: UILabel?
     private var animationProgress: CAShapeLayer?
-    
+
     var image: UIImage!
     var countSeconds: Int = 3
     var showSkip = false {
@@ -26,16 +26,16 @@ public class ZZLaunchView: UIView {
         }
     }
     var onTouch: ZZLaunchViewCallback?
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.commonInitView()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     override public func didMoveToSuperview() {
         super.didMoveToSuperview()
         if self.showSkip {
@@ -44,7 +44,7 @@ public class ZZLaunchView: UIView {
             Timer.scheduledTimer(timeInterval: TimeInterval(self.countSeconds), target: self, selector: #selector(skip), userInfo: nil, repeats: false)
         }
     }
-    
+
     public func showInView(_ view: UIView, image: UIImage, countSeconds: Int = 3, enableSkip: Bool = true, onTouch: ZZLaunchViewCallback? = nil) {
         self.frame = view.bounds
         self.imageView.image = image
@@ -58,20 +58,20 @@ public class ZZLaunchView: UIView {
         }
         view.addSubview(self)
     }
-    
+
     @objc func skip() {
         self.hide()
     }
-    
+
     func hide(_ callback: ZZLaunchViewCallback? = nil) {
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
-        }) { (finished) in
+        }, completion:  { (_) in
             self.removeSubviews()
             callback?()
-        }
+        })
     }
-    
+
     func showCountDownAnimation() {
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.fromValue = 0
@@ -79,19 +79,19 @@ public class ZZLaunchView: UIView {
         animation.duration = CFTimeInterval(self.countSeconds)
         animation.delegate = self
         animationProgress?.add(animation, forKey: "progress")
-        
+
     }
-    
-    //MARK: - initView
+
+    // MARK: - initView
     func commonInitView() {
         imageView = UIImageView()
         self.addSubview(imageView)
         imageView.snp.makeConstraints { (make) in
             make.edges.equalToSuperview()
         }
-        
+
     }
-    
+
     func showSkipButton() {
         if skipLabel == nil {
             let view = UIView()
@@ -101,7 +101,7 @@ public class ZZLaunchView: UIView {
                 make.right.equalToSuperview().offset(-15)
                 make.width.height.equalTo(40)
             }
-            
+
             let label = UILabel()
             label.zText("跳过").zFontSize(14).zColor(AppTheme.shared[.majorText]).zAlign(.center).zBgColor(.clear)
             label.layer.cornerRadius = 20
@@ -115,7 +115,7 @@ public class ZZLaunchView: UIView {
                 self.skip()
             }
             skipLabel = label
-            
+
             let animationLayer = CAShapeLayer()
             animationLayer.strokeColor = AppTheme.shared[.majorText].cgColor
             animationLayer.fillColor = UIColor.clear.cgColor
@@ -128,10 +128,10 @@ public class ZZLaunchView: UIView {
             view.layer.addSublayer(animationLayer)
             animationProgress = animationLayer
         }
-        
+
         skipLabel!.isHidden = false
     }
-    
+
     /*
     override func layoutSubviews() {
         super.layoutSubviews()

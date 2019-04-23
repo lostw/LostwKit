@@ -18,8 +18,7 @@ import os.log
  `OSLogRecorder` will record log messages with an `OSLogType` of `.default`.
  This is consistent with the behavior of `NSLog()`.
  */
-public struct OSLogRecorder: LogRecorder
-{
+public struct OSLogRecorder: LogRecorder {
     /** `true` if the `os_log()` function is available at runtime. */
     public static let isAvailable: Bool = {
         guard #available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *) else {
@@ -27,13 +26,13 @@ public struct OSLogRecorder: LogRecorder
         }
         return true
     }()
-    
+
     /** The `LogFormatter`s to be used in conjunction with the receiver. */
     public let formatters: [LogFormatter]
 
     /** Governs how `OSLogType` values are generated from `LogEntry` values. */
     public let logTypeTranslator: OSLogTypeTranslator
-    
+
     /** The `OSLog` used to perform logging. */
     public let log: OSLog
 
@@ -69,7 +68,7 @@ public struct OSLogRecorder: LogRecorder
         guard #available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *) else {
             return nil
         }
-        
+
         self.log = OSLog(subsystem: subsystem, category: "CleanroomLogger")
         self.queue = queue != nil ? queue! : DispatchQueue(label: String(describing: type(of: self)), attributes: [])
         self.formatters = formatters
@@ -92,12 +91,11 @@ public struct OSLogRecorder: LogRecorder
      - parameter synchronousMode: If `true`, the recording is being done in
      synchronous mode, and the recorder should act accordingly.
      */
-    public func record(message: String, for entry: LogEntry, currentQueue: DispatchQueue, synchronousMode: Bool)
-    {
+    public func record(message: String, for entry: LogEntry, currentQueue: DispatchQueue, synchronousMode: Bool) {
         guard #available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *) else {
             fatalError("os.log module not supported on this platform")    // things should never get this far; failable initializers should prevent this condition
         }
-        
+
         let type = self.logTypeTranslator.osLogType(logEntry: entry)
         os_log("%{public}@", type: type, message)
     }

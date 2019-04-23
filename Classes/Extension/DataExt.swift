@@ -12,7 +12,7 @@ public extension Data {
     func toJSONObject() -> Any? {
         return try? JSONSerialization.jsonObject(with: self, options: .allowFragments)
     }
-    
+
     func toDictionary() -> [String: Any]? {
         return self.toJSONObject() as? [String: Any]
     }

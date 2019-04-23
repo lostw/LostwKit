@@ -11,16 +11,16 @@ import UIKit
 public class ZZInputRow: UIView {
     public let field: UITextField = ZZTextField()
     public let titleLabel = UILabel()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.commonInitView()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     public func setPlaceholder(_ p: String?) {
         if let p = p {
             self.field.attributedPlaceholder = NSMutableAttributedString(string: p, attributes: [.foregroundColor: AppTheme.shared[.promptText]])
@@ -28,14 +28,14 @@ public class ZZInputRow: UIView {
             self.field.attributedPlaceholder = nil
         }
     }
-    
+
     public func disableFieldAction() {
         (self.field as! ZZTextField).disableAction = true
     }
-    
+
     func commonInitView() {
         self.backgroundColor = UIColor.white
-        
+
         self.titleLabel.zFontSize(14).zColor(AppTheme.shared[.title])
         self.addSubview(self.titleLabel)
         self.titleLabel.snp.makeConstraints { (make) in
@@ -43,7 +43,7 @@ public class ZZInputRow: UIView {
             make.centerY.equalToSuperview()
             make.width.equalTo(80)
         }
-        
+
         self.field.font = UIFont.systemFont(ofSize: 14)
         self.field.textColor = AppTheme.shared[.text]
         self.field.clearButtonMode = .whileEditing

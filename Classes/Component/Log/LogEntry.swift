@@ -11,11 +11,9 @@ import Foundation
 /**
  Represents an entry to be written to the log.
  */
-public struct LogEntry
-{
+public struct LogEntry {
     /** Represents the payload contained within a log entry. */
-    public enum Payload
-    {
+    public enum Payload {
         /** The log entry is a trace call and contains no explicit payload. */
         case trace
 
@@ -49,11 +47,11 @@ public struct LogEntry
 
     /** The time at which the `LogEntry` was created. */
     public let timestamp: Date
-    
+
     /** The name by which the currently executing process is known to the
      operating system. */
     public let processName: String
-    
+
     /** The ID that uniquely identifies the executing process during its
      lifetime. After a process exits, its ID is no longer meaningful; over 
      time, process IDs are recycled. */
@@ -81,8 +79,7 @@ public struct LogEntry
      - parameter timestamp: The time at which the log entry was created. 
      Defaults to the current time if not explicitly specified.
      */
-    public init(payload: Payload, severity: LogSeverity, callingFilePath: String, callingFileLine: Int, callingStackFrame: String, callingThreadID: UInt64, timestamp: Date = Date())
-    {
+    public init(payload: Payload, severity: LogSeverity, callingFilePath: String, callingFileLine: Int, callingStackFrame: String, callingThreadID: UInt64, timestamp: Date = Date()) {
         self.payload = payload
         self.severity = severity
         self.callingFilePath = callingFilePath
@@ -95,16 +92,14 @@ public struct LogEntry
     }
 }
 
-fileprivate struct ProcessIdentification
-{
+private struct ProcessIdentification {
     // this ensures we only look up process info once
     public static let current = ProcessIdentification()
-    
+
     public let processName: String
     public let processID: Int32
 
-    private init()
-    {
+    private init() {
         let process = ProcessInfo.processInfo
         processName = process.processName
         processID = process.processIdentifier

@@ -17,12 +17,10 @@ import Darwin.C.stdlib
  configured to bypass it, log messages will be written to either the `stdout`
  or `stderr` output stream of the running process.
  */
-open class ConsoleLogConfiguration: BasicLogConfiguration
-{
+open class ConsoleLogConfiguration: BasicLogConfiguration {
     /** Governs when a `ConsoleLogConfiguration` directs log messages to 
      `stdout` and `stderr`. */
-    public enum StandardStreamsMode
-    {
+    public enum StandardStreamsMode {
         /** Indicates that logging will be directed to `stdout` and `stderr`
          only as a fallback on platforms where `os_log()` is not available. */
         case useAsFallback
@@ -68,8 +66,7 @@ open class ConsoleLogConfiguration: BasicLogConfiguration
      - parameter formatters: An array of `LogFormatter`s to use when
      formatting log entries.
      */
-    public convenience init(minimumSeverity: LogSeverity = .info, debugMode: Bool = false, verboseDebugMode: Bool = false, stdStreamsMode: StandardStreamsMode = .useAsFallback, filters: [LogFilter] = [], formatters: [LogFormatter])
-    {
+    public convenience init(minimumSeverity: LogSeverity = .info, debugMode: Bool = false, verboseDebugMode: Bool = false, stdStreamsMode: StandardStreamsMode = .useAsFallback, filters: [LogFilter] = [], formatters: [LogFormatter]) {
         self.init(minimumSeverity: minimumSeverity, debugMode: debugMode, verboseDebugMode: verboseDebugMode, stdStreamsMode: stdStreamsMode, filters: filters, osLogFormatters: formatters, stdoutFormatters: formatters)
     }
 
@@ -108,13 +105,11 @@ open class ConsoleLogConfiguration: BasicLogConfiguration
      - parameter stdoutFormatters: An array of `LogFormatter`s to use when
      formatting log entries bound for the `StandardOutputLogRecorder`.
      */
-    public init(minimumSeverity: LogSeverity = .info, debugMode: Bool = false, verboseDebugMode: Bool = false, stdStreamsMode: StandardStreamsMode = .useAsFallback, filters: [LogFilter] = [], osLogFormatters: [LogFormatter], stdoutFormatters: [LogFormatter])
-    {
+    public init(minimumSeverity: LogSeverity = .info, debugMode: Bool = false, verboseDebugMode: Bool = false, stdStreamsMode: StandardStreamsMode = .useAsFallback, filters: [LogFilter] = [], osLogFormatters: [LogFormatter], stdoutFormatters: [LogFormatter]) {
         var minimumSeverity = minimumSeverity
         if verboseDebugMode {
             minimumSeverity = .verbose
-        }
-        else if debugMode && minimumSeverity > .debug {
+        } else if debugMode && minimumSeverity > .debug {
             minimumSeverity = .debug
         }
 
@@ -135,8 +130,7 @@ open class ConsoleLogConfiguration: BasicLogConfiguration
     }
 }
 
-extension ConsoleLogConfiguration
-{
+extension ConsoleLogConfiguration {
     /**
      Determines whether the `os_log()` function will be used given the runtime
      environment and the value of `mode`.
@@ -149,8 +143,7 @@ extension ConsoleLogConfiguration
      the value of `mode`.
      */
     public static func willUseOSLog(mode: StandardStreamsMode)
-        -> Bool
-    {
+        -> Bool {
         switch mode {
         case .useAlways, .useAsFallback:
             return OSLogRecorder.isAvailable
@@ -172,8 +165,7 @@ extension ConsoleLogConfiguration
      `mode`.
      */
     public static func shouldUseStandardStreams(mode: StandardStreamsMode)
-        -> Bool
-    {
+        -> Bool {
         switch mode {
         case .useAlways, .useExclusively:
             return true

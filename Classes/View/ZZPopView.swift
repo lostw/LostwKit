@@ -14,7 +14,7 @@ open class ZZPopView: UIView {
         guard !self.queue.isEmpty else {
             return
         }
-        
+
         let view = self.queue.first!
         if view.moveToView == nil {
             self.queue.remove(at: 0)
@@ -23,31 +23,31 @@ open class ZZPopView: UIView {
         }
         view.show()
     }
-    
+
     public enum Position {
         case center, onethird, bottom, top, point(CGPoint)
     }
-    
+
     public enum AnimationType {
         case none, fade, push, scale, custom
     }
-    
+
     public enum AnimationPushType {
         case fromTop, fromBottom, fromLeft, fromRight
     }
-    
+
     weak var moveToView: UIView?
-    fileprivate var dismissCallback: (()->Void)?
+    fileprivate var dismissCallback: (() -> Void)?
     public lazy var coverView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black
         return view
     }()
-    
+
     public var dismissOnBackground = false {
         didSet {
             if dismissOnBackground {
-                coverView.onTouch({ [unowned self](tap) in
+                coverView.onTouch({ [unowned self](_) in
                     self.dismiss()
                 })
             } else {
@@ -55,28 +55,28 @@ open class ZZPopView: UIView {
             }
         }
     }
-    public var animationType:AnimationType = .fade
-    public var animationPushType:AnimationPushType = .fromTop
+    public var animationType: AnimationType = .fade
+    public var animationPushType: AnimationPushType = .fromTop
     public var delayTransform: CGAffineTransform?
-    
+
     override public init(frame: CGRect) {
         super.init(frame: frame)
         self.commonInitView()
     }
-    
+
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     @objc func showInWindow() {
         self.show(inView: UIApplication.shared.keyWindow!)
     }
-    
+
     public func show(inView superview: UIView, position: Position = .center, size: CGSize? = nil) {
         if let size = size {
             self.bounds = CGRect(origin: .zero, size: size)
         }
-        
+
         var x: CGFloat = (superview.bounds.width - self.bounds.width) / 2
         var y: CGFloat = 0
         switch position {
@@ -92,7 +92,7 @@ open class ZZPopView: UIView {
             x = point.x
             y = point.y
         }
-        
+
         var rect = self.bounds
         rect.origin = CGPoint(x: x, y: y)
         self.frame = rect
@@ -100,33 +100,33 @@ open class ZZPopView: UIView {
         ZZPopView.queue.append(self)
         ZZPopView.nextView()
     }
-    
+
     fileprivate func show() {
         guard let superview = self.moveToView else {
             return
         }
-        
+
         self.coverView.frame = superview.bounds
         self.coverView.alpha = 0.6
         superview.addSubview(self.coverView)
         superview.addSubview(self)
-        
+
         self.pop()
     }
-    
+
     func pop() {
         guard self.superview != nil else {
             return
         }
-        
+
         if let transform = self.delayTransform {
             self.layoutIfNeeded()
             self.transform = transform
             self.setNeedsLayout()
         }
-        
+
         switch self.animationType {
-        case .none:break;
+        case .none:break
         case .fade:
             self.fadeIn()
         case .scale:
@@ -136,16 +136,16 @@ open class ZZPopView: UIView {
         case .custom:
             self.animateIn()
         }
-       
+
     }
-    
+
     @objc public func close() {
         self.dismiss()
     }
-    
-    public func dismiss(completion: (()->Void)? = nil) {
+
+    public func dismiss(completion: (() -> Void)? = nil) {
         self.dismissCallback = completion
-        
+
         switch self.animationType {
         case .none:
             self.cleanup()
@@ -159,22 +159,22 @@ open class ZZPopView: UIView {
             self.animateOut()
         }
     }
-    
+
     public func cleanup() {
         self.coverView.removeFromSuperview()
         self.removeFromSuperview()
         if let callback = self.dismissCallback {
             callback()
         }
-        
+
         ZZPopView.queue.remove(at: 0)
         ZZPopView.nextView()
     }
-    
+
     func animateIn() {}
-    
+
     func animateOut() {}
-    
+
     fileprivate func fadeIn() {
         self.alpha = 0
         self.coverView.alpha = 0
@@ -183,38 +183,38 @@ open class ZZPopView: UIView {
             self.coverView.alpha = 0.6
         }
     }
-    
+
     fileprivate func fadeOut() {
         UIView.animate(withDuration: 0.3, animations: {
-            self.alpha = 0;
-            self.coverView.alpha = 0;
-        }) { (finished) in
+            self.alpha = 0
+            self.coverView.alpha = 0
+        }) { (_) in
             self.cleanup()
         }
     }
-    
+
     fileprivate func scaleIn() {
-        self.transform = CGAffineTransform(scaleX: 0.01, y: 0.01);
+        self.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
         self.coverView.alpha = 0
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1, options: .curveEaseInOut, animations: { 
-            self.transform = CGAffineTransform.identity;
-            self.coverView.alpha = 0.6;
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1, options: .curveEaseInOut, animations: {
+            self.transform = CGAffineTransform.identity
+            self.coverView.alpha = 0.6
         })
     }
-    
+
     fileprivate func scaleOut() {
         UIView.animate(withDuration: 0.3, animations: {
-            self.transform = CGAffineTransform(scaleX: 0.01, y: 0.01);
-            self.coverView.alpha = 0;
-        }) { (finished) in
+            self.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+            self.coverView.alpha = 0
+        }) { (_) in
             self.cleanup()
         }
     }
-    
+
     fileprivate func pushIn() {
         var startRect = self.frame
         let endRect = self.frame
-        
+
         switch self.animationPushType {
         case .fromTop:
             startRect.origin.y = -startRect.height
@@ -225,18 +225,18 @@ open class ZZPopView: UIView {
         case .fromRight:
             startRect.origin.x = self.superview!.bounds.width + startRect.size.width
         }
-        
+
         self.frame = startRect
         self.coverView.alpha = 0
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1, options: .curveEaseInOut, animations: {
             self.frame = endRect
-            self.coverView.alpha = 0.6;
+            self.coverView.alpha = 0.6
         })
     }
-    
+
     fileprivate func pushOut() {
         var endRect = self.frame
-        
+
         switch self.animationPushType {
         case .fromTop:
             endRect.origin.y = -endRect.height
@@ -247,16 +247,15 @@ open class ZZPopView: UIView {
         case .fromRight:
             endRect.origin.x = self.superview!.bounds.width + endRect.size.width
         }
-        
-        
+
         UIView.animate(withDuration: 0.3, animations: {
             self.frame = endRect
-            self.coverView.alpha = 0;
-        }) { (finished) in
+            self.coverView.alpha = 0
+        }) { (_) in
             self.cleanup()
         }
     }
-    
+
     open func commonInitView() {
         self.layer.cornerRadius = 5
         self.layer.backgroundColor = UIColor.white.cgColor

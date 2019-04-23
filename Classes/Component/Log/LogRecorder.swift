@@ -13,8 +13,7 @@ import Dispatch
  (along with their accompanying `LogEntry` instances) to an underlying log
  facility or data store.
  */
-public protocol LogRecorder
-{
+public protocol LogRecorder {
     /**
      The `LogFormatter`s that should be used to create a formatted log string
      for passing to the receiver's `recordFormattedString()` function. 

@@ -12,25 +12,25 @@ import SnapKit
 public class ZZInfoCell: UIView {
     public var titleLabel: UILabel!
     public var valueLabel: UILabel!
-    
+
     private var gapConstraint: Constraint!
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.commonInitView()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     public func adjustGap(_ gap: CGFloat) {
         self.gapConstraint.update(offset: gap)
     }
-    
+
     func commonInitView() {
         self.backgroundColor = UIColor.white
-        
+
         titleLabel = UILabel()
         titleLabel.textAlignment = .center
         self.addSubview(self.titleLabel)
@@ -40,7 +40,7 @@ public class ZZInfoCell: UIView {
             make.left.right.equalToSuperview()
             make.bottom.equalTo(self.snp.centerY).offset(-4)
         }
-        
+
         valueLabel = UILabel()
         valueLabel.textAlignment = .center
         self.addSubview(self.valueLabel)

@@ -10,8 +10,7 @@
  A `LogFormatter` that returns a string representation of a `LogEntry`'s
  `payload` property.
  */
-public struct PayloadLogFormatter: LogFormatter
-{
+public struct PayloadLogFormatter: LogFormatter {
     /** The `LogFormatter` used by the receiver when encountering a `LogEntry`
      whose `payload` property contains a `.trace` value. */
     public let traceFormatter: LogFormatter
@@ -29,8 +28,7 @@ public struct PayloadLogFormatter: LogFormatter
      */
     public init(traceFormatter: LogFormatter = PayloadTraceLogFormatter(),
                 messageFormatter: LogFormatter = PayloadMessageLogFormatter(),
-                valueFormatter: LogFormatter = PayloadValueLogFormatter())
-    {
+                valueFormatter: LogFormatter = PayloadValueLogFormatter()) {
         self.traceFormatter = traceFormatter
         self.messageFormatter = messageFormatter
         self.valueFormatter = valueFormatter
@@ -46,8 +44,7 @@ public struct PayloadLogFormatter: LogFormatter
      for the given message.
      */
     public func format(_ entry: LogEntry)
-        -> String?
-    {
+        -> String? {
         switch entry.payload {
         case .trace:    return traceFormatter.format(entry)
         case .message:  return messageFormatter.format(entry)

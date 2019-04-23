@@ -21,8 +21,7 @@ import Foundation
  you can also perform logging by creating `LogEntry` instances manually and
  passing them along to a `LogReceptacle`.
  */
-public struct LogChannel
-{
+public struct LogChannel {
     /** The `LogSeverity` of this `LogChannel`, which determines the severity
      of the `LogEntry` instances it creates. */
     public let severity: LogSeverity
@@ -40,8 +39,7 @@ public struct LogChannel
      - parameter receptacle: The `LogReceptacle` to be used for depositing the
      `LogEntry` instances created by the channel.
      */
-    public init(severity: LogSeverity, receptacle: LogReceptacle)
-    {
+    public init(severity: LogSeverity, receptacle: LogReceptacle) {
         self.severity = severity
         self.receptacle = receptacle
     }
@@ -63,8 +61,7 @@ public struct LogChannel
      captures the line number issuing the call to this function. You should
      not provide a value for this parameter.
      */
-    public func trace(_ function: String = #function, filePath: String = #file, fileLine: Int = #line)
-    {
+    public func trace(_ function: String = #function, filePath: String = #file, fileLine: Int = #line) {
         var threadID: UInt64 = 0
         pthread_threadid_np(nil, &threadID)
 
@@ -90,8 +87,7 @@ public struct LogChannel
      captures the line number issuing the call to this function. You should
      not provide a value for this parameter.
     */
-    public func message(_ msg: String, function: String = #function, filePath: String = #file, fileLine: Int = #line)
-    {
+    public func message(_ msg: String, function: String = #function, filePath: String = #file, fileLine: Int = #line) {
         var threadID: UInt64 = 0
         pthread_threadid_np(nil, &threadID)
 
@@ -120,8 +116,7 @@ public struct LogChannel
      captures the line number issuing the call to this function. You should
      not provide a value for this parameter.
     */
-    public func value(_ value: Any?, function: String = #function, filePath: String = #file, fileLine: Int = #line)
-    {
+    public func value(_ value: Any?, function: String = #function, filePath: String = #file, fileLine: Int = #line) {
         var threadID: UInt64 = 0
         pthread_threadid_np(nil, &threadID)
 

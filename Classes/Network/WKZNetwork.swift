@@ -33,21 +33,19 @@ public protocol ZZApiResponse {
     init(dict: [String: Any]) throws
 }
 
-
-
 public struct ZZApiError: Error, LocalizedError {
     public var code: String
     public var message: String
-    
+
     public init(code: String = "-1", message: String = "未知错误") {
         self.code = code
         self.message = message
     }
-    
+
     public init(networkError: Error, statusCode: Int?) {
         self.init(code: "http\(statusCode ?? -1)", message: networkError.localizedDescription)
     }
-    
+
     public var errorDescription: String? {
         return message
     }
@@ -72,7 +70,7 @@ public extension ZZJsonApi {
                         seal.reject(ZZApiError(message: NetworkErrorDesc.parseFailure))
                         return
                     }
-                    
+
                     ZLog.info(dict.toJsonString(pretty: true)!)
                     do {
                         let response = try T(dict: dict)

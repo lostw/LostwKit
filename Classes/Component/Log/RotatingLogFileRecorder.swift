@@ -16,8 +16,7 @@ import Foundation
  the log directory specified by its `directoryPath` property. Please see the
  initializer documentation for details.
 */
-open class RotatingLogFileRecorder: LogRecorderBase
-{
+open class RotatingLogFileRecorder: LogRecorderBase {
     /** The number of days for which the receiver will retain log files
      before they're eligible for pruning. */
     public let daysToKeep: Int
@@ -57,8 +56,7 @@ open class RotatingLogFileRecorder: LogRecorderBase
      yield a non-`nil` value will be recorded. If every formatter returns `nil`,
      the log entry is silently ignored and not recorded.
     */
-    public init(daysToKeep: Int, directoryPath: String, formatters: [LogFormatter] = [ReadableLogFormatter()])
-    {
+    public init(daysToKeep: Int, directoryPath: String, formatters: [LogFormatter] = [ReadableLogFormatter()]) {
         self.daysToKeep = daysToKeep
         self.directoryPath = directoryPath
 
@@ -74,28 +72,24 @@ open class RotatingLogFileRecorder: LogRecorderBase
      - returns: The filename.
     */
     open class func logFilename(forDate date: Date)
-        -> String
-    {
+        -> String {
         return filenameFormatter.string(from: date)
     }
 
     private class func fileLogRecorder(_ date: Date, directoryPath: String, formatters: [LogFormatter])
-        -> FileLogRecorder?
-    {
+        -> FileLogRecorder? {
         let fileName = logFilename(forDate: date)
         let filePath = (directoryPath as NSString).appendingPathComponent(fileName)
         return FileLogRecorder(filePath: filePath, formatters: formatters)
     }
 
     private func fileLogRecorder(_ date: Date)
-        -> FileLogRecorder?
-    {
+        -> FileLogRecorder? {
         return type(of: self).fileLogRecorder(date, directoryPath: directoryPath, formatters: formatters)
     }
 
     private func isDate(_ firstDate: Date, onSameDayAs secondDate: Date)
-        -> Bool
-    {
+        -> Bool {
         let firstDateStr = type(of: self).logFilename(forDate: firstDate)
         let secondDateStr = type(of: self).logFilename(forDate: secondDate)
         return firstDateStr == secondDateStr
@@ -108,8 +102,7 @@ open class RotatingLogFileRecorder: LogRecorderBase
      - throws: If the function fails to create a directory at `directoryPath`.
      */
     open func createLogDirectory()
-        throws
-    {
+        throws {
         let url = URL(fileURLWithPath: directoryPath, isDirectory: true)
 
         try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
@@ -131,8 +124,7 @@ open class RotatingLogFileRecorder: LogRecorderBase
      - parameter synchronousMode: If `true`, the recording is being done in
      synchronous mode, and the recorder should act accordingly.
     */
-    open override func record(message: String, for entry: LogEntry, currentQueue: DispatchQueue, synchronousMode: Bool)
-    {
+    open override func record(message: String, for entry: LogEntry, currentQueue: DispatchQueue, synchronousMode: Bool) {
         if mostRecentLogTime == nil || !self.isDate(entry.timestamp as Date, onSameDayAs: mostRecentLogTime!) {
             prune()
             currentFileRecorder = fileLogRecorder(entry.timestamp)
@@ -149,8 +141,7 @@ open class RotatingLogFileRecorder: LogRecorderBase
      - warning: Any file within the `directoryPath` not recognized as an active
      log file will be deleted during pruning.
     */
-    open func prune()
-    {
+    open func prune() {
         // figure out what files we'd want to keep, then nuke everything else
         let cal = Calendar.current
         var date = Date()
@@ -173,15 +164,12 @@ open class RotatingLogFileRecorder: LogRecorderBase
             for path in pathsToRemove {
                 do {
                     try fileMgr.removeItem(atPath: path)
-                }
-                catch {
+                } catch {
                     print("Error attempting to delete the unneeded file <\(path)>: \(error)")
                 }
             }
-        }
-        catch {
+        } catch {
             print("Error attempting to read directory at path <\(directoryPath)>: \(error)")
         }
     }
 }
-

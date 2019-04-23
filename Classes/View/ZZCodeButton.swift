@@ -18,7 +18,7 @@ public class ZZCounterdownController {
     public enum CounterState {
         case ready, loading, counting(Int), done
     }
-    
+
     public weak var slaver: ZZCounterdownButton? {
         didSet {
             slaver?.onStateChange(.ready)
@@ -29,13 +29,13 @@ public class ZZCounterdownController {
     public var isReady = true
     var remain: Int = 0
     public var state: CounterState = .ready {
-        didSet {            
+        didSet {
            slaver?.onStateChange(state)
         }
     }
-    
+
     public init() {}
-    
+
     public func willStart(_ action:  ((@escaping ZZCounterdownStart) -> Void)) {
         state = .loading
         action({
@@ -46,21 +46,21 @@ public class ZZCounterdownController {
             }
         })
     }
-    
+
     func start() {
         self.remain = self.duration
-        
+
         if let timer = self.timer {
             timer.invalidate()
         }
-        
+
         self.tick()
     }
-    
+
     @objc func tick() {
         self.state = .counting(remain)
         self.remain -= 1
-        
+
         if self.remain <= 0 {
             self.state = .done
         } else {
@@ -68,7 +68,6 @@ public class ZZCounterdownController {
         }
     }
 }
-
 
 public class ZZCodeButton: UIButton, ZZCounterdownButton {
     public var counterController = ZZCounterdownController()
@@ -83,7 +82,7 @@ public class ZZCodeButton: UIButton, ZZCounterdownButton {
             }
         }
     }
-    
+
     public func onStateChange(_ state: ZZCounterdownController.CounterState) {
         switch state {
         case .ready:
@@ -107,20 +106,20 @@ public class ZZCodeButton: UIButton, ZZCounterdownButton {
         super.init(frame: frame)
 //        self.counterController =
         self.commonInitView()
-        
+
         self.counterController.slaver = self
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func commonInitView() {
         self.backgroundColor = UIColor.clear
         self.setTitleColor(AppTheme.shared[.majorText], for: .normal)
         self.setTitleColor(UIColor(hex: 0x9f9f9f), for: .disabled)
         self.titleLabel?.font = UIFont.systemFont(ofSize: 12)
-        
+
         self.layer.cornerRadius = 3
         self.layer.borderWidth = 1
         self.layer.borderColor = AppTheme.shared[.majorText].cgColor

@@ -20,8 +20,7 @@ import os.log
  `LogSeverity` values, `OSLogTypeTranslation` provides a mechanism for 
  deriving the appropriate `OSLogType` for a given `LogEntry`.
   */
-public enum OSLogTypeTranslator
-{
+public enum OSLogTypeTranslator {
     /** The most direct translation from a `LogEntry`'s `severity` to the
      corresponding `OSLogType` value.
 
@@ -76,29 +75,28 @@ public enum OSLogTypeTranslator
 
     /** `OSLogType.info` is used for all messages. */
     case allAsInfo
-    
+
     /** `OSLogType.debug` is used for all messages. */
     case allAsDebug
-    
+
     /** Uses a custom function to determine the `OSLogType` to use for each
      `LogEntry`. */
     case function((LogEntry) -> OSLogType)
 }
 
-extension OSLogTypeTranslator
-{
+extension OSLogTypeTranslator {
     internal func osLogType(logEntry: LogEntry)
-        -> OSLogType
-    {
+        -> OSLogType {
         return logTypeFunction()(logEntry)
     }
 
-    private func logTypeFunction() -> ((LogEntry) -> OSLogType)
-    {
+    // swiftlint:disable cyclomatic_complexity
+    private func logTypeFunction() -> ((LogEntry) -> OSLogType) {
+        // swiftlint:enable cyclomatic_complexity
         guard #available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *) else {
             fatalError("os.log module not supported on this platform")    // things should never get this far
         }
-        
+
         switch self {
         case .default:
             return { entry -> OSLogType in
@@ -132,16 +130,12 @@ extension OSLogTypeTranslator
                 case .error:        return .default
                 }
             }
-            
        case .allAsDefault:
             return { _ in return OSLogType.default }
-            
         case .allAsInfo:
             return { _ in return OSLogType.info }
-            
         case .allAsDebug:
             return { _ in return OSLogType.debug }
-            
         case .function(let f):
             return f
         }

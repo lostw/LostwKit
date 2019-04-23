@@ -12,35 +12,35 @@ import UIKit
 class TextFieldFilter: NSObject, UITextFieldDelegate {
     var condition: String?
     weak var originDelegate: UITextFieldDelegate?
-    
+
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let text = textField.text
         let result = text!.replacingCharacters(in: (text?.range(from: range))!, with: string)
-        
+
         if result.count == 0 {
             return true
         }
-        
+
         if let condition = self.condition {
             if condition.count > 0 && !result.isMatch(regex: condition) {
                 return false
             }
         }
-        
+
         if let origin = self.originDelegate {
             if origin .responds(to: #selector(textField(_:shouldChangeCharactersIn:replacementString:))) {
                 return origin.textField!(textField, shouldChangeCharactersIn: range, replacementString: string)
             }
         }
-        
+
         return true
     }
-    
+
     func textFieldDidBeginEditing(_ textField: UITextField) {
         guard let origin = self.originDelegate else {
             return
         }
-        if (origin.responds(to: #selector(textFieldDidBeginEditing(_:)))) {
+        if origin.responds(to: #selector(textFieldDidBeginEditing(_:))) {
             self.originDelegate?.textFieldDidBeginEditing?(textField)
         }
     }
@@ -58,7 +58,7 @@ public extension UITextField {
             objc_setAssociatedObject(self, &textFieldFilterKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
-    
+
     var filterCondition: String? {
         get {
             return self.filter?.condition
@@ -67,26 +67,26 @@ public extension UITextField {
             if self.filter == nil {
                 self.filter = TextFieldFilter()
             }
-            
+
             if self.delegate != nil && !(self.delegate! is TextFieldFilter) {
                 self.filter!.originDelegate = self.delegate
             }
-            
+
             self.delegate = self.filter
             self.filter!.condition = newValue
         }
     }
-    
+
     func limit(length: Int, numberOnly: Bool) {
         let charactor = numberOnly ? "\\d" : "."
 
         self.filterCondition = "^\(charactor){0,\(length)}$"
     }
-    
+
     func limit(regex: String) {
         self.filterCondition = regex
     }
-    
+
     // MARK: - 验证规则
     var validator: TextFieldValidator? {
         get {

@@ -10,8 +10,7 @@
  A `LogFormatter` that returns the message content of a `LogEntry` whose
  `payload` is a `.message` value.
  */
-public struct PayloadMessageLogFormatter: LogFormatter
-{
+public struct PayloadMessageLogFormatter: LogFormatter {
     /**
      The initializer.
      */
@@ -27,8 +26,7 @@ public struct PayloadMessageLogFormatter: LogFormatter
      `payload` with a `.message` value.
      */
     public func format(_ entry: LogEntry)
-        -> String?
-    {
+        -> String? {
         guard case .message(let content) = entry.payload else { return nil }
 
         return content

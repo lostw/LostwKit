@@ -19,8 +19,7 @@
 
  Each of these settings can be overridden during instantiation.
  */
-open class ReadableLogFormatter: StandardLogFormatter
-{
+open class ReadableLogFormatter: StandardLogFormatter {
     /**
      Initializes a new `ReadableLogFormatter` instance.
 
@@ -40,8 +39,7 @@ open class ReadableLogFormatter: StandardLogFormatter
      - parameter showCallSite: If `true`, the source file and line indicating
      the call site of the log request will be added to formatted log messages.
      */
-    public override init(timestampStyle: TimestampStyle? = .default, severityStyle: SeverityStyle? = .custom(textRepresentation: .capitalized, truncateAtWidth: 7, padToWidth: 7, rightAlign: false), delimiterStyle: DelimiterStyle? = nil, callingThreadStyle: CallingThreadStyle? = .hex, showCallSite: Bool = true)
-    {
+    public override init(timestampStyle: TimestampStyle? = .default, severityStyle: SeverityStyle? = .custom(textRepresentation: .capitalized, truncateAtWidth: 7, padToWidth: 7, rightAlign: false), delimiterStyle: DelimiterStyle? = nil, callingThreadStyle: CallingThreadStyle? = .hex, showCallSite: Bool = true) {
         super.init(timestampStyle: timestampStyle, severityStyle: severityStyle, delimiterStyle: delimiterStyle, callingThreadStyle: callingThreadStyle, showCallSite: showCallSite)
     }
 }

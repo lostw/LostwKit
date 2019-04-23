@@ -8,14 +8,13 @@
 
 import UIKit
 
-
 @objc public protocol OptionDropViewDelegate: AnyObject {
     func numberOfSectionsInDropView(_ view: OptionDropView) -> Int
     func dropView(_ view: OptionDropView, defaultIndexForSection section: Int) -> Int
     func dropView(_ view: OptionDropView, titleAt indexPath: IndexPath) -> String
-    func dropView(_ view: OptionDropView, numberOfRowsInSection section:Int) -> Int
+    func dropView(_ view: OptionDropView, numberOfRowsInSection section: Int) -> Int
     func dropView(_ view: OptionDropView, selectAt indexPath: IndexPath)
-    
+
     @objc optional func dropView(_ view: OptionDropView, dropTitleAt indexPath: IndexPath) -> String
     @objc optional func showDropView()
 }
@@ -45,49 +44,48 @@ public class OptionSectionView: UIView {
             self.updateLayout()
         }
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.commonInitView()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 
-    
     func commonInitView() {
         self.titleLabel.textColor = AppTheme.shared[.text]
         self.titleLabel.font = UIFont.systemFont(ofSize: 14)
         self.addSubview(self.titleLabel)
-        
+
         self.triangle.fillColor = UIColor(hex: 0xd6d6d6).cgColor
         self.triangle.path = self.trianglePath().cgPath
         self.layer.addSublayer(self.triangle)
-        
+
         self.updateLayout()
     }
-    
+
     func updateLayout() {
         let size = self.titleLabel.sizeThatFits(self.bounds.size)
         self.titleLabel.frame = self.bounds.rectForCenterSize(size)
-        
+
         self.triangle.frame = CGRect(x: self.titleLabel.frame.origin.x + self.titleLabel.frame.width + 4,
                                      y: (self.bounds.height - 4) / 2,
                                      width: 8,
                                      height: 4)
     }
-    
+
     func trianglePath() -> UIBezierPath {
         let w = 8, h = 4
-        
+
         let path = UIBezierPath()
-        
+
         path.move(to: CGPoint.zero)
-        path.addLine(to: CGPoint(x:w, y:0))
-        path.addLine(to: CGPoint(x:w/2, y:h))
+        path.addLine(to: CGPoint(x: w, y: 0))
+        path.addLine(to: CGPoint(x: w/2, y: h))
         path.close()
-        
+
         return path
     }
 }
@@ -102,7 +100,7 @@ public class OptionDropView: UIView {
         let view = UIView()
         view.isHidden = true
         view.backgroundColor = UIColor(hex: 0x000000, alpha: 0.6)
-        view.onTouch({ [unowned self] (tap) in
+        view.onTouch({ [unowned self] (_) in
             self.touchSection(atIndex: -1)
         })
         return view
@@ -112,13 +110,13 @@ public class OptionDropView: UIView {
         view.isHidden = true
         view.delegate = self
         view.dataSource = self
-        
+
         view.separatorInset = UIEdgeInsets.zero
         view.layoutMargins = UIEdgeInsets.zero
-        
+
         return view
     }()
-    
+
     override public var bounds: CGRect {
         didSet {
             self.updateLayout()
@@ -128,35 +126,34 @@ public class OptionDropView: UIView {
         super.init(frame: frame)
         self.commonInitView()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     public func reloadData() {
         guard let delegate = self.delegate else {
             return
         }
-        
+
         let numberOfSections = delegate.numberOfSectionsInDropView(self)
         guard numberOfSections > 0 else {
             return
         }
-        
+
         self.removeSubviews()
         self.sectionViews.removeAll()
-        
-        
+
         for idx in 0..<numberOfSections {
             let sectionView = OptionSectionView()
             let selectedIdx = delegate.dropView(self, defaultIndexForSection: idx)
             let title = delegate.dropView(self, titleAt: IndexPath(row: selectedIdx, section: idx))
             sectionView.title = title
             self.addSubview(sectionView)
-            
+
             self.sectionViews.append(sectionView)
         }
-        
+
         self.onTouch { [unowned self] (tap) in
             let point = tap.location(in: self)
             for (idx, item) in self.sectionViews.enumerated() {
@@ -166,36 +163,35 @@ public class OptionDropView: UIView {
                 }
             }
         }
-        
+
         self.updateLayout()
-        
+
     }
-    
+
     func touchSection(atIndex index: Int) {
         //清除之前的tab选中状态
         if self.currentSection != -1 {
             let sectionView = self.sectionViews[self.currentSection]
             sectionView.isHighlight = false
         }
-        
+
         //点击同一个tab, 收起菜单
         if self.currentSection == index {
             self.currentSection = -1
         } else {
             self.currentSection = index
         }
-        
-        
+
         //选中了新的tab
         if self.currentSection != -1 {
             let sectionView = self.sectionViews[self.currentSection]
             sectionView.isHighlight = true
         }
-        
+
         //更新菜单
         self.updateDropList()
     }
-    
+
     func updateDropList() {
         if self.currentSection == -1 {
             self.collapse()
@@ -207,9 +203,9 @@ public class OptionDropView: UIView {
                 self.coverView.isHidden = false
                 self.superview?.bringSubviewToFront(self)
                 self.delegate?.showDropView?()
-            
+
                 let numberOfRows = self.delegate!.dropView(self, numberOfRowsInSection: self.currentSection)
-                var height:CGFloat = 0
+                var height: CGFloat = 0
                 if (numberOfRows > 6) {
                     height = 6 * self.rowHeight - 21
                     self.listView.isScrollEnabled = true
@@ -219,53 +215,53 @@ public class OptionDropView: UIView {
                 }
                 self.coverView.frame = superview.bounds
                 let rect = CGRect(x: 0, y: self.frame.origin.y + self.frame.size.height, width: self.frame.size.width, height: height)
-                
+
                 //保证动画开始时的宽度
                 if self.listView.frame.width == 0 {
                     var startRect = self.listView.frame
                     startRect.size.width = self.frame.size.width
                     self.listView.frame = startRect
                 }
-                
-                UIView.animate(withDuration: 0.2, animations: { 
+
+                UIView.animate(withDuration: 0.2, animations: {
                     self.coverView.alpha = 0.3
                     self.listView.frame = rect
                 })
-                
+
                 self.listView.reloadData()
             }
         }
     }
-    
+
     func collapse() {
         if !self.listView.isHidden {
             var rect = self.listView.frame
             rect.size.height = 0
-            
+
             UIView.animate(withDuration: 0.2, animations: {
                 self.listView.frame = rect
                 self.coverView.alpha = 0
-            }, completion: { finished in
+            }, completion: { _ in
                 self.listView.isHidden = true
                 self.coverView.isHidden = true
             })
         }
     }
-    
+
     func commonInitView() {
         self.backgroundColor = UIColor.white
     }
-    
+
     func updateLayout() {
         guard let delegate = self.delegate else {
             return
         }
-        
+
         let numberOfSections = delegate.numberOfSectionsInDropView(self)
         guard numberOfSections > 0 else {
             return
         }
-        
+
         let w = self.bounds.width / CGFloat(numberOfSections)
         for (idx, view) in self.sectionViews.enumerated() {
             view.frame = CGRect(x: CGFloat(idx) * w, y: 0, width: w, height: self.bounds.height)
@@ -278,24 +274,24 @@ extension OptionDropView: UITableViewDelegate, UITableViewDataSource {
         guard let delegate = self.delegate else {
             return 0
         }
-        
+
         return delegate.dropView(self, numberOfRowsInSection: self.currentSection)
     }
-    
+
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return self.rowHeight
     }
-    
+
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: UITableViewCell! = tableView.dequeueReusableCell(withIdentifier: OptionDropView.identifier)
         if cell == nil {
             cell = UITableViewCell.init(style: .default, reuseIdentifier: OptionDropView.identifier)
             cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
             cell.tintColor = AppTheme.shared[.majorText]
-            
+
             cell.layoutMargins = UIEdgeInsets.zero
         }
-        
+
         if let delegate = self.delegate {
             let idx = delegate.dropView(self, defaultIndexForSection: self.currentSection)
             if idx == indexPath.row {
@@ -306,7 +302,7 @@ extension OptionDropView: UITableViewDelegate, UITableViewDataSource {
                 cell.accessoryType = .none
             }
             var text = delegate.dropView?(self, dropTitleAt: IndexPath(row: indexPath.row, section: self.currentSection))
-            if text == nil{
+            if text == nil {
                 text = delegate.dropView(self, titleAt: IndexPath(row: indexPath.row, section: self.currentSection))
             }
             cell.textLabel?.text = text
@@ -314,17 +310,17 @@ extension OptionDropView: UITableViewDelegate, UITableViewDataSource {
 
         return cell
     }
-    
+
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
+
         if let delegate = self.delegate {
             let indexPath = IndexPath(row: indexPath.row, section: self.currentSection)
             let title = delegate.dropView(self, titleAt: indexPath)
             self.sectionViews[self.currentSection].title = title
             delegate.dropView(self, selectAt: indexPath)
         }
-        
+
         self.touchSection(atIndex: -1)
     }
 }

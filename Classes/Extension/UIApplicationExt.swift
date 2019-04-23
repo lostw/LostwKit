@@ -12,15 +12,14 @@ public extension UIApplication {
         guard let url = URL(string: str) else {
             return
         }
-        
+
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(url)
         } else {
             UIApplication.shared.openURL(url)
         }
     }
-    
-    
+
     func dial(_ dialNumber: String) {
         compatibleOpen("tel:\(dialNumber)")
     }

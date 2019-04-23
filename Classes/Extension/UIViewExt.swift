@@ -14,28 +14,28 @@ public extension UIView {
     /// 获取从属的viewController
     var controller: UIViewController? {
         var next = self.next
-        
+
         while next != nil {
             if next!.isKind(of: UIViewController.self) {
                 return (next as! UIViewController)
             }
-            
+
             next = next!.next
         }
-        
+
         return nil
     }
 }
 
 public extension UIView {
-    
+
     /// 删除所有的subview
     @objc func removeSubviews() {
         for subview in self.subviews {
             subview.removeFromSuperview()
         }
     }
-    
+
     @discardableResult
     public func addBottomLine(color: UIColor? = nil, left: CGFloat = 0, right: CGFloat = 0) -> UIView {
         let color = color ?? AppTheme.shared[.border]
@@ -48,7 +48,7 @@ public extension UIView {
             make.right.equalToSuperview().offset(-right)
             make.height.equalTo(ONE_PX)
         }
-        
+
         return line
     }
 //
@@ -97,7 +97,7 @@ public extension UIView {
         guard views.count > 0 else {
             return
         }
-        
+
         var prevView: UIView! = nil
         for (idx, view) in views.enumerated() {
             self.addSubview(view)
@@ -108,34 +108,33 @@ public extension UIView {
                     make.left.equalTo(prevView.snp.right)
                     make.width.equalTo(prevView.snp.width)
                 }
-                
+
                 make.top.equalToSuperview()
                 make.bottom.equalToSuperview()
-                
-                
+
                 if idx == views.count - 1 {
                     make.right.equalToSuperview()
                 }
             })
-            
+
             prevView = view
         }
-        
+
         if enableSeperatorLine {
             for idx in 1..<views.count {
                 let line = UIView()
                 line.backgroundColor = borderColor
                 self.addSubview(line)
                 line.snp.makeConstraints({ (make) in
-                    make.top.equalToSuperview().offset(linePadding);
-                    make.left.equalTo(self.snp.right).multipliedBy(Double(idx)/Double(views.count)).offset(-ONE_PX_ADJUST);
-                    make.width.equalTo(ONE_PX);
-                    make.bottom.equalToSuperview().offset(-linePadding);
+                    make.top.equalToSuperview().offset(linePadding)
+                    make.left.equalTo(self.snp.right).multipliedBy(Double(idx)/Double(views.count)).offset(-ONE_PX_ADJUST)
+                    make.width.equalTo(ONE_PX)
+                    make.bottom.equalToSuperview().offset(-linePadding)
                 })
             }
         }
     }
-    
+
     public func popSuccessToast(_ message: String) {
         let view = ToastView(message: message, style: .success)
         self.showToast(view, position: .center)
@@ -145,9 +144,7 @@ public extension UIView {
         let view = ToastView(message: message)
         self.showToast(view)
     }
-    
-    
-    
+
 }
 
 private var badgeLabelKey: UInt8 = 0
@@ -230,24 +227,24 @@ extension UIView {
         weak var owner: UIView?
         var action: UIViewTapAction
         var tap: UITapGestureRecognizer!
-        
+
         init(target: UIView, action: @escaping (UITapGestureRecognizer) -> Void) {
             self.owner = target
             self.action = action
-            
+
             self.tap = UITapGestureRecognizer.init(target: self, action: #selector(onTaped(_:)))
             target.addGestureRecognizer(self.tap)
         }
-        
+
         deinit {
             self.owner?.removeGestureRecognizer(self.tap)
         }
-        
+
         @objc func onTaped(_ tap: UITapGestureRecognizer) {
             self.action(tap)
         }
     }
-    
+
     fileprivate var wkz_handler: TouchHandler? {
         get {
             return objc_getAssociatedObject(self, &touchHandlerKey) as? TouchHandler
@@ -256,10 +253,10 @@ extension UIView {
             objc_setAssociatedObject(self, &touchHandlerKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
-    
+
     @objc public func onTouch(_ action: UIViewTapAction?) {
         self.isUserInteractionEnabled = true
-        
+
         if action == nil {
             if self.wkz_handler != nil {
                 self.wkz_handler = nil
@@ -277,14 +274,14 @@ public extension UIView {
         animation.keyPath = "position.x"
         animation.values = [0, 10, -10, 10, 0]
         animation.keyTimes = [NSNumber(value: 0), NSNumber(value: 1 / 6.0), NSNumber(value: 3 / 6.0), NSNumber(value: 5 / 6.0), NSNumber(value: 1)]
-        animation.duration = 0.4;
+        animation.duration = 0.4
         animation.isAdditive = true
         self.layer.add(animation, forKey: "shake")
     }
-    
+
     func success() {
         let layer = CAShapeLayer()
-        layer.frame = CGRect(x: self.bounds.width - 15 - 20, y:(self.bounds.height - 20) / 2, width: 20, height:20)
+        layer.frame = CGRect(x: self.bounds.width - 15 - 20, y: (self.bounds.height - 20) / 2, width: 20, height: 20)
         layer.strokeColor = UIColor(hex: 0x5cb85c).cgColor
         layer.fillColor = UIColor.clear.cgColor
         layer.lineWidth = 5
@@ -296,7 +293,7 @@ public extension UIView {
         path.addLine(to: CGPoint(x: 20, y: 2))
         layer.path = path.cgPath
         self.layer.addSublayer(layer)
-        
+
         layer.strokeEnd = 0
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.duration = 0.3
@@ -305,7 +302,7 @@ public extension UIView {
         animation.isRemovedOnCompletion = false
         animation.fillMode = CAMediaTimingFillMode.forwards
         layer.add(animation, forKey: "success")
-        
+
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.5) {
             layer.removeFromSuperlayer()
         }

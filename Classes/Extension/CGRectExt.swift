@@ -12,7 +12,7 @@ public extension CGRect {
     init(_ x: CGFloat, _ y: CGFloat, _ width: CGFloat, _ height: CGFloat) {
         self.init(x: x, y: y, width: width, height: height)
     }
-    
+
     func rectForCenterSize(_ size: CGSize) -> CGRect {
         return CGRect(x: (self.width - size.width)/2,
                       y: (self.height - size.height)/2,
@@ -37,7 +37,7 @@ public extension CGPoint {
     init(_ x: CGFloat, _ y: CGFloat) {
         self.init(x: x, y: y)
     }
-    
+
     func scaled(to size: CGSize) -> CGPoint {
         return CGPoint(x: self.x * size.width, y: self.y * size.height)
     }

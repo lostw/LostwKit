@@ -10,20 +10,18 @@
  A `LogFormatter` that outputs Xcode-bound trace information for each
  `LogEntry` that has a `Payload` of `.trace`.
  */
-public final class XcodeTraceLogFormatter: FieldBasedLogFormatter
-{
+public final class XcodeTraceLogFormatter: FieldBasedLogFormatter {
     /** 
      Initalizes a new `XcodeTraceLogFormatter` instance.
      */
-    public init()
-    {
+    public init() {
         super.init(fields: [.severity(.xcode),
                             .literal(" —> "),
                             .callSite,
                             .delimiter(.spacedHyphen),
                             .payload])
     }
-    
+
     /**
      Called to create a string representation of the passed-in `LogEntry`.
      
@@ -33,13 +31,12 @@ public final class XcodeTraceLogFormatter: FieldBasedLogFormatter
      receiver could not format the `LogEntry`.
      */
     public override func format(_ entry: LogEntry)
-        -> String?
-    {
+        -> String? {
         guard case .trace = entry.payload else {
             // we are only to be used for outputting trace information
             return nil
         }
-        
+
         return super.format(entry)
     }
 }

@@ -25,8 +25,7 @@ import Dispatch
  - `BufferedLogEntryMessageRecorder` stores a `(LogEntry, String)` tuple
  containing the `LogEntry` and formatted log message.
  */
-open class BufferedLogRecorder<BufferItem>: LogRecorderBase
-{
+open class BufferedLogRecorder<BufferItem>: LogRecorderBase {
     /** The maximum number if items that will be stored in the receiver's
      buffer */
     public let bufferLimit: Int
@@ -63,15 +62,14 @@ open class BufferedLogRecorder<BufferItem>: LogRecorderBase
      instances for each `LogEntry` and formatted message string passed to the
      receiver's `record`()` function.
      */
-    public init(formatters: [LogFormatter], bufferLimit: Int = 10_000, queue: DispatchQueue? = nil, createBufferItem: @escaping (LogEntry, String) -> BufferItem)
-    {
+    public init(formatters: [LogFormatter], bufferLimit: Int = 10_000, queue: DispatchQueue? = nil, createBufferItem: @escaping (LogEntry, String) -> BufferItem) {
         self.buffer = []
         self.bufferLimit = bufferLimit
         self.createBufferItem = createBufferItem
 
         super.init(formatters: formatters, queue: queue)
     }
-    
+
     /**
      Called by the `LogReceptacle` to record the formatted log message.
 
@@ -88,8 +86,7 @@ open class BufferedLogRecorder<BufferItem>: LogRecorderBase
      - parameter synchronousMode: If `true`, the recording is being done in
      synchronous mode, and the recorder should act accordingly.
      */
-    open override func record(message: String, for entry: LogEntry, currentQueue: DispatchQueue, synchronousMode: Bool)
-    {
+    open override func record(message: String, for entry: LogEntry, currentQueue: DispatchQueue, synchronousMode: Bool) {
         let item = createBufferItem(entry, message)
 
         buffer.append(item)
@@ -105,8 +102,7 @@ open class BufferedLogRecorder<BufferItem>: LogRecorderBase
      This operation is performed synchronously on the receiver's `queue`
      to ensure thread safety.
      */
-    public func clear()
-    {
+    public func clear() {
         // ensures consistent access to buffer, preventing race conditions
         queue.sync {
             self.buffer = []
@@ -118,8 +114,7 @@ open class BufferedLogRecorder<BufferItem>: LogRecorderBase
  The `BufferedMessageRecorder` buffers the formatted log messages passed to
  its `record()` function.
  */
-open class BufferedMessageRecorder: BufferedLogRecorder<String>
-{
+open class BufferedMessageRecorder: BufferedLogRecorder<String> {
     /**
      Initializes a new `BufferedMessageRecorder`.
 
@@ -140,8 +135,7 @@ open class BufferedMessageRecorder: BufferedLogRecorder<String>
      - parameter queue: The `DispatchQueue` to use for the recorder. If `nil`,
      a new queue will be created.
      */
-    public init(formatters: [LogFormatter], bufferLimit: Int = 10_000, queue: DispatchQueue? = nil)
-    {
+    public init(formatters: [LogFormatter], bufferLimit: Int = 10_000, queue: DispatchQueue? = nil) {
         super.init(formatters: formatters, bufferLimit: bufferLimit, queue: queue) { _, message in
             return message
         }
@@ -152,8 +146,7 @@ open class BufferedMessageRecorder: BufferedLogRecorder<String>
  The `BufferedLogEntryRecorder` buffers each `LogEntry` passed to its
  `record()` function.
  */
-open class BufferedLogEntryRecorder: BufferedLogRecorder<LogEntry>
-{
+open class BufferedLogEntryRecorder: BufferedLogRecorder<LogEntry> {
     /**
      Initializes a new `BufferedLogEntryRecorder`.
 
@@ -174,8 +167,7 @@ open class BufferedLogEntryRecorder: BufferedLogRecorder<LogEntry>
      - parameter queue: The `DispatchQueue` to use for the recorder. If `nil`,
      a new queue will be created.
      */
-    public init(formatters: [LogFormatter], bufferLimit: Int = 10_000, queue: DispatchQueue? = nil)
-    {
+    public init(formatters: [LogFormatter], bufferLimit: Int = 10_000, queue: DispatchQueue? = nil) {
         super.init(formatters: formatters, bufferLimit: bufferLimit, queue: queue) { entry, _ in
             return entry
         }
@@ -186,8 +178,7 @@ open class BufferedLogEntryRecorder: BufferedLogRecorder<LogEntry>
  The `BufferedLogEntryMessageRecorder` buffers each `LogEntry` and formatted
  message passed to its `record()` function.
  */
-open class BufferedLogEntryMessageRecorder: BufferedLogRecorder<(LogEntry, String)>
-{
+open class BufferedLogEntryMessageRecorder: BufferedLogRecorder<(LogEntry, String)> {
     /**
      Initializes a new `BufferedLogEntryMessageRecorder`.
 
@@ -208,8 +199,7 @@ open class BufferedLogEntryMessageRecorder: BufferedLogRecorder<(LogEntry, Strin
      - parameter queue: The `DispatchQueue` to use for the recorder. If `nil`,
      a new queue will be created.
      */
-    public init(formatters: [LogFormatter], bufferLimit: Int = 10_000, queue: DispatchQueue? = nil)
-    {
+    public init(formatters: [LogFormatter], bufferLimit: Int = 10_000, queue: DispatchQueue? = nil) {
         super.init(formatters: formatters, bufferLimit: bufferLimit, queue: queue) { entry, message in
             return (entry, message)
         }

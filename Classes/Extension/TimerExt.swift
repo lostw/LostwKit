@@ -12,7 +12,7 @@ extension Timer {
     public static func scheduledTimer(timeInterval: TimeInterval, repeats: Bool, handler: @escaping () -> Void) -> Timer {
         return self.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(onTimer(_:)), userInfo: handler, repeats: repeats)
     }
-    
+
     @objc static func onTimer(_ timer: Timer) {
         if let handler = timer.userInfo as? (() -> Void) {
             handler()

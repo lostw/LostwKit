@@ -9,8 +9,7 @@
 /**
  A standard `LogFormatter` that provides some common customization points.
  */
-open class StandardLogFormatter: FieldBasedLogFormatter
-{
+open class StandardLogFormatter: FieldBasedLogFormatter {
     /**
      Initializes a new `StandardLogFormatter` instance.
 
@@ -30,8 +29,7 @@ open class StandardLogFormatter: FieldBasedLogFormatter
      - parameter showCallSite: If `true`, the source file and line indicating
      the call site of the log request will be added to formatted log messages.
      */
-    public init(timestampStyle: TimestampStyle? = .default, severityStyle: SeverityStyle? = .simple, delimiterStyle: DelimiterStyle? = nil, callingThreadStyle: CallingThreadStyle? = .hex, showCallSite: Bool = true)
-    {
+    public init(timestampStyle: TimestampStyle? = .default, severityStyle: SeverityStyle? = .simple, delimiterStyle: DelimiterStyle? = nil, callingThreadStyle: CallingThreadStyle? = .hex, showCallSite: Bool = true) {
         var fields: [Field] = []
         var addSeparator = false
 

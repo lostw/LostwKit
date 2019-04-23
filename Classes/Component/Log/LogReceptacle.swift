@@ -15,8 +15,7 @@ import Dispatch
  functions, the `Log` implementation provides a higher-level interface that's
  more convenient to use within your code.
  */
-public final class LogReceptacle
-{
+public final class LogReceptacle {
     /** The `LogConfiguration` instances used to construct the receiver. */
     public let configuration: [LogConfiguration]
 
@@ -36,11 +35,10 @@ public final class LogReceptacle
      - parameter configuration: An array of `LogConfiguration` instances that
      specify how the logging system will behave when messages are logged.
      */
-    public init(configuration: [LogConfiguration])
-    {
-        let configs = configuration.flatMap{ $0.flatten() }
+    public init(configuration: [LogConfiguration]) {
+        let configs = configuration.flatMap { $0.flatten() }
 
-        self.minimumSeverity = configs.map{ $0.minimumSeverity }.reduce(.error, { $0 < $1 ? $0 : $1 })
+        self.minimumSeverity = configs.map { $0.minimumSeverity }.reduce(.error, { $0 < $1 ? $0 : $1 })
 
         self.configuration = configs
     }
@@ -51,23 +49,21 @@ public final class LogReceptacle
 
      - parameter entry: The `LogEntry` being logged.
      */
-    public func log(_ entry: LogEntry)
-    {
-        let matchingConfigs = configuration.filter{ entry.severity >= $0.minimumSeverity }
+    public func log(_ entry: LogEntry) {
+        let matchingConfigs = configuration.filter { entry.severity >= $0.minimumSeverity }
 
         // pass off to the asynchronous configurations first...
-        let asyncConfigs = matchingConfigs.filter{ !$0.synchronousMode }
-        asyncConfigs.forEach{ logEntry(entry, usingConfiguration: $0) }
+        let asyncConfigs = matchingConfigs.filter { !$0.synchronousMode }
+        asyncConfigs.forEach { logEntry(entry, usingConfiguration: $0) }
 
         // ...then log using the synchronous configurations
-        let syncConfigs = matchingConfigs.filter{ $0.synchronousMode }
-        syncConfigs.forEach{ logEntry(entry, usingConfiguration: $0) }
+        let syncConfigs = matchingConfigs.filter { $0.synchronousMode }
+        syncConfigs.forEach { logEntry(entry, usingConfiguration: $0) }
     }
 
     private lazy var acceptQueue: DispatchQueue = DispatchQueue(label: "LogReceptacle.acceptQueue", attributes: [])
 
-    private func logEntry(_ entry: LogEntry, usingConfiguration config: LogConfiguration)
-    {
+    private func logEntry(_ entry: LogEntry, usingConfiguration config: LogConfiguration) {
         let synchronous = config.synchronousMode
         let acceptDispatcher = dispatcherForQueue(acceptQueue, synchronous: synchronous)
         acceptDispatcher {
@@ -94,8 +90,7 @@ public final class LogReceptacle
     }
 
     private func doesLogEntry(_ entry: LogEntry, passFilters filters: [LogFilter])
-        -> Bool
-    {
+        -> Bool {
         for filter in filters {
             if !filter.shouldRecord(entry: entry) {
                 return false
@@ -105,8 +100,7 @@ public final class LogReceptacle
     }
 
     private func dispatcherForQueue(_ queue: DispatchQueue, synchronous: Bool)
-        -> (@escaping () -> Void) -> Void
-    {
+        -> (@escaping () -> Void) -> Void {
         let dispatcher: (@escaping () -> Void) -> Void = { block in
             if synchronous {
                 return queue.sync(execute: block)

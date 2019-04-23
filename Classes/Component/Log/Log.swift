@@ -78,8 +78,7 @@ import Foundation
  It is the responsibility of the *application developer* to enable logging, which
  is done by calling the appropriate `Log.enable()` function.
  */
-public struct Log
-{
+public struct Log {
     /** The `LogChannel` that can be used to perform logging at the `.error`
      log severity level. Will be `nil` if logging hasn't yet been enabled, or
      if logging for the `.error` severity has not been configured. */
@@ -145,8 +144,7 @@ public struct Log
      - parameter filters: The `LogFilter`s to use when deciding whether a given
      `LogEntry` should be passed along for recording.
      */
-    public static func enable(minimumSeverity: LogSeverity = .info, debugMode: Bool = false, verboseDebugMode: Bool = false, stdStreamsMode: ConsoleLogConfiguration.StandardStreamsMode = .useAsFallback, mimicOSLogOutput: Bool = true, showCallSite: Bool = true, filters: [LogFilter] = [])
-    {
+    public static func enable(minimumSeverity: LogSeverity = .info, debugMode: Bool = false, verboseDebugMode: Bool = false, stdStreamsMode: ConsoleLogConfiguration.StandardStreamsMode = .useAsFallback, mimicOSLogOutput: Bool = true, showCallSite: Bool = true, filters: [LogFilter] = []) {
         let config = XcodeLogConfiguration(minimumSeverity: minimumSeverity, debugMode: debugMode, verboseDebugMode: verboseDebugMode, stdStreamsMode: stdStreamsMode, mimicOSLogOutput: mimicOSLogOutput, showCallSite: showCallSite, filters: filters)
 
         enable(configuration: config)
@@ -158,8 +156,7 @@ public struct Log
      - parameter configuration: The `LogConfiguration` to use for controlling
      the behavior of logging.
      */
-    public static func enable(configuration: LogConfiguration)
-    {
+    public static func enable(configuration: LogConfiguration) {
         enable(configuration: [configuration])
     }
 
@@ -169,8 +166,7 @@ public struct Log
      - parameter configuration: An array of `LogConfiguration`s specifying
      the behavior of logging.
      */
-    public static func enable(configuration: [LogConfiguration])
-    {
+    public static func enable(configuration: [LogConfiguration]) {
         enable(receptacle: LogReceptacle(configuration: configuration))
     }
 
@@ -184,8 +180,7 @@ public struct Log
      - parameter receptacle: The `LogReceptacle` to use when creating the
      `LogChannel`s for the five severity levels.
      */
-    public static func enable(receptacle: LogReceptacle)
-    {
+    public static func enable(receptacle: LogReceptacle) {
         enable(
             errorChannel: createLogChannel(severity: .error, receptacle: receptacle),
             warningChannel: createLogChannel(severity: .warning, receptacle: receptacle),
@@ -220,8 +215,7 @@ public struct Log
      - parameter verboseChannel: The `LogChannel` to use for logging messages
      with a `severity` of `.verbose`.
      */
-    public static func enable(errorChannel: LogChannel?, warningChannel: LogChannel?, infoChannel: LogChannel?, debugChannel: LogChannel?, verboseChannel: LogChannel?)
-    {
+    public static func enable(errorChannel: LogChannel?, warningChannel: LogChannel?, infoChannel: LogChannel?, debugChannel: LogChannel?, verboseChannel: LogChannel?) {
         logLock.lock()
         if !didEnable {
             self.error = errorChannel
@@ -250,8 +244,7 @@ public struct Log
      - important: If `Log.enable()` has already been called, calling
      `Log.neverEnable()` will have no effect.
      */
-    public static func neverEnable()
-    {
+    public static func neverEnable() {
         enable(errorChannel: nil, warningChannel: nil, infoChannel: nil, debugChannel: nil, verboseChannel: nil)
     }
 
@@ -266,8 +259,7 @@ public struct Log
      that severity.
      */
     public static func channel(severity: LogSeverity)
-        -> LogChannel?
-    {
+        -> LogChannel? {
         switch severity {
         case .verbose:  return verbose
         case .debug:    return debug
@@ -296,8 +288,7 @@ public struct Log
      captures the line number issuing the call to this function. You should
      not provide a value for this parameter.
      */
-    public static func trace(_ severity: LogSeverity, function: String = #function, filePath: String = #file, fileLine: Int = #line)
-    {
+    public static func trace(_ severity: LogSeverity, function: String = #function, filePath: String = #file, fileLine: Int = #line) {
         channel(severity: severity)?.trace(function, filePath: filePath, fileLine: fileLine)
     }
 
@@ -320,8 +311,7 @@ public struct Log
      captures the line number issuing the call to this function. You should
      not provide a value for this parameter.
      */
-    public static func message(_ severity: LogSeverity, message: String, function: String = #function, filePath: String = #file, fileLine: Int = #line)
-    {
+    public static func message(_ severity: LogSeverity, message: String, function: String = #function, filePath: String = #file, fileLine: Int = #line) {
         channel(severity: severity)?.message(message, function: function, filePath: filePath, fileLine: fileLine)
     }
 
@@ -347,18 +337,16 @@ public struct Log
      captures the line number issuing the call to this function. You should
      not provide a value for this parameter.
      */
-    public static func value(_ severity: LogSeverity, value: Any?, function: String = #function, filePath: String = #file, fileLine: Int = #line)
-    {
+    public static func value(_ severity: LogSeverity, value: Any?, function: String = #function, filePath: String = #file, fileLine: Int = #line) {
         channel(severity: severity)?.value(value, function: function, filePath: filePath, fileLine: fileLine)
     }
 
     private static func createLogChannel(severity: LogSeverity, receptacle: LogReceptacle)
-        -> LogChannel?
-    {
+        -> LogChannel? {
         guard severity >= receptacle.minimumSeverity else {
             return nil
         }
-        
+
         return LogChannel(severity: severity, receptacle: receptacle)
     }
 }

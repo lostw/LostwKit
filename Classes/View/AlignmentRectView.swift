@@ -12,7 +12,7 @@ open class AlignmentRectView: UIView {
     open var insets: UIEdgeInsets {
         return UIEdgeInsets.zero
     }
-    
+
     override open var alignmentRectInsets: UIEdgeInsets {
         if #available(iOS 11, *) {
             return insets

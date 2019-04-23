@@ -15,23 +15,23 @@ public extension String {
     var intValue: Int {
         return Int(self) ?? 0
     }
-    
+
     var doubleValue: Double {
         return Double(self) ?? 0
     }
-    
+
     var utf8Data: Data {
         return self.data(using: .utf8)!
     }
-    
+
     var URLEncoded: String {
         return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
     }
-    
+
     func trim() -> String {
         return trimmingCharacters(in: CharacterSet.whitespaces)
     }
-    
+
     func range(from nsRange: NSRange) -> Range<String.Index>? {
         guard
             let from16 = utf16.index(utf16.startIndex, offsetBy: nsRange.location, limitedBy: utf16.endIndex),
@@ -41,17 +41,17 @@ public extension String {
             else { return nil }
         return from ..< to
     }
-    
+
     func ranges(of search: String, options: NSString.CompareOptions = []) -> [Range<String.Index>]? {
         var ranges: [Range<String.Index>]?
         var searchIndex = self.startIndex
-        
+
         while searchIndex < self.endIndex {
             if let range = self.range(of: search, options: options, range: searchIndex..<self.endIndex) {
                 if ranges == nil {
                     ranges = []
                 }
-                
+
                 ranges!.append(range)
 
                 searchIndex = range.upperBound
@@ -59,54 +59,52 @@ public extension String {
                 break
             }
         }
-        
+
         return ranges
     }
-    
+
     func toDict() -> [String: Any]? {
         return self.utf8Data.toDictionary()
     }
-    
+
     func toJSONObject() -> Any? {
         return self.utf8Data.toJSONObject()
     }
-    
+
     // MARK: - encoding
     func base64Encoded() -> String {
         return utf8Data.base64EncodedString()
     }
-    
+
     func base64Decoded() -> String? {
         guard let data = Data(base64Encoded: self) else {
             return nil
         }
         return String(data: data, encoding: .utf8)
     }
-    
-    
-    
+
     // MARK: - Validator
     func isMatch(regex: String) -> Bool {
         return range(of: regex, options: .regularExpression, range: nil, locale: nil) != nil
     }
-    
+
     func isPhone() -> Bool {
         return isMatch(regex: "^0{0,1}1[0-9]{10}$")
     }
-    
+
     func isIdcard() -> Bool {
         guard count == 18 else {
             return false
         }
-        
+
         let text = lowercased()
-        
+
         //初步校验
         let result = text.isMatch(regex: "^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|x)$")
         if !result {
             return false
         }
-        
+
         //计算并比对校验位
         var sum: Int = 0
         for i in 0..<17 {
@@ -115,18 +113,18 @@ public extension String {
         let mod = sum % 11
         return idcardMod[mod] == String(text[17])
     }
-    
+
     // MARK: - 脱敏
     func mask(range: Range<Int>, charactor: Character = "*") -> String {
         guard range.upperBound <= self.count - 1 else {
             return self
         }
-        
+
         let indexRange = index(self.startIndex, offsetBy: range.lowerBound)..<index(self.startIndex, offsetBy: range.upperBound)
         let replace = String(repeating: charactor, count: range.count)
         return self.replacingCharacters(in: indexRange, with: replace)
     }
-    
+
     func mask(range: Range<String.Index>, charactor: Character = "*") -> String {
         guard range.upperBound <= self.endIndex else {
             return self
@@ -135,26 +133,26 @@ public extension String {
         let replace = String(repeating: charactor, count: count)
         return self.replacingCharacters(in: range, with: replace)
     }
-    
+
     func asMaskedName() -> String {
         guard count >= 2 else {
             return self
         }
-        
+
         var range: Range<Int>!
         if count == 2 {
             range = 1..<2
         } else {
             range = 1..<(count - 1)
         }
-        
+
         return mask(range: range)
     }
-    
+
     func asMaskedMobile() -> String {
         return mask(range: 3..<7)
     }
-    
+
     func asMaskedIdcard() -> String {
         return mask(range: 8..<16)
     }
@@ -164,7 +162,7 @@ public extension String {
     subscript (i: Int) -> Character {
         return self[index(startIndex, offsetBy: i)]
     }
-    
+
     subscript(i: Int, length: Int) -> Substring {
         return self[index(startIndex, offsetBy: i)..<index(startIndex, offsetBy: i+length)]
     }

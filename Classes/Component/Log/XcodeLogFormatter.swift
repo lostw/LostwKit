@@ -10,21 +10,19 @@
  A `LogFormatter` ideal for use within Xcode. This format is not well-suited
  for parsing.
  */
-public final class XcodeLogFormatter: LogFormatter
-{
+public final class XcodeLogFormatter: LogFormatter {
     private let traceFormatter: XcodeTraceLogFormatter
     private let defaultFormatter: FieldBasedLogFormatter
-    
+
     /**
      Initializes a new `XcodeLogFormatter` instance.
 
      - parameter showCallSite: If `true`, the source file and line indicating
      the call site of the log request will be added to formatted log messages.
      */
-    public init(showCallSite: Bool = true)
-    {
+    public init(showCallSite: Bool = true) {
         traceFormatter = XcodeTraceLogFormatter()
-        
+
         var fields: [FieldBasedLogFormatter.Field] = []
         fields.append(.severity(.xcode))
         fields.append(.delimiter(.space))
@@ -37,7 +35,7 @@ public final class XcodeLogFormatter: LogFormatter
 
         defaultFormatter = FieldBasedLogFormatter(fields: fields)
     }
-    
+
     /**
      Called to create a string representation of the passed-in `LogEntry`.
      
@@ -46,8 +44,7 @@ public final class XcodeLogFormatter: LogFormatter
      - returns:  A `String` representation of `entry`, or `nil` if the
      receiver could not format the `LogEntry`.
      */
-    public func format(_ entry: LogEntry) -> String?
-    {
+    public func format(_ entry: LogEntry) -> String? {
         return traceFormatter.format(entry) ?? defaultFormatter.format(entry)
     }
 }

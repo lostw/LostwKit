@@ -10,8 +10,7 @@
  In case the name didn't give it away, the `BasicLogConfiguration` class 
  provides a basic implementation of the `LogConfiguration` protocol.
  */
-open class BasicLogConfiguration: LogConfiguration
-{
+open class BasicLogConfiguration: LogConfiguration {
     /** The minimum `LogSeverity` supported by the configuration. */
     public let minimumSeverity: LogSeverity
 
@@ -65,8 +64,7 @@ open class BasicLogConfiguration: LogConfiguration
      as entirely separate entities; the receiver's state does not affect the
      behavior of the contained configurations in any way.
     */
-    public init(minimumSeverity: LogSeverity = .info, filters: [LogFilter] = [], recorders: [LogRecorder] = [], synchronousMode: Bool = false, configurations: [LogConfiguration]? = nil)
-    {
+    public init(minimumSeverity: LogSeverity = .info, filters: [LogFilter] = [], recorders: [LogRecorder] = [], synchronousMode: Bool = false, configurations: [LogConfiguration]? = nil) {
         self.minimumSeverity = minimumSeverity
         self.filters = filters
         self.synchronousMode = synchronousMode
