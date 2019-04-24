@@ -204,7 +204,7 @@ public class WKZSliderView: UIView {
         let width = self.bounds.width
         let height = self.bounds.height
 
-        if (offsetPage == 0) {
+        if offsetPage == 0 {
             self.currentPage -= 1
             if self.currentPage < 0 {
                 self.currentPage = links.count - 1
@@ -228,7 +228,7 @@ public class WKZSliderView: UIView {
             self.scrollView.contentOffset = CGPoint(x: width, y: 0)
         }
 
-        if (offsetPage == 2) {
+        if offsetPage == 2 {
             self.currentPage += 1
             if self.currentPage > links.count - 1 {
                 self.currentPage = 0
@@ -292,18 +292,12 @@ public class WKZSliderView: UIView {
     }
 
     private func isDifferentLinks(_ links: [String]) -> Bool {
-        if let currentLinks = self.links {
-            if currentLinks.count == links.count {
-                var isDifferent = false
-                for (idx, item) in links.enumerated() {
-                    if item != currentLinks[idx] {
-                        isDifferent = true
-                        break
-                    }
-                }
-
-                return isDifferent
+        if let currentLinks = self.links, currentLinks.count == links.count {
+            for (idx, item) in links.enumerated() where item != currentLinks[idx] {
+                return true
             }
+
+            return false
         }
 
         return true

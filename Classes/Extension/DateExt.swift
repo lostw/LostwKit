@@ -14,12 +14,12 @@ public enum WKZDateFormatStyle {
     var format: String {
         var formatStyle = ""
         switch self {
-            case .date: formatStyle = "yyyy-MM-dd"
-            case .shortDate: formatStyle = "MM.dd"
-            case .time: formatStyle = "HH:mm:ss"
-            case .datetime: formatStyle = "yyyy-MM-dd HH:mm:ss"
-            case .sign: formatStyle = "yyyyMMddHHmmss"
-            case .custom(let style): formatStyle = style
+        case .date: formatStyle = "yyyy-MM-dd"
+        case .shortDate: formatStyle = "MM.dd"
+        case .time: formatStyle = "HH:mm:ss"
+        case .datetime: formatStyle = "yyyy-MM-dd HH:mm:ss"
+        case .sign: formatStyle = "yyyyMMddHHmmss"
+        case .custom(let style): formatStyle = style
         }
         return formatStyle
     }

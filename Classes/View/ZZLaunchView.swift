@@ -66,7 +66,7 @@ public class ZZLaunchView: UIView {
     func hide(_ callback: ZZLaunchViewCallback? = nil) {
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
-        }, completion:  { (_) in
+        }, completion: { (_) in
             self.removeSubviews()
             callback?()
         })

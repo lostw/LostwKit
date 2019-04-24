@@ -17,10 +17,8 @@ open class PullToRefreshFooterView: UIView {
         case finish
     }
 
-    // MARK: Variables
-    let contentOffsetKeyPath = "contentOffset"
-    let contentSizeKeyPath = "contentSize"
-    var kvoContext = "PullToRefreshKVOContext"
+    var contentOffsetObserver: Any?
+    var contentSizeObserver: Any?
 
     weak var owner: UIScrollView? {
         didSet {
@@ -39,12 +37,6 @@ open class PullToRefreshFooterView: UIView {
     fileprivate var scrollViewInsets: UIEdgeInsets = UIEdgeInsets.zero
     fileprivate var refreshCompletion: (() -> Void)?
     fileprivate var pull: Bool = false
-
-    open override var tintColor: UIColor! {
-        didSet {
-            //            self.indicator.color = tintColor
-        }
-    }
 
     fileprivate var positionY: CGFloat = 0 {
         didSet {
@@ -123,59 +115,44 @@ open class PullToRefreshFooterView: UIView {
         guard let scrollView = superView as? UIScrollView else {
             return
         }
-        scrollView.addObserver(self, forKeyPath: contentOffsetKeyPath, options: .initial, context: &kvoContext)
+
+        contentOffsetObserver = scrollView.observe(\UIScrollView.contentOffset) { [weak self] (scrollView, _) in
+            guard let this = self else { return }
+
+            // Pulling State Check
+            let offsetY = scrollView.contentOffset.y
+
+            guard scrollView.contentSize.height > scrollView.bounds.size.height else {
+                return
+            }
+
+            guard this.state != .finish else {
+                return
+            }
+
+            if this.state != .refreshing {
+                let throttle = scrollView.contentSize.height - scrollView.bounds.height - 120
+                if offsetY > throttle {
+                    this.state = .refreshing
+                }
+            }
+        }
+
         if !pull {
-            scrollView.addObserver(self, forKeyPath: contentSizeKeyPath, options: .initial, context: &kvoContext)
+            contentSizeObserver = scrollView.observe(\UIScrollView.contentSize) { [weak self] (scrollView, _) in
+                guard let this = self else { return }
+                this.positionY = scrollView.contentSize.height
+            }
         }
     }
 
     fileprivate func removeRegister() {
-        if let scrollView = superview as? UIScrollView {
-            scrollView.removeObserver(self, forKeyPath: contentOffsetKeyPath, context: &kvoContext)
-            if !pull {
-                scrollView.removeObserver(self, forKeyPath: contentSizeKeyPath, context: &kvoContext)
-            }
-        }
+        contentSizeObserver = nil
+        contentOffsetObserver = nil
     }
 
     deinit {
         self.removeRegister()
-    }
-
-    // MARK: KVO
-
-    open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-        guard let scrollView = object as? UIScrollView else {
-            return
-        }
-        if keyPath == contentSizeKeyPath {
-            self.positionY = scrollView.contentSize.height
-            return
-        }
-
-        if !(keyPath == contentOffsetKeyPath) {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-            return
-        }
-
-        // Pulling State Check
-        let offsetY = scrollView.contentOffset.y
-
-        guard scrollView.contentSize.height > scrollView.bounds.size.height else {
-            return
-        }
-
-        guard self.state != .finish else {
-            return
-        }
-
-        if self.state != .refreshing {
-            let throttle = scrollView.contentSize.height - scrollView.bounds.height - 120
-            if offsetY > throttle {
-                self.state = .refreshing
-            }
-        }
-
     }
 
     // MARK: private

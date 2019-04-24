@@ -71,26 +71,22 @@ public extension UIView {
     }
 
     private var activeToasts: NSMutableArray {
-        get {
-            if let activeToasts = objc_getAssociatedObject(self, &ToastKeys.activeToasts) as? NSMutableArray {
-                return activeToasts
-            } else {
-                let activeToasts = NSMutableArray()
-                objc_setAssociatedObject(self, &ToastKeys.activeToasts, activeToasts, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-                return activeToasts
-            }
+        if let activeToasts = objc_getAssociatedObject(self, &ToastKeys.activeToasts) as? NSMutableArray {
+            return activeToasts
+        } else {
+            let activeToasts = NSMutableArray()
+            objc_setAssociatedObject(self, &ToastKeys.activeToasts, activeToasts, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            return activeToasts
         }
     }
 
     private var queue: NSMutableArray {
-        get {
-            if let queue = objc_getAssociatedObject(self, &ToastKeys.queue) as? NSMutableArray {
-                return queue
-            } else {
-                let queue = NSMutableArray()
-                objc_setAssociatedObject(self, &ToastKeys.queue, queue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-                return queue
-            }
+        if let queue = objc_getAssociatedObject(self, &ToastKeys.queue) as? NSMutableArray {
+            return queue
+        } else {
+            let queue = NSMutableArray()
+            objc_setAssociatedObject(self, &ToastKeys.queue, queue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            return queue
         }
     }
 
@@ -298,10 +294,10 @@ public extension UIView {
             if let view = self.activityView, view.superview != nil {
                 UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseIn, .beginFromCurrentState], animations: {
                     view.alpha = 0.0
-                }) { _ in
+                }, completion: { _ in
                     view.removeFromSuperview()
                     self.isUserInteractionEnabled = true
-                }
+                })
             }
         }
     }
@@ -372,11 +368,11 @@ public extension UIView {
         UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseOut, .allowUserInteraction], animations: {
 //            toast.alpha = 1.0
             toast.transform = .identity
-        }) { _ in
+        }, completion: { _ in
             let timer = Timer(timeInterval: duration, target: self, selector: #selector(UIView.toastTimerDidFinish(_:)), userInfo: toast, repeats: false)
             RunLoop.main.add(timer, forMode: RunLoop.Mode.common)
             objc_setAssociatedObject(toast, &ToastKeys.timer, timer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
+        })
     }
 
     private func hideToast(_ toast: UIView, fromTap: Bool) {
@@ -386,7 +382,7 @@ public extension UIView {
 
         UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseIn, .beginFromCurrentState], animations: {
             toast.alpha = 0.0
-        }) { _ in
+        }, completion: { _ in
             toast.removeFromSuperview()
             self.activeToasts.remove(toast)
 
@@ -398,7 +394,7 @@ public extension UIView {
                 self.queue.removeObject(at: 0)
                 self.showToast(nextToast, duration: duration.doubleValue, point: point.cgPointValue)
             }
-        }
+        })
     }
 
     // MARK: - Events

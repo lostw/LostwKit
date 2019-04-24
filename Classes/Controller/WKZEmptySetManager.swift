@@ -21,7 +21,7 @@ public class WKZEmptySetManager {
             }
         }
 
-        static func ==(lhs: PageKey, rhs: PageKey) -> Bool {
+        static func == (lhs: PageKey, rhs: PageKey) -> Bool {
             return lhs.name == rhs.name
         }
     }

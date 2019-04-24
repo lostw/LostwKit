@@ -55,6 +55,6 @@ extension LogSeverity: CustomStringConvertible {
 extension LogSeverity: Comparable {}
 
 /// :nodoc:
-public func <(lhs: LogSeverity, rhs: LogSeverity) -> Bool {
+public func < (lhs: LogSeverity, rhs: LogSeverity) -> Bool {
     return lhs.rawValue < rhs.rawValue
 }
