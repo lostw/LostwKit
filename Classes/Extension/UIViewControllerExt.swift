@@ -33,22 +33,12 @@ public struct NavConfig {
 }
 
 public extension UIViewController {
-
-    convenience public init(withParams params: Dictionary<String, Any>) {
-        self.init()
-        self.setValuesForKeys(params)
-    }
-
     func showController(_ controller: UIViewController, present: Bool = false, animated: Bool = true) {
         if present {
             self.present(controller, animated: animated, completion: nil)
         } else {
-            guard (self.navigationController != nil) else {
-                return
-            }
-
             controller.hidesBottomBarWhenPushed = true
-            self.navigationController!.pushViewController(controller, animated: animated)
+            self.navigationController?.pushViewController(controller, animated: animated)
         }
     }
 
@@ -187,33 +177,6 @@ public extension UIViewController {
 
         self.present(controller, animated: true)
     }
-
-//    @objc func wkz_prompt(title: String?, message: String?, buttonTitles: [String]? = nil, showClose: Bool = false, callback: WKZAlertCallback? = nil) {
-//        let controller = WKZAlertController(title: title, message: message, style: .prompt, buttonTitles: buttonTitles, showClose: showClose, callback: callback)
-//        controller.modalPresentationStyle = .overCurrentContext
-//        controller.modalTransitionStyle = .crossDissolve
-//        self.definesPresentationContext = true
-//
-//        if self.presentingViewController == nil {
-//            UIApplication.shared.keyWindow?.rootViewController?.present(controller, animated: true)
-//        } else {
-//            self.present(controller, animated: true)
-//        }
-//    }
-//
-//    @objc func wkz_prompt(title: String?, attributedMessage: NSAttributedString?, buttonTitles: [String]? = nil, showClose: Bool = false, callback: WKZAlertCallback? = nil) {
-//        let controller = WKZAlertController(title: title, message: nil, style: .prompt, buttonTitles: buttonTitles, showClose: showClose, callback: callback)
-//        controller.attributedMessage = attributedMessage
-//        controller.modalPresentationStyle = .overCurrentContext
-//        controller.modalTransitionStyle = .crossDissolve
-//        self.definesPresentationContext = true
-//
-//        if self.presentingViewController == nil {
-//            UIApplication.shared.keyWindow?.rootViewController?.present(controller, animated: true)
-//        } else {
-//            self.present(controller, animated: true)
-//        }
-//    }
 }
 
 extension UIViewController {
@@ -225,5 +188,95 @@ extension UIViewController {
             self.navigationController?.navigationBar.isTranslucent = false
             self.navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
         }
+    }
+}
+
+public typealias ViewWillAppearInjection = (UIViewController) -> Void
+public extension UIViewController {
+    private struct AssociatedKey {
+        static var kNavBarTextColorKey: Int = 0
+        static var kNavBarColorKey: Int = 0
+        static var navBarHidden: Int = 0
+        static var globalWillAppear: Int = 0
+    }
+
+    static var globalWillAppearInjection: ViewWillAppearInjection? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKey.globalWillAppear) as? ViewWillAppearInjection
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKey.globalWillAppear, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+        }
+    }
+
+    static func injectViewWillAppear(global: (ViewWillAppearInjection)? = nil) {
+        self.globalWillAppearInjection = global
+
+        swizzleMethod(UIViewController.self, original: #selector(viewWillAppear(_:)), swizzled: #selector(zz_viewWillAppear(_:)))
+        swizzleMethod(UIViewController.self, original: #selector(willMove(toParent:)), swizzled: #selector(zz_willMove(toParent:)))
+    }
+
+    @objc func zz_viewWillAppear(_ animated: Bool) {
+        self.zz_viewWillAppear(animated)
+
+        UIViewController.globalWillAppearInjection?(self)
+
+        if let nav = self.navigationController {
+            if nav.viewControllers.contains(self) {
+                nav.setNavigationBarHidden(self.navBarHidden ?? false, animated: animated)
+            }
+        }
+    }
+
+    @objc func zz_willMove(toParent: UIViewController?) {
+        self.zz_willMove(toParent: toParent)
+        if self == self.navigationController?.viewControllers.last,
+            let count = self.navigationController?.viewControllers.count,
+            count > 1 {
+            self.navigationController!.viewControllers[count - 2].setupNaivationBar()
+        }
+    }
+
+    var navBarHidden: Bool? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKey.navBarHidden) as? Bool
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKey.navBarHidden, newValue, .OBJC_ASSOCIATION_ASSIGN)
+        }
+    }
+
+    var navBarTextColor: UIColor? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKey.kNavBarTextColorKey) as? UIColor
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKey.kNavBarTextColorKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    var navBarColor: UIColor? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKey.kNavBarColorKey) as? UIColor
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKey.kNavBarColorKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+
+    @objc func animateNavigationBarColor() {
+        transitionCoordinator?.animate(alongsideTransition: { [weak self] _ in
+            self?.setupNaivationBar()
+            }, completion: nil)
+    }
+
+    @objc func setupNaivationBar() {
+        guard let nav = navigationController else {
+            return
+        }
+
+        nav.navigationBar.barTintColor = self.navBarColor ?? UINavigationBar.appearance().barTintColor
+        nav.navigationBar.tintColor = self.navBarTextColor ?? UINavigationBar.appearance().tintColor
+        nav.navigationBar.titleTextAttributes = [.foregroundColor: (self.navBarTextColor ?? UINavigationBar.appearance().tintColor) as Any]
+
     }
 }

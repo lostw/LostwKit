@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import CommonCrypto
 
-typealias VoidClosure = () -> Void
+public typealias VoidClosure = () -> Void
 
 public let APP_VERSION = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
 public let APP_BUILD = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
@@ -33,6 +33,17 @@ public func isPhoneX() -> Bool {
 postfix operator ~
 public postfix func ~ (value: CGFloat) -> CGFloat {
     return value / 375 * SCREEN_WIDTH
+}
+
+@discardableResult
+public func swizzleMethod(_ classType: AnyClass, original: Selector, swizzled: Selector) -> Bool {
+    guard let originalMethod = class_getInstanceMethod(classType, original),
+        let swizzledMethod = class_getInstanceMethod(classType, swizzled) else {
+        return false
+    }
+
+    method_exchangeImplementations(originalMethod, swizzledMethod)
+    return true
 }
 
 public func genderTextByIdcard(_ idcard: String?) -> String {
