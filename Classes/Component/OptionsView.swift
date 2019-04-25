@@ -206,7 +206,7 @@ public class OptionDropView: UIView {
 
                 let numberOfRows = self.delegate!.dropView(self, numberOfRowsInSection: self.currentSection)
                 var height: CGFloat = 0
-                if (numberOfRows > 6) {
+                if numberOfRows > 6 {
                     height = 6 * self.rowHeight - 21
                     self.listView.isScrollEnabled = true
                 } else {

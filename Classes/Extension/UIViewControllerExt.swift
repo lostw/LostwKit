@@ -276,7 +276,17 @@ public extension UIViewController {
 
         nav.navigationBar.barTintColor = self.navBarColor ?? UINavigationBar.appearance().barTintColor
         nav.navigationBar.tintColor = self.navBarTextColor ?? UINavigationBar.appearance().tintColor
-        nav.navigationBar.titleTextAttributes = [.foregroundColor: (self.navBarTextColor ?? UINavigationBar.appearance().tintColor) as Any]
 
+        var attribute = UINavigationBar.appearance().titleTextAttributes ?? [:]
+        if let textColor = self.navBarTextColor {
+            attribute[.foregroundColor] = textColor
+        }
+        nav.navigationBar.titleTextAttributes = attribute
+    }
+
+    func useSimpleBackItem() {
+        if self.navigationItem.backBarButtonItem == nil {
+            self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+        }
     }
 }

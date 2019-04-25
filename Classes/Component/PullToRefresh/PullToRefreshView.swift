@@ -222,15 +222,14 @@ open class PullToRefreshView: UIView {
                                    options: [],
                                    animations: {
             scrollView.contentInset = insets
-            },
-                                   completion: { _ in
-                if self.options.autoStopTime != 0 {
-                    let time = DispatchTime.now() + Double(Int64(self.options.autoStopTime * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
-                    DispatchQueue.main.asyncAfter(deadline: time) {
-                        self.state = .stop
-                    }
+        }, completion: { _ in
+            if self.options.autoStopTime != 0 {
+                let time = DispatchTime.now() + Double(Int64(self.options.autoStopTime * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+                DispatchQueue.main.asyncAfter(deadline: time) {
+                    self.state = .stop
                 }
-                self.refreshCompletion?()
+            }
+            self.refreshCompletion?()
         })
     }
 
