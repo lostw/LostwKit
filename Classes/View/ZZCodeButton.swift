@@ -12,6 +12,24 @@ public typealias ZZCounterdownStart = (Bool) -> Void
 public protocol ZZCounterdownButton: UIButton {
     var counterController: ZZCounterdownController {get set}
     func onStateChange(_ state: ZZCounterdownController.CounterState)
+
+    func willStart(_ action:  ((ZZCounterdownStart) -> Void))
+    func start()
+    func resume(_ remain: Int)
+}
+
+public extension ZZCounterdownButton {
+    func start() {
+        self.counterController.start()
+    }
+
+    func resume(_ remain: Int) {
+        self.counterController.resume(remain)
+    }
+
+    func willStart(_ action: ((ZZCounterdownStart) -> Void)) {
+        self.counterController.willStart(action)
+    }
 }
 
 public class ZZCounterdownController {
@@ -36,7 +54,7 @@ public class ZZCounterdownController {
 
     public init() {}
 
-    public func willStart(_ action:  ((@escaping ZZCounterdownStart) -> Void)) {
+    public func willStart(_ action:  (( @escaping ZZCounterdownStart) -> Void)) {
         state = .loading
         action({
             if $0 {
@@ -49,6 +67,16 @@ public class ZZCounterdownController {
 
     func start() {
         self.remain = self.duration
+
+        if let timer = self.timer {
+            timer.invalidate()
+        }
+
+        self.tick()
+    }
+
+    func resume(_ remain: Int) {
+        self.remain = remain
 
         if let timer = self.timer {
             timer.invalidate()
