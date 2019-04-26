@@ -196,6 +196,7 @@ public extension UIViewController {
     private struct AssociatedKey {
         static var kNavBarTextColorKey: Int = 0
         static var kNavBarColorKey: Int = 0
+        static var kNavBarStyle: Int = 0
         static var navBarHidden: Int = 0
         static var globalWillAppear: Int = 0
     }
@@ -226,6 +227,8 @@ public extension UIViewController {
                 nav.setNavigationBarHidden(self.navBarHidden ?? false, animated: animated)
             }
         }
+
+        self.setupNaivationBar()
     }
 
     @objc func zz_willMove(toParent: UIViewController?) {
@@ -262,6 +265,14 @@ public extension UIViewController {
             objc_setAssociatedObject(self, &AssociatedKey.kNavBarColorKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
+    var navBarStyle: UIBarStyle? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKey.kNavBarStyle) as? UIBarStyle
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKey.kNavBarStyle, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
 
     @objc func animateNavigationBarColor() {
         transitionCoordinator?.animate(alongsideTransition: { [weak self] _ in
@@ -276,6 +287,7 @@ public extension UIViewController {
 
         nav.navigationBar.barTintColor = self.navBarColor ?? UINavigationBar.appearance().barTintColor
         nav.navigationBar.tintColor = self.navBarTextColor ?? UINavigationBar.appearance().tintColor
+        nav.navigationBar.barStyle = self.navBarStyle ?? UINavigationBar.appearance().barStyle
 
         var attribute = UINavigationBar.appearance().titleTextAttributes ?? [:]
         if let textColor = self.navBarTextColor {
