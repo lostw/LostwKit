@@ -163,3 +163,19 @@ public func qrcode(_ content: String, imageWidth: CGFloat) -> UIImage {
     let image = UIImage(ciImage: transformImage)
     return image
 }
+
+public func storageSizeDesc(_ size: UInt) -> String {
+    if size == 0 {
+        return "0K"
+    }
+    
+    var double = Double(size) / 1024
+    var level = 0
+    let unit = ["K", "M", "G"]
+    while (double > 1024) && (level <= unit.count) {
+        double /= 1024
+        level += 1
+    }
+
+    return String(format: "%0.2f%@", double, unit[level])
+}

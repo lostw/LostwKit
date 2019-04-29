@@ -39,8 +39,8 @@ extension WKZLinearLayout.Height: ExpressibleByFloatLiteral, ExpressibleByIntege
 }
 
 private var WKZLayoutKey: UInt8 = 0
-extension UIView {
-    public var zLinearLayout: WKZLinearLayout {
+public extension UIView {
+    var zLinearLayout: WKZLinearLayout {
         var layout = objc_getAssociatedObject(self, &WKZLayoutKey) as? WKZLinearLayout
         if layout == nil {
             layout = WKZLinearLayout()
@@ -48,7 +48,10 @@ extension UIView {
         }
 
         return layout!
+    }
 
+    func configureLinearStyle(_ configure: (WKZLinearLayout) -> Void) {
+        configure(self.zLinearLayout)
     }
 }
 
