@@ -140,7 +140,7 @@ public extension UIView {
         self.showToast(view, position: .center)
     }
 
-    public func popToast(_ message: String) {
+    @objc public func popToast(_ message: String) {
         let view = ToastView(message: message)
         self.showToast(view)
     }
