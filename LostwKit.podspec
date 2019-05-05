@@ -1,18 +1,18 @@
 Pod::Spec.new do |s|
 
   s.name = "LostwKit"
-  s.version = "1.0.0"
+  s.version = "1.0.1"
   s.summary = "private kit"
 
   s.description = <<-DESC
     private kit.
   DESC
 
-  s.homepage = "https://github.com/TakeScoop/SwiftyRSA"
+  s.homepage = "http://101.69.143.198:8082/tz_frontend/ios/lostwkit"
   s.license = "MIT"
   s.author = { "Lostw" => "zzywil@163.com" }
 
-  s.source = { :git => "https://github.com/TakeScoop/SwiftyRSA.git", :tag => s.version }
+  s.source = { :git => "http://101.69.143.198:8082/tz_frontend/ios/lostwkit.git", :tag => s.version }
   s.source_files = "Classes/**/*.{swift}"
   # s.exclude_files = "SwiftyRSA/SwiftyRSA+ObjC.swift"
   # s.framework = "Security"

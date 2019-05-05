@@ -59,6 +59,7 @@ public protocol ZZJsonApi {
 }
 
 public extension ZZJsonApi {
+    @discardableResult
     func send(name: String, parameters: [String: Any]) -> Promise<T> {
         return Promise { seal in
             let request = self.buildRequest(name: name, parameters: parameters)
