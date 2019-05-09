@@ -188,9 +188,9 @@ open class ZZPopView: UIView {
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
             self.coverView.alpha = 0
-        }) { (_) in
+        }, completion: { _ in
             self.cleanup()
-        }
+        })
     }
 
     fileprivate func scaleIn() {
@@ -206,9 +206,9 @@ open class ZZPopView: UIView {
         UIView.animate(withDuration: 0.3, animations: {
             self.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
             self.coverView.alpha = 0
-        }) { (_) in
+        }, completion: { _ in
             self.cleanup()
-        }
+        })
     }
 
     fileprivate func pushIn() {
@@ -251,9 +251,9 @@ open class ZZPopView: UIView {
         UIView.animate(withDuration: 0.3, animations: {
             self.frame = endRect
             self.coverView.alpha = 0
-        }) { (_) in
+        }, completion: { _ in
             self.cleanup()
-        }
+        })
     }
 
     open func commonInitView() {

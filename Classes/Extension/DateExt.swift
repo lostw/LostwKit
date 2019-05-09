@@ -9,7 +9,7 @@
 import Foundation
 
 public enum WKZDateFormatStyle {
-    case date, time, datetime, shortDate, sign, custom(String)
+    case date, time, datetime, shortDate, sign, shortSign, custom(String)
 
     var format: String {
         var formatStyle = ""
@@ -19,6 +19,7 @@ public enum WKZDateFormatStyle {
         case .time: formatStyle = "HH:mm:ss"
         case .datetime: formatStyle = "yyyy-MM-dd HH:mm:ss"
         case .sign: formatStyle = "yyyyMMddHHmmss"
+        case .shortSign: formatStyle = "yyyyMMdd"
         case .custom(let style): formatStyle = style
         }
         return formatStyle

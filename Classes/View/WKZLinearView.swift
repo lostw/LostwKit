@@ -249,13 +249,6 @@ open class WKZLinearView: UIView {
                 case .ratioToWidth(let value):
                     make.height.equalTo(view.snp.width).multipliedBy(value)
                 }
-//                if layout.ratioToWidth > 0 {
-//                    make.height.equalTo(view.snp.width).multipliedBy(layout.ratioToWidth)
-//                } else if layout.height > 0 {
-//                    make.height.equalTo(layout.height)
-//                } else if layout.useContainerHeight {
-//                    make.height.equalTo(self.viewHeight)
-//                }
 
                 if idx == self.views.count - 1 {
                     make.bottom.equalToSuperview().offset(-margin.bottom-self.padding.bottom)

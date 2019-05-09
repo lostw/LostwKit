@@ -67,7 +67,7 @@ public class ZZLaunchView: UIView {
         UIView.animate(withDuration: 0.3, animations: {
             self.alpha = 0
         }, completion: { (_) in
-            self.removeSubviews()
+            self.removeFromSuperview()
             callback?()
         })
     }

@@ -13,7 +13,7 @@ public protocol ZZCounterdownButton: UIButton {
     var counterController: ZZCounterdownController {get set}
     func onStateChange(_ state: ZZCounterdownController.CounterState)
 
-    func willStart(_ action:  ((ZZCounterdownStart) -> Void))
+    func willStart(_ action: ((ZZCounterdownStart) -> Void))
     func start()
     func resume(_ remain: Int)
 }
