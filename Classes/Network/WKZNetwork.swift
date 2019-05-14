@@ -21,10 +21,6 @@ public typealias ParameterConfiguration = ([String: Any]?) -> [String: Any]
 public typealias ImageDownloadCompletion = (Data?) -> Void
 //typealias NetworkCompletion = (WKZNetworkResponse) -> Void
 
-public enum WKZRequestMethod: String {
-    case get = "GET", post = "POST", delete = "DELETE", put = "PUT", head = "HEAD"
-}
-
 public protocol ZZApiResponse {
     var code: String {get set}
     var message: String {get set}
@@ -52,10 +48,11 @@ public struct ZZApiError: Error, LocalizedError {
 }
 
 public protocol ZZJsonApi {
-    associatedtype T: ZZApiResponse
+    associatedtype T
     var baseURL: String { get }
     func send(name: String, parameters: [String: Any]) -> Promise<T>
     func buildRequest(name: String, parameters: [String: Any]) -> DataRequest
+    func parseResult(_ result: [String: Any]) throws -> T
 }
 
 public extension ZZJsonApi {
@@ -74,7 +71,7 @@ public extension ZZJsonApi {
 
                     ZLog.info(dict.toJsonString(pretty: true)!)
                     do {
-                        let response = try T(dict: dict)
+                        let response = try self.parseResult(dict)
                         seal.fulfill(response)
                     } catch let err {
                         seal.reject(err)

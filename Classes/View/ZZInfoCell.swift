@@ -14,6 +14,7 @@ public class ZZInfoCell: UIView {
     public var valueLabel: UILabel!
 
     private var gapConstraint: Constraint!
+    private var titleBottomConstraint: Constraint!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -28,6 +29,10 @@ public class ZZInfoCell: UIView {
         self.gapConstraint.update(offset: gap)
     }
 
+    public func adjustTitleBottomOffset(_ val: CGFloat) {
+        self.titleBottomConstraint.update(inset: val)
+    }
+
     func commonInitView() {
         self.backgroundColor = UIColor.white
 
@@ -38,7 +43,7 @@ public class ZZInfoCell: UIView {
         self.titleLabel.textColor = AppTheme.shared[.title]
         self.titleLabel.snp.makeConstraints { (make) in
             make.left.right.equalToSuperview()
-            make.bottom.equalTo(self.snp.centerY).offset(-4)
+            self.titleBottomConstraint = make.bottom.equalTo(self.snp.centerY).offset(-4).constraint
         }
 
         valueLabel = UILabel()
