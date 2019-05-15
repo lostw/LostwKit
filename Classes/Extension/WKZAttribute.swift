@@ -71,13 +71,13 @@ public class WKZAttribute {
 
     @discardableResult
     public func strikethrough(_ style: NSUnderlineStyle) -> WKZAttribute {
-        self.attrs[NSAttributedString.Key.strikethroughColor] = style as AnyObject?
+        self.attrs[NSAttributedString.Key.strikethroughColor] = style.rawValue
         return self
     }
 
     @discardableResult
     public func underline(_ style: NSUnderlineStyle) -> WKZAttribute {
-        self.attrs[NSAttributedString.Key.underlineStyle] = style as AnyObject?
+        self.attrs[NSAttributedString.Key.underlineStyle] = style.rawValue
         return self
     }
 
