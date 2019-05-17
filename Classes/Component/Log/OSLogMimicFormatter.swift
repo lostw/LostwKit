@@ -15,6 +15,6 @@ internal final class OSLogMimicFormatter: FieldBasedLogFormatter {
                             .processID,
                             .literal(":"),
                             .callingThread(.integer),
-                            .literal("] [CleanroomLogger] ")])
+                            .literal("]")])
     }
 }
