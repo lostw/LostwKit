@@ -8,7 +8,7 @@
 import UIKit
 
 open class PullToRefreshView: UIView {
-    enum PullToRefreshState {
+    public enum PullToRefreshState {
         case pulling
         case triggered
         case refreshing
@@ -48,7 +48,7 @@ open class PullToRefreshView: UIView {
         }
     }
 
-    var state: PullToRefreshState = PullToRefreshState.pulling {
+    public var state: PullToRefreshState = PullToRefreshState.pulling {
         didSet {
             if self.state == oldValue {
                 return

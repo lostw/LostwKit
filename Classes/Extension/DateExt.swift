@@ -28,17 +28,17 @@ public enum WKZDateFormatStyle {
 }
 
 public extension Date {
-    public enum Scale {
+    enum Scale {
         case second, minute, hour, day
     }
 
-    public static func fromString(_ str: String, inFormat format: String) -> Date? {
+    static func fromString(_ str: String, inFormat format: String) -> Date? {
         let formatter = DateFormatter()
         formatter.dateFormat = format
         return formatter.date(from: str)
     }
 
-    public static func format(forInterval interval: TimeInterval, style: WKZDateFormatStyle = .date, isMicroSecond: Bool = false) -> String {
+    static func format(forInterval interval: TimeInterval, style: WKZDateFormatStyle = .date, isMicroSecond: Bool = false) -> String {
         let date = Date(timeIntervalSince1970: (isMicroSecond ? interval / 1000 : interval) )
         return date.format(style)
     }
@@ -51,7 +51,7 @@ public extension Date {
         return Date().addingTimeInterval(-86400)
     }
 
-    public func format(_ style: WKZDateFormatStyle = .date) -> String {
+    func format(_ style: WKZDateFormatStyle = .date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = style.format
         return formatter.string(from: self)

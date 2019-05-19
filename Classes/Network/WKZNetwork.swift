@@ -19,7 +19,6 @@ public struct NetworkErrorDesc {
 
 public typealias ParameterConfiguration = ([String: Any]?) -> [String: Any]
 public typealias ImageDownloadCompletion = (Data?) -> Void
-//typealias NetworkCompletion = (WKZNetworkResponse) -> Void
 
 public protocol ZZApiResponse {
     var code: String {get set}

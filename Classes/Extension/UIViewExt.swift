@@ -37,7 +37,7 @@ public extension UIView {
     }
 
     @discardableResult
-    public func addBottomLine(color: UIColor? = nil, left: CGFloat = 0, right: CGFloat = 0) -> UIView {
+    func addBottomLine(color: UIColor? = nil, left: CGFloat = 0, right: CGFloat = 0) -> UIView {
         let color = color ?? AppTheme.shared[.border]
         let line = UIView()
         line.backgroundColor = color
@@ -93,7 +93,7 @@ public extension UIView {
 ////        }
 ////    }
 //    
-    public func addAndSplitSubviews(_ views: [UIView], borderColor: UIColor = UIColor(hex: 0xe0e0e0), enableSeperatorLine: Bool = true, linePadding: Double = 0) {
+    func addAndSplitSubviews(_ views: [UIView], borderColor: UIColor = UIColor(hex: 0xe0e0e0), enableSeperatorLine: Bool = true, linePadding: Double = 0) {
         guard views.count > 0 else {
             return
         }
@@ -135,12 +135,12 @@ public extension UIView {
         }
     }
 
-    public func popSuccessToast(_ message: String) {
+    func popSuccessToast(_ message: String) {
         let view = ToastView(message: message, style: .success)
         self.showToast(view, position: .center)
     }
 
-    @objc public func popToast(_ message: String) {
+    @objc func popToast(_ message: String) {
         let view = ToastView(message: message)
         self.showToast(view)
     }

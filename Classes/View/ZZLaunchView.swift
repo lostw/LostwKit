@@ -85,6 +85,7 @@ public class ZZLaunchView: UIView {
     // MARK: - initView
     func commonInitView() {
         imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
         self.addSubview(imageView)
         imageView.snp.makeConstraints { (make) in
             make.edges.equalToSuperview()

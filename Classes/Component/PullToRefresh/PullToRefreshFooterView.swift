@@ -9,7 +9,7 @@
 import UIKit
 
 open class PullToRefreshFooterView: UIView {
-    enum PullToRefreshState {
+    public enum PullToRefreshState {
         case pulling
         case triggered
         case refreshing
@@ -49,7 +49,7 @@ open class PullToRefreshFooterView: UIView {
         }
     }
 
-    var state: PullToRefreshState = PullToRefreshState.pulling {
+    public var state: PullToRefreshState = PullToRefreshState.pulling {
         didSet {
             if self.state == oldValue {
                 return
