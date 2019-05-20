@@ -21,6 +21,14 @@ public extension CGRect {
     }
 }
 
+extension CGRect: ExpressibleByArrayLiteral {
+    public typealias ArrayLiteralElement = CGFloat
+
+    public init(arrayLiteral elements: ArrayLiteralElement...) {
+        self.init(x: elements[0], y: elements[1], width: elements[2], height: elements[3])
+    }
+}
+
 public extension UIEdgeInsets {
     init(_ top: CGFloat, _ left: CGFloat, _ bottom: CGFloat, _ right: CGFloat) {
         self.init(top: top, left: left, bottom: bottom, right: right)
