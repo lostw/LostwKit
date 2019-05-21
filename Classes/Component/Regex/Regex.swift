@@ -159,4 +159,3 @@ extension Regex: Codable {
     try container.encode(regularExpression.pattern)
   }
 }
-

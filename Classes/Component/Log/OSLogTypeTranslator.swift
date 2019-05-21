@@ -130,6 +130,7 @@ extension OSLogTypeTranslator {
                 case .error:        return .default
                 }
             }
+
        case .allAsDefault:
             return { _ in return OSLogType.default }
         case .allAsInfo:
