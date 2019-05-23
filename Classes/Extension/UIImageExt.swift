@@ -104,7 +104,7 @@ public extension UIImage {
     func imageByScaledToWidth(_ width: CGFloat) -> UIImage? {
         let height = width / self.size.width * self.size.height
         UIGraphicsBeginImageContext(CGSize(width: width, height: height))
-        self.draw(in: CGRect(x: 0, y: 9, width: width, height: height))
+        self.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image

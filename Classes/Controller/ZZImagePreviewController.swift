@@ -96,6 +96,8 @@ public class ZZImagePreviewController: UIViewController {
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 0
         flowLayout = layout
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .black
@@ -103,6 +105,8 @@ public class ZZImagePreviewController: UIViewController {
         collectionView.delegate = self
         collectionView.isPagingEnabled = true
         collectionView.scrollsToTop = false
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.contentSize = CGSize(CGFloat(self.photos.count) * (self.view.bounds.width + 20), 0)
         collectionView.register(ZZImagePreviewCell.self, forCellWithReuseIdentifier: "Cell")
         view.addSubview(collectionView)
@@ -117,13 +121,15 @@ public class ZZImagePreviewController: UIViewController {
         if parent == nil {
             onFinish?(photos)
         }
+        super.willMove(toParent: parent)
     }
 
     override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         flowLayout.itemSize = CGSize(self.view.bounds.width + 20, self.view.bounds.height)
-        collectionView.collectionViewLayout = flowLayout
+//        collectionView.collectionViewLayout = flowLayout
+        collectionView.setCollectionViewLayout(flowLayout, animated: false)
     }
 }
 
@@ -136,6 +142,10 @@ extension ZZImagePreviewController: UICollectionViewDelegateFlowLayout, UICollec
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! ZZImagePreviewCell
         cell.bindData(image: self.photos[indexPath.row])
         return cell
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        (cell as! ZZImagePreviewCell).previewView.setNeedsLayout()
     }
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -164,7 +174,7 @@ class ZZImagePreviewCell: UICollectionViewCell {
     }
 
     func commonInitView() {
-        contentView.addSubview(previewView)
+        self.addSubview(previewView)
         previewView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }

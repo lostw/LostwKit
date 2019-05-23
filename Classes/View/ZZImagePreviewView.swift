@@ -25,6 +25,7 @@ public class ZZImagePreviewView: UIView {
     }
 
     func setupImage(_ image: UIImage) {
+        scrollView.zoomScale = 1
         imageView.image = image
         setNeedsLayout()
     }
@@ -39,7 +40,6 @@ public class ZZImagePreviewView: UIView {
         scrollView.minimumZoomScale = 1
         scrollView.delegate = self
         scrollView.scrollsToTop = false
-//        scrollView.delaysContentTouches
 
         scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         if #available(iOS 11, *) {
@@ -47,8 +47,6 @@ public class ZZImagePreviewView: UIView {
         }
         addSubview(scrollView)
 
-//        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-//        imageView.contentMode = .scaleAspectFit
         scrollView.addSubview(imageView)
     }
 
@@ -71,7 +69,8 @@ public class ZZImagePreviewView: UIView {
                 height = scrollView.bounds.height
                 width = image.size.width / image.size.height * height
             }
-
+            
+            scrollView.zoomScale = 1
             imageView.frame = scrollView.bounds.rectForCenterSize(CGSize(width, height))
             scrollView.contentSize = scrollView.bounds.size
         }
@@ -88,16 +87,8 @@ extension ZZImagePreviewView: UIScrollViewDelegate {
     }
 
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-//        let imageSize = imageView.image!.size
-//        let width = max(scrollView.bounds.width, imageView.bounds.width)
-//        let height = max(scrollView.bounds.height, imageView.bounds.height)
-//        scrollView.contentSize = CGSize(width, height)
         self.adjustImageViewCenter()
     }
-
-//    public func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-//        <#code#>
-//    }
 
     func adjustImageViewCenter() {
         let offsetX = max((scrollView.bounds.width - scrollView.contentSize.width) / 2, 0)
