@@ -8,18 +8,8 @@
 import UIKit
 
 open class PullToRefreshView: UIView {
-    public enum PullToRefreshState {
-        case pulling
-        case triggered
-        case refreshing
-        case stop
-        case finish
-    }
-
-    // MARK: Variables
-    let contentOffsetKeyPath = "contentOffset"
-    let contentSizeKeyPath = "contentSize"
-    var kvoContext = "PullToRefreshKVOContext"
+    var contentOffsetObserver: Any?
+    var contentSizeObserver: Any?
 
     fileprivate var options: PullToRefreshOption
     fileprivate var backgroundView: UIView
@@ -126,41 +116,29 @@ open class PullToRefreshView: UIView {
         guard let scrollView = superView as? UIScrollView else {
             return
         }
-        scrollView.addObserver(self, forKeyPath: contentOffsetKeyPath, options: .initial, context: &kvoContext)
+        contentOffsetObserver = scrollView.observe(\UIScrollView.contentOffset) { [weak self] (scrollView, _) in
+            guard let this = self else { return }
+            this.scrollViewDidScroll(scrollView)
+        }
+
         if !pull {
-            scrollView.addObserver(self, forKeyPath: contentSizeKeyPath, options: .initial, context: &kvoContext)
+            contentSizeObserver = scrollView.observe(\UIScrollView.contentSize) { [weak self] (scrollView, _) in
+                guard let this = self else { return }
+                this.positionY = scrollView.contentSize.height
+            }
         }
     }
 
     fileprivate func removeRegister() {
-        if let scrollView = superview as? UIScrollView {
-            scrollView.removeObserver(self, forKeyPath: contentOffsetKeyPath, context: &kvoContext)
-            if !pull {
-                scrollView.removeObserver(self, forKeyPath: contentSizeKeyPath, context: &kvoContext)
-            }
-        }
+        contentSizeObserver = nil
+        contentOffsetObserver = nil
     }
 
     deinit {
         self.removeRegister()
     }
 
-    // MARK: KVO
-
-    open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-        guard let scrollView = object as? UIScrollView else {
-            return
-        }
-        if keyPath == contentSizeKeyPath {
-            self.positionY = scrollView.contentSize.height
-            return
-        }
-
-        if !(keyPath == contentOffsetKeyPath) {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-            return
-        }
-
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         // Pulling State Check
         let offsetY = scrollView.contentOffset.y
 

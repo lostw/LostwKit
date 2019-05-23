@@ -30,3 +30,11 @@ public struct PullToRefreshOption {
         self.fixedSectionHeader = fixedSectionHeader
     }
 }
+
+public enum PullToRefreshState {
+    case pulling
+    case triggered
+    case refreshing
+    case stop
+    case finish
+}

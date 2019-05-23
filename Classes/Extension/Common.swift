@@ -82,19 +82,6 @@ public func toCurrency(_ value: Double) -> String {
     return formatter.string(from: NSNumber(value: value)) ?? ""
 }
 
-func toCurrency(_ value: Int, decimal: Bool = true) -> String {
-    let formatter = NumberFormatter()
-
-    if decimal {
-        formatter.positiveFormat = "###,###,###,###,##0.00;"
-    } else {
-        formatter.positiveFormat = "###,###,###,###,##0;"
-    }
-
-    formatter.roundingMode = .halfUp
-    return formatter.string(from: NSNumber(value: value)) ?? ""
-}
-
 public func currencyStyle(_ value: Double) -> String {
     let formatter = NumberFormatter()
     formatter.positiveFormat = "###,###,##0.00;"
@@ -110,18 +97,6 @@ public func isVersion(_ a: String, olderThan b: String) -> Bool {
     }
 
     return a.compare(b, options: .numeric) == .orderedDescending
-}
-
-func swiftClassFromString(_ className: String) -> AnyClass! {
-
-    /// get namespace
-    let namespace = Bundle.main.infoDictionary!["CFBundleExecutable"] as! String
-
-    /// get 'anyClass' with classname and namespace
-    let cls: AnyClass = NSClassFromString("\(namespace).\(className)")!
-
-    // return AnyClass!
-    return cls
 }
 
 public func getIdcardAge(_ idcard: String) -> Int {

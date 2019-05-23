@@ -9,14 +9,6 @@
 import UIKit
 
 open class PullToRefreshFooterView: UIView {
-    public enum PullToRefreshState {
-        case pulling
-        case triggered
-        case refreshing
-        case stop
-        case finish
-    }
-
     var contentOffsetObserver: Any?
     var contentSizeObserver: Any?
 
