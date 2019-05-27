@@ -101,10 +101,33 @@ public extension UIImage {
         }
     }
 
-    func imageByScaledToWidth(_ width: CGFloat) -> UIImage? {
-        let height = width / self.size.width * self.size.height
-        UIGraphicsBeginImageContext(CGSize(width: width, height: height))
-        self.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
+    /// 根据最大宽高获取等比例缩放后图片
+    func imageFitToSize(_ maxSize: CGSize) -> UIImage? {
+        let reWidth = self.size.width
+        let reHeight = self.size.height
+
+        if self.size.height == 0 || maxSize.height == 0 {
+            return nil
+        }
+
+        let reRatio =  reWidth/reHeight
+        let ratio = maxSize.width/maxSize.height
+
+        var size = CGSize(reWidth, reHeight)
+        if ratio > reRatio {
+            if maxSize.height < reHeight {
+                let width = maxSize.width/reRatio
+                size = CGSize(width, maxSize.height)
+            }
+        } else {
+            if maxSize.width < reWidth {
+                let height = maxSize.height * reRatio
+                size = CGSize(maxSize.width, height)
+            }
+        }
+
+        UIGraphicsBeginImageContext(size)
+        self.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image
