@@ -101,6 +101,15 @@ public extension UIImage {
         }
     }
 
+    func imageFitTo(width: CGFloat) -> UIImage? {
+        let height = width / self.size.width * self.size.height
+        UIGraphicsBeginImageContext(CGSize(width: width, height: height))
+        self.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }
+
     /// 根据最大宽高获取等比例缩放后图片
     func imageFitToSize(_ maxSize: CGSize) -> UIImage? {
         let reWidth = self.size.width

@@ -18,10 +18,20 @@ public extension Optional where Wrapped == String {
     }
 
     var intValue: Int {
-        return self.intValue ?? 0
+        switch self {
+        case .none:
+            return 0
+        case .some(let value):
+            return value.intValue
+        }
     }
 
     var doubleValue: Double {
-        return self.doubleValue ?? 0
+        switch self {
+        case .none:
+            return 0
+        case .some(let value):
+            return value.doubleValue
+        }
     }
 }
