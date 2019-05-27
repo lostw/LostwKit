@@ -32,6 +32,10 @@ public extension String {
         return trimmingCharacters(in: CharacterSet.whitespaces)
     }
 
+    var isBlank: Bool {
+        return allSatisfy { $0.isWhitespace }
+    }
+
     func range(from nsRange: NSRange) -> Range<String.Index>? {
         guard
             let from16 = utf16.index(utf16.startIndex, offsetBy: nsRange.location, limitedBy: utf16.endIndex),
