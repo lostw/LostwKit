@@ -6,20 +6,22 @@
 //
 
 import Foundation
-/**
- UIButton图像文字同时存在时---图像相对于文字的位置
- 
- - top:    图像在上
- - left:   图像在左
- - right:  图像在右
- - bottom: 图像在下
- */
-public enum ButtonImageEdgeInsetsStyle {
-    case top, left, right, bottom
-}
 
 public extension UIButton {
-    func imagePosition(at style: ButtonImageEdgeInsetsStyle, space: CGFloat) {
+
+    /**
+     UIButton图像文字同时存在时---图像相对于文字的位置
+
+     - top:    图像在上
+     - left:   图像在左
+     - right:  图像在右
+     - bottom: 图像在下
+     */
+    public enum ImageLayoutStyle {
+        case top, left, right, bottom
+    }
+
+    func imagePosition(at style: ImageLayoutStyle, space: CGFloat) {
         self.layoutIfNeeded()
         guard let imageV = imageView else { return }
         guard let titleL = titleLabel else { return }
