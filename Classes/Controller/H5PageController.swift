@@ -130,8 +130,9 @@ open class H5PageController: UIViewController {
                 make.height.equalTo(2)
             })
 
-            self.zObserveKeyPath(self.webView, for: "estimatedProgress", using: { [unowned self] (info, _) in
+            self.zObserveKeyPath(self.webView, for: "estimatedProgress", using: { [weak self] (info, _) in
                 UIView.animate(withDuration: 0.5, animations: {
+                    guard let self = self else { return }
                     self.progressBar?.progress = (info![.newKey] as! NSNumber).floatValue
                 })
             })

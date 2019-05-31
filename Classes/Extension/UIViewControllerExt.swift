@@ -276,7 +276,8 @@ public extension UIViewController {
 
     @objc func animateNavigationBarColor() {
         transitionCoordinator?.animate(alongsideTransition: { [weak self] _ in
-            self?.setupNaivationBar()
+            guard let self = self else { return }
+            self.setupNaivationBar()
             }, completion: nil)
     }
 

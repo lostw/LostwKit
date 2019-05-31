@@ -47,7 +47,8 @@ open class ZZPopView: UIView {
     public var dismissOnBackground = false {
         didSet {
             if dismissOnBackground {
-                coverView.onTouch({ [unowned self](_) in
+                coverView.onTouch({ [weak self](_) in
+                    guard let self = self else { return }
                     self.dismiss()
                 })
             } else {

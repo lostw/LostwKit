@@ -84,7 +84,8 @@ open class WKZListController: UIViewController {
         }
 
         if self.forPager {
-            self.tableView.addPullRefresh { [unowned self] in
+            self.tableView.addPullRefresh { [weak self] in
+                guard let self = self else { return }
                 self.refresh()
             }
         }
@@ -168,7 +169,8 @@ extension WKZListController: Pagable {
 
     public func toggleLoadMore(_ more: Bool) {
         if more {
-            self.tableView.addPushRefresh { [unowned self] in
+            self.tableView.addPushRefresh { [weak self] in
+                guard let self = self else { return }
                 self.fetch()
             }
             if self.indicatorNoMoreData {
@@ -176,7 +178,8 @@ extension WKZListController: Pagable {
             }
         } else {
             if self.indicatorNoMoreData && self.list.count > 0 {
-                self.tableView.addPushRefresh { [unowned self] in
+                self.tableView.addPushRefresh { [weak self] in
+                    guard let self = self else { return }
                     self.fetch()
                 }
                 self.tableView.stopPushRefreshEver(true)

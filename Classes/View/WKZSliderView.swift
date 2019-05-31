@@ -101,10 +101,8 @@ public class WKZSliderView: UIView {
         self.pageControl.hidesForSinglePage = true
         self.addSubview(self.pageControl)
 
-        self.onTouch { [unowned self] tap in
-            guard let links = self.links else {
-                return
-            }
+        self.onTouch { [weak self] tap in
+            guard let self = self, let links = self.links else { return }
 
             let location = tap.location(in: self.scrollView)
             var i = self.currentPage
@@ -270,7 +268,8 @@ public class WKZSliderView: UIView {
     private func setupTimer() {
         self.timer?.invalidate()
 
-        self.timer = Timer.scheduledTimer(timeInterval: self.autoInterval, repeats: true, handler: { [unowned self] in
+        self.timer = Timer.scheduledTimer(timeInterval: self.autoInterval, repeats: true, handler: { [weak self] in
+            guard let self = self else { return }
             self.nextPage()
         })
     }

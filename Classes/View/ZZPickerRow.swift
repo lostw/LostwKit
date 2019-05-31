@@ -43,7 +43,8 @@ class ZZPickerToolbar: UIView {
             make.right.equalToSuperview().offset(-12)
             make.centerY.equalToSuperview()
         }
-        confirmButton.zBind { [unowned self] in
+        confirmButton.zBind { [weak self] in
+            guard let self = self else { return }
             self.delegate?.willResignPicker()
         }
 
@@ -138,7 +139,8 @@ open class ZZPickerRow: UIView {
             make.right.equalToSuperview().offset(-12)
         }
 
-        valueLabel.onTouch { [unowned self] (_) in
+        valueLabel.onTouch { [weak self] (_) in
+            guard let self = self else { return }
             if self.options.count > 0 {
                 guard !self.field.isFirstResponder else {
                     return

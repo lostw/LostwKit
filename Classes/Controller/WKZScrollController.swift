@@ -289,10 +289,11 @@ extension WKZScrollController {
 
         if let request = self.requestHandler {
             request { [weak self] success in
+                guard let self = self else { return }
                 if success {
-                    self?.lastFetchDate = Date()
+                    self.lastFetchDate = Date()
                 }
-                self?.scrollView.stopPullRefreshEver()
+                self.scrollView.stopPullRefreshEver()
             }
         }
     }
@@ -308,7 +309,8 @@ extension WKZScrollController {
             self.scrollView.removePullRefresh()
         } else {
             if refresh {
-                self.scrollView.addPullRefresh { [unowned self] in
+                self.scrollView.addPullRefresh { [weak self] in
+                    guard let self = self else { return }
                     self.fetch()
                 }
             }

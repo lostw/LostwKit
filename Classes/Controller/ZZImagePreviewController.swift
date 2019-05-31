@@ -39,7 +39,8 @@ public class ZZImagePreviewController: UIViewController {
         commonInitView()
         self.title = "\(currentIndex + 1)/\(photos.count)"
 
-        self.view.onTouch { [unowned self] _ in
+        self.view.onTouch { [weak self] _ in
+            guard let self = self else { return }
             self._hideNavBar = !self._hideNavBar
             self.navigationController?.setNavigationBarHidden(self._hideNavBar, animated: true)
             self.setNeedsStatusBarAppearanceUpdate()

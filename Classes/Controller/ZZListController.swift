@@ -30,7 +30,8 @@ public protocol Pagable: AnyObject {
 extension Pagable {
     public func fetch() {
         if let handler = self.sourceHandler {
-            handler(self.page + 1) { [unowned self](comingList, hasMore) in
+            handler(self.page + 1) { [weak self](comingList, hasMore) in
+                guard let self = self else { return }
                 self.isDataFetched = true
 
                 if self.page == 0 {
@@ -119,7 +120,8 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         }
 
         if self.forPager {
-            self.tableView.addPullRefresh { [unowned self] in
+            self.tableView.addPullRefresh { [weak self] in
+                guard let self = self else { return }
                 self.refresh()
             }
         }
@@ -221,7 +223,8 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
 
     public func toggleLoadMore(_ more: Bool) {
         if more {
-            self.tableView.addPushRefresh { [unowned self] in
+            self.tableView.addPushRefresh { [weak self] in
+                guard let self = self else { return }
                 self.fetch()
             }
             if self.indicatorNoMoreData {
@@ -229,7 +232,8 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
             }
         } else {
             if self.indicatorNoMoreData && self.list.count > 0 {
-                self.tableView.addPushRefresh { [unowned self] in
+                self.tableView.addPushRefresh { [weak self] in
+                    guard let self = self else { return }
                     self.fetch()
                 }
                 self.tableView.stopPushRefreshEver(true)

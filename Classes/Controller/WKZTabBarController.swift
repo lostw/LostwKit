@@ -177,7 +177,8 @@ open class WKZTabBarController: UIViewController {
         }
 
         tabBar.highlightedColor = AppTheme.shared[.majorText]
-        tabBar.didTouchButtonCallback = { [unowned self] idx in
+        tabBar.didTouchButtonCallback = { [weak self] idx in
+            guard let self = self else { return }
             self.selectedIndex = idx
         }
         tabView.addSubview(tabBar)

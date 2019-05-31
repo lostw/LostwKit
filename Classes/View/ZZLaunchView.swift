@@ -52,7 +52,8 @@ public class ZZLaunchView: UIView {
         self.showSkip = enableSkip
         self.onTouch = onTouch
         if onTouch != nil {
-            imageView.onTouch { [unowned self] _ in
+            imageView.onTouch { [weak self] _ in
+                guard let self = self else { return }
                 self.hide(self.onTouch)
             }
         }
@@ -112,7 +113,8 @@ public class ZZLaunchView: UIView {
             label.snp.makeConstraints { (make) in
                 make.edges.equalToSuperview()
             }
-            label.onTouch { [unowned self] (_) in
+            label.onTouch { [weak self] (_) in
+                guard let self = self else { return }
                 self.skip()
             }
             skipLabel = label

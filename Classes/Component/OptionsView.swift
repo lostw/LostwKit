@@ -100,7 +100,8 @@ public class OptionDropView: UIView {
         let view = UIView()
         view.isHidden = true
         view.backgroundColor = UIColor(hex: 0x000000, alpha: 0.6)
-        view.onTouch({ [unowned self] (_) in
+        view.onTouch({ [weak self] (_) in
+            guard let self = self else { return }
             self.touchSection(atIndex: -1)
         })
         return view
@@ -154,7 +155,8 @@ public class OptionDropView: UIView {
             self.sectionViews.append(sectionView)
         }
 
-        self.onTouch { [unowned self] (tap) in
+        self.onTouch { [weak self] (tap) in
+            guard let self = self else { return }
             let point = tap.location(in: self)
             for (idx, item) in self.sectionViews.enumerated() {
                 if item.frame.contains(point) {
