@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.dependency 'SnapKit'
   s.dependency 'Alamofire'
   s.dependency 'AlamofireImage'
-  s.dependency 'PromiseKit'
+  s.dependency 'PromiseKit/CorePromise'
 #  s.dependency 'RxSwift',    '~> 4.0'
 #  s.dependency 'RxCocoa',    '~> 4.0'
 

@@ -52,6 +52,8 @@ open class H5PageController: UIViewController {
     @objc var handlerEnabled = true
     public var URLString: String!
 
+    var progressOb: NSKeyValueObservation?
+
     lazy var backView: UIView = {
         let view = WebBackView()
 
@@ -130,12 +132,11 @@ open class H5PageController: UIViewController {
                 make.height.equalTo(2)
             })
 
-            self.zObserveKeyPath(self.webView, for: "estimatedProgress", using: { [weak self] (info, _) in
+            progressOb = self.webView.observe(\WKWebView.estimatedProgress, options: [.new]) { [unowned self] (_, info) in
                 UIView.animate(withDuration: 0.5, animations: {
-                    guard let self = self else { return }
-                    self.progressBar?.progress = (info![.newKey] as! NSNumber).floatValue
+                    self.progressBar?.progress = Float(info.newValue ?? 0)
                 })
-            })
+            }
         }
     }
 
