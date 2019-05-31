@@ -13,7 +13,7 @@ import PromiseKit
 
 public struct NetworkErrorDesc {
     public static let unknown = "网络错误"
-    public static let messageNotFound = "服务字段解析错误"
+    public static let messageNotFound = "服务错误，请稍后再试"
     public static let parseFailure = "服务解析错误"
 }
 
