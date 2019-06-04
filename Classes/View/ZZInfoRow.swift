@@ -12,7 +12,7 @@ open class ZZInfoRow: UIView {
     public let titleLabel = UILabel()
     public let valueLabel = UILabel()
     lazy var indicatorView: UIImageView = {
-        let view = UIImageView(image: UIImage(named: "arrow_right"))
+        let view = UIImageView(image: UIImage.bundleImage(named: "icon_indicator"))
         self.addSubview(view)
         view.snp.makeConstraints({ (make) in
             make.centerY.equalToSuperview()

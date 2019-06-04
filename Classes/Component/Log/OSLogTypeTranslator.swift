@@ -131,7 +131,7 @@ extension OSLogTypeTranslator {
                 }
             }
 
-       case .allAsDefault:
+        case .allAsDefault:
             return { _ in return OSLogType.default }
         case .allAsInfo:
             return { _ in return OSLogType.info }

@@ -34,7 +34,7 @@ public class ToastView: UIView {
         var height: CGFloat = 10
 
         if style == .success {
-            let image = #imageLiteral(resourceName: "toast_success")
+            let image = UIImage.bundleImage(named: "icon_toast_success")
             let iconView = UIImageView(image: image)
             var rect = CGRect(0, 0, 23, 23)
             rect.origin.x = (viewWidth - iconView.bounds.width) / 2

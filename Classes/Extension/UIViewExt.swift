@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 
 public extension UIView {
-
     /// 获取从属的viewController
     var controller: UIViewController? {
         var next = self.next
@@ -28,7 +27,6 @@ public extension UIView {
 }
 
 public extension UIView {
-
     /// 删除所有的subview
     @objc func removeSubviews() {
         for subview in self.subviews {
@@ -51,7 +49,7 @@ public extension UIView {
 
         return line
     }
-//
+
     func addTopLine(color: UIColor? = nil, left: CGFloat = 0, right: CGFloat = 0) {
         let color = color ?? AppTheme.shared[.border]
         let line = UIView()
@@ -64,78 +62,21 @@ public extension UIView {
             make.height.equalTo(ONE_PX)
         }
     }
-//
-//    func insertLine(color: UIColor = themeColor[.Border,] left: CGFloat = 0, right: CGFloat = 0, below view:UIView) {
-//        guard view.superview == self else {
-//            return
-//        }
-//        
-//        let line = UIView()
-//        line.backgroundColor = color
+
+
+//    func addBottomDashedLine(color: UIColor = themeColor[.Border,] left: CGFloat = 0, right: CGFloat = 0) {
+//        let line = ZZDashLineView()
+//        line.backedLayer.strokeColor = color.cgColor
 //        self.addSubview(line)
 //        line.snp.makeConstraints { (make) in
-//            make.top.equalTo(view.snp.bottom).offset(1-ONE_PX_ADJUST)
+//            make.bottom.equalToSuperview().offset(0)
 //            make.left.equalToSuperview().offset(left)
 //            make.right.equalToSuperview().offset(-right)
-//            make.height.equalTo(ONE_PX)
+//            make.height.equalTo(1)
 //        }
 //    }
-//    
-////    func addBottomDashedLine(color: UIColor = themeColor[.Border,] left: CGFloat = 0, right: CGFloat = 0) {
-////        let line = ZZDashLineView()
-////        line.backedLayer.strokeColor = color.cgColor
-////        self.addSubview(line)
-////        line.snp.makeConstraints { (make) in
-////            make.bottom.equalToSuperview().offset(0)
-////            make.left.equalToSuperview().offset(left)
-////            make.right.equalToSuperview().offset(-right)
-////            make.height.equalTo(1)
-////        }
-////    }
-//    
-    func addAndSplitSubviews(_ views: [UIView], borderColor: UIColor = UIColor(hex: 0xe0e0e0), enableSeperatorLine: Bool = true, linePadding: Double = 0) {
-        guard views.count > 0 else {
-            return
-        }
 
-        var prevView: UIView! = nil
-        for (idx, view) in views.enumerated() {
-            self.addSubview(view)
-            view.snp.makeConstraints({ (make) in
-                if prevView == nil {
-                    make.left.equalToSuperview()
-                } else {
-                    make.left.equalTo(prevView.snp.right)
-                    make.width.equalTo(prevView.snp.width)
-                }
-
-                make.top.equalToSuperview()
-                make.bottom.equalToSuperview()
-
-                if idx == views.count - 1 {
-                    make.right.equalToSuperview()
-                }
-            })
-
-            prevView = view
-        }
-
-        if enableSeperatorLine {
-            for idx in 1..<views.count {
-                let line = UIView()
-                line.backgroundColor = borderColor
-                self.addSubview(line)
-                line.snp.makeConstraints({ (make) in
-                    make.top.equalToSuperview().offset(linePadding)
-                    make.left.equalTo(self.snp.right).multipliedBy(Double(idx)/Double(views.count)).offset(-ONE_PX_ADJUST)
-                    make.width.equalTo(ONE_PX)
-                    make.bottom.equalToSuperview().offset(-linePadding)
-                })
-            }
-        }
-    }
-
-    func popSuccessToast(_ message: String) {
+    func successToast(_ message: String) {
         let view = ToastView(message: message, style: .success)
         self.showToast(view, position: .center)
     }
@@ -144,7 +85,6 @@ public extension UIView {
         let view = ToastView(message: message)
         self.showToast(view)
     }
-
 }
 
 private var badgeLabelKey: UInt8 = 0
@@ -228,11 +168,12 @@ extension UIView {
         var action: UIViewTapAction
         var tap: UITapGestureRecognizer!
 
-        init(target: UIView, action: @escaping (UITapGestureRecognizer) -> Void) {
+        init(target: UIView, action: @escaping UIViewTapAction) {
             self.owner = target
             self.action = action
 
             self.tap = UITapGestureRecognizer.init(target: self, action: #selector(onTaped(_:)))
+            target.isUserInteractionEnabled = true
             target.addGestureRecognizer(self.tap)
         }
 
@@ -245,7 +186,7 @@ extension UIView {
         }
     }
 
-    fileprivate var wkz_handler: TouchHandler? {
+    fileprivate var touchHandler: TouchHandler? {
         get {
             return objc_getAssociatedObject(self, &touchHandlerKey) as? TouchHandler
         }
@@ -255,14 +196,10 @@ extension UIView {
     }
 
     @objc public func onTouch(_ action: UIViewTapAction?) {
-        self.isUserInteractionEnabled = true
-
-        if action == nil {
-            if self.wkz_handler != nil {
-                self.wkz_handler = nil
-            }
+        if let action = action {
+            self.touchHandler = TouchHandler(target: self, action: action)
         } else {
-            self.wkz_handler = TouchHandler(target: self, action: action!)
+            self.touchHandler = nil
         }
     }
 }

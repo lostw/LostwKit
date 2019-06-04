@@ -132,7 +132,7 @@ open class ZZPickerRow: UIView {
             make.right.equalToSuperview().offset(-27)
         }
 
-        indicatorView = UIImageView(image: #imageLiteral(resourceName: "arrow_right.png"))
+        indicatorView = UIImageView(image: UIImage.bundleImage(named: "icon_indicator"))
         self.addSubview(indicatorView)
         indicatorView.snp.makeConstraints { (make) in
             make.centerY.equalToSuperview()

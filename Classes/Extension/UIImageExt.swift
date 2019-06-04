@@ -9,6 +9,15 @@
 import Foundation
 
 public extension UIImage {
+    static func bundleImage(named name: String) -> UIImage? {
+        let frameworkBundle = Bundle(for: ZZCrypto.self)
+        let bundleURL = frameworkBundle.resourceURL?.appendingPathComponent("Resource.bundle")
+        let resourceBundle = Bundle(url: bundleURL!)
+        return UIImage(named: name, in: resourceBundle, compatibleWith: nil)
+    }
+}
+
+public extension UIImage {
     static func getFaceData(_ imageData: Data) -> UIImage? {
         let faceDetector: CIDetector = CIDetector(ofType: CIDetectorTypeFace, context: CIContext(), options: [CIDetectorAccuracy: CIDetectorAccuracy])!
         let ciImage = CIImage(data: imageData)!

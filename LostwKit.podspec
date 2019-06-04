@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   # s.exclude_files = "SwiftyRSA/SwiftyRSA+ObjC.swift"
   # s.framework = "Security"
   s.resource_bundles = {
-    'LostwBundle' => ['Classes/Resource/*.png', 'Classes/Resource/*.js'],
+    'Resource' => ['Resource/*.xcassets'],
   }
   s.requires_arc = true
   
