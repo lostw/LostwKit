@@ -220,6 +220,11 @@ public extension UIView {
     
      @param position The toast's position
      */
+
+    func showIndicator(_ text: String) {
+        self.showIndicator(loadingText: text)
+    }
+
     @objc func showIndicator(loadingText: String? = nil) {
         self.activityCount += 1
         if self.activityCount > 0 {

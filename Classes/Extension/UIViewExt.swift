@@ -75,6 +75,14 @@ public extension UIView {
 //        }
 //    }
 
+    func toast(_ message: String) {
+        self.popToast(message)
+    }
+
+    func toastSuccess(_ message: String) {
+        self.successToast(message)
+    }
+
     func successToast(_ message: String) {
         let view = ToastView(message: message, style: .success)
         self.showToast(view, position: .center)
