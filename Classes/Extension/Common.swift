@@ -14,6 +14,7 @@ public typealias VoidClosure = () -> Void
 
 public let APP_VERSION = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
 public let APP_BUILD = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
+public let STATUSBAR_HEIGHT = UIApplication.shared.statusBarFrame.height
 public let SCREEN_WIDTH = UIScreen.main.bounds.width
 public let SCREEN_HEIGHT = UIScreen.main.bounds.height
 

@@ -129,17 +129,17 @@ public extension UIImage {
         }
 
         let reRatio =  reWidth/reHeight
-        let ratio = maxSize.width/maxSize.height
+        let ratio = maxSize.width / maxSize.height
 
         var size = CGSize(reWidth, reHeight)
         if ratio > reRatio {
             if maxSize.height < reHeight {
-                let width = maxSize.width/reRatio
+                let width = maxSize.width * reRatio
                 size = CGSize(width, maxSize.height)
             }
         } else {
             if maxSize.width < reWidth {
-                let height = maxSize.height * reRatio
+                let height = maxSize.height / reRatio
                 size = CGSize(maxSize.width, height)
             }
         }
