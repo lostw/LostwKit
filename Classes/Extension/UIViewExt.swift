@@ -63,7 +63,6 @@ public extension UIView {
         }
     }
 
-
 //    func addBottomDashedLine(color: UIColor = themeColor[.Border,] left: CGFloat = 0, right: CGFloat = 0) {
 //        let line = ZZDashLineView()
 //        line.backedLayer.strokeColor = color.cgColor
@@ -76,22 +75,9 @@ public extension UIView {
 //        }
 //    }
 
-    func toast(_ message: String) {
-        self.popToast(message)
-    }
-
+    @available(*, deprecated, message: "use toast(_ message: String, style: ToastView.Style = .normal) instead")
     func toastSuccess(_ message: String) {
-        self.successToast(message)
-    }
-
-    func successToast(_ message: String) {
-        let view = ToastView(message: message, style: .success)
-        self.showToast(view, position: .center)
-    }
-
-    @objc func popToast(_ message: String) {
-        let view = ToastView(message: message)
-        self.showToast(view)
+        self.toast(message, style: .success)
     }
 }
 

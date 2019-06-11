@@ -9,20 +9,20 @@
 import UIKit
 
 open class ZZPopView: UIView {
-    static var queue = [ZZPopView]()
-    static func nextView() {
-        guard !self.queue.isEmpty else {
-            return
-        }
-
-        let view = self.queue.first!
-        if view.moveToView == nil {
-            self.queue.remove(at: 0)
-            self.nextView()
-            return
-        }
-        view.show()
-    }
+//    static var queue = [ZZPopView]()
+//    static func nextView() {
+//        guard !self.queue.isEmpty else {
+//            return
+//        }
+//
+//        let view = self.queue.first!
+//        if view.moveToView == nil {
+//            self.queue.remove(at: 0)
+//            self.nextView()
+//            return
+//        }
+//        view.show()
+//    }
 
     public enum Position {
         case center, onethird, bottom, top, point(CGPoint)
@@ -98,8 +98,7 @@ open class ZZPopView: UIView {
         rect.origin = CGPoint(x: x, y: y)
         self.frame = rect
         self.moveToView = superview
-        ZZPopView.queue.append(self)
-        ZZPopView.nextView()
+        self.show()
     }
 
     fileprivate func show() {
@@ -168,8 +167,8 @@ open class ZZPopView: UIView {
             callback()
         }
 
-        ZZPopView.queue.remove(at: 0)
-        ZZPopView.nextView()
+//        ZZPopView.queue.remove(at: 0)
+//        ZZPopView.nextView()
     }
 
     func animateIn() {}

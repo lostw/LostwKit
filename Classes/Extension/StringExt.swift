@@ -87,6 +87,23 @@ public extension String {
         return String(data: data, encoding: .utf8)
     }
 
+    mutating func appendQuery(_ params: [String: String]? = nil) {
+        var link = self
+
+        if let parameters = params {
+            var query = [String]()
+            for (key, value) in parameters {
+                query.append("\(key)=\(value.URLEncoded)")
+            }
+            if link.contains("?") {
+                link = "\(self)&\(query.joined(separator: "&"))"
+            } else {
+                link = "\(self)?\(query.joined(separator: "&"))"
+            }
+        }
+        self = link
+    }
+
     // MARK: - Validator
     func isMatch(regex: String) -> Bool {
         return range(of: regex, options: .regularExpression, range: nil, locale: nil) != nil
