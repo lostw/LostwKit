@@ -9,13 +9,16 @@ import UIKit
 
 public class ZZImagePreviewController: UIViewController {
     public var enableDelete = false
+    public var showTitle = true
     public var onFinish: (([UIImage]) -> Void)?
     private var _hideNavBar = false
     var flowLayout: UICollectionViewFlowLayout!
     var photos: [UIImage]
     var currentIndex: Int {
         didSet {
-            self.title = "\(currentIndex + 1)/\(self.photos.count)"
+            if showTitle {
+                self.title = "\(currentIndex + 1)/\(self.photos.count)"
+            }
         }
     }
     var collectionView: UICollectionView!
@@ -37,7 +40,9 @@ public class ZZImagePreviewController: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         commonInitView()
-        self.title = "\(currentIndex + 1)/\(photos.count)"
+        if showTitle {
+            self.title = "\(currentIndex + 1)/\(photos.count)"
+        }
 
         self.view.onTouch { [weak self] _ in
             guard let self = self else { return }
