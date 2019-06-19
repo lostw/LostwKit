@@ -179,7 +179,7 @@ public extension UIViewController {
     }
 }
 
-extension UIViewController {
+public extension UIViewController {
     func translucentNavigationBar(_ flag: Bool) {
         if flag {
             self.navigationController?.navigationBar.isTranslucent = true
@@ -187,6 +187,18 @@ extension UIViewController {
         } else {
             self.navigationController?.navigationBar.isTranslucent = false
             self.navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
+        }
+    }
+
+    func topMostViewController() -> UIViewController? {
+        if let tabbar = self as? UITabBarController {
+            return tabbar.selectedViewController!.topMostViewController()
+        } else if let nav = self as? UINavigationController {
+            return nav.visibleViewController!.topMostViewController()
+        } else if let p = self.presentedViewController {
+            return p.topMostViewController()
+        } else {
+            return self
         }
     }
 }
