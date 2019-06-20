@@ -163,9 +163,9 @@ extension ZZImagePreviewController: UICollectionViewDelegateFlowLayout, UICollec
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! ZZImagePreviewCell
         if isUrl {
-            cell.bindData(image: self.photos[indexPath.row])
-        } else {
             cell.bindUrl(url: self.photoUrls[indexPath.row])
+        } else {
+            cell.bindData(image: self.photos[indexPath.row])
         }
 
         return cell
