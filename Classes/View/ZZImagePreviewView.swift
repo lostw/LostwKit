@@ -13,6 +13,11 @@ public class ZZImagePreviewView: UIView {
             setupImage(image)
         }
     }
+    public var imageUrl: String! {
+        didSet {
+            setupImageUrl(imageUrl)
+        }
+    }
     let scrollView = UIScrollView()
     let imageView = UIImageView()
     override init(frame: CGRect) {
@@ -27,6 +32,12 @@ public class ZZImagePreviewView: UIView {
     func setupImage(_ image: UIImage) {
         scrollView.zoomScale = 1
         imageView.image = image
+        setNeedsLayout()
+    }
+
+    func setupImageUrl(_ imageUrl: String) {
+        scrollView.zoomScale = 1
+        imageView.af_setImage(withURL: URL(string: imageUrl)!)
         setNeedsLayout()
     }
 

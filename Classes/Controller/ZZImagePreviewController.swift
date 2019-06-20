@@ -11,13 +11,16 @@ public class ZZImagePreviewController: UIViewController {
     public var enableDelete = false
     public var showTitle = true
     public var onFinish: (([UIImage]) -> Void)?
+    public var onPhotoUrlFinish: (([String]) -> Void)?
     private var _hideNavBar = false
     var flowLayout: UICollectionViewFlowLayout!
     var photos: [UIImage]
+    var photoUrls: [String]
+    var isUrl = false
     var currentIndex: Int {
         didSet {
             if showTitle {
-                self.title = "\(currentIndex + 1)/\(self.photos.count)"
+                self.title = "\(currentIndex + 1)/\(self.photos.count > 0 ? self.photos.count : self.photoUrls.count)"
             }
         }
     }
@@ -29,6 +32,15 @@ public class ZZImagePreviewController: UIViewController {
 
     public init(photos: [UIImage], currentIndex: Int) {
         self.photos = photos
+        self.photoUrls = []
+        self.currentIndex = currentIndex
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    public init(photoUrls: [String], currentIndex: Int) {
+        self.isUrl = true
+        self.photos = []
+        self.photoUrls = photoUrls
         self.currentIndex = currentIndex
         super.init(nibName: nil, bundle: nil)
     }
@@ -41,7 +53,7 @@ public class ZZImagePreviewController: UIViewController {
         super.viewDidLoad()
         commonInitView()
         if showTitle {
-            self.title = "\(currentIndex + 1)/\(photos.count)"
+            self.title = "\(currentIndex + 1)/\(isUrl ? self.photoUrls.count : self.photos.count)"
         }
 
         self.view.onTouch { [weak self] _ in
@@ -74,7 +86,7 @@ public class ZZImagePreviewController: UIViewController {
 
     func deleteCurrentPhoto() {
         photos.remove(at: currentIndex)
-        if photos.isEmpty {
+        if photos.isEmpty && photoUrls.isEmpty {
             navBack()
         } else {
             collectionView.reloadData()
@@ -113,7 +125,7 @@ public class ZZImagePreviewController: UIViewController {
         collectionView.scrollsToTop = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.contentSize = CGSize(CGFloat(self.photos.count) * (self.view.bounds.width + 20), 0)
+        collectionView.contentSize = CGSize(CGFloat(isUrl ? self.photoUrls.count : self.photos.count) * (self.view.bounds.width + 20), 0)
         collectionView.register(ZZImagePreviewCell.self, forCellWithReuseIdentifier: "Cell")
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints {
@@ -125,7 +137,11 @@ public class ZZImagePreviewController: UIViewController {
 
     override public func willMove(toParent parent: UIViewController?) {
         if parent == nil {
-            onFinish?(photos)
+            if isUrl {
+                onPhotoUrlFinish?(photoUrls)
+            } else {
+                onFinish?(photos)
+            }
         }
         super.willMove(toParent: parent)
     }
@@ -141,12 +157,17 @@ public class ZZImagePreviewController: UIViewController {
 
 extension ZZImagePreviewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.photos.count
+        return isUrl ? self.photoUrls.count : self.photos.count
     }
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! ZZImagePreviewCell
-        cell.bindData(image: self.photos[indexPath.row])
+        if isUrl {
+            cell.bindData(image: self.photos[indexPath.row])
+        } else {
+            cell.bindUrl(url: self.photoUrls[indexPath.row])
+        }
+
         return cell
     }
 
@@ -156,7 +177,7 @@ extension ZZImagePreviewController: UICollectionViewDelegateFlowLayout, UICollec
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let index = calculateCurrentIndex()
-        if index < photos.count && currentIndex != index {
+        if index < (isUrl ? photoUrls.count : photos.count) && currentIndex != index {
             currentIndex = index
         }
     }
@@ -177,6 +198,10 @@ class ZZImagePreviewCell: UICollectionViewCell {
 
     func bindData(image: UIImage) {
         previewView.image = image
+    }
+
+    func bindUrl(url: String) {
+        previewView.imageUrl = url
     }
 
     func commonInitView() {
