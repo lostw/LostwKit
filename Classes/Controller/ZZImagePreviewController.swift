@@ -12,7 +12,15 @@ public class ZZImagePreviewController: UIViewController {
     public var showTitle = true
     public var onFinish: (([UIImage]) -> Void)?
     public var onPhotoUrlFinish: (([String]) -> Void)?
-    private var _hideNavBar = false
+    private var _hideNavBar = false {
+        didSet {
+            if _hideNavBar {
+
+            } else {
+
+            }
+        }
+    }
     var flowLayout: UICollectionViewFlowLayout!
     var photos: [UIImage]
     var photoUrls: [String]
@@ -22,8 +30,7 @@ public class ZZImagePreviewController: UIViewController {
             if showTitle {
                 self.title = "\(currentIndex + 1)/\(self.photos.count > 0 ? self.photos.count : self.photoUrls.count)"
             }
-        }
-    }
+        }    }
     var collectionView: UICollectionView!
 
     override public var prefersStatusBarHidden: Bool {
