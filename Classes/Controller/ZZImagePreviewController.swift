@@ -11,24 +11,55 @@ public class ZZImagePreviewController: UIViewController {
     public var enableDelete = false
     public var showTitle = true
     public var onFinish: (([UIImage]) -> Void)?
-    private var _hideNavBar = false
+    public var onPhotoUrlFinish: (([String]) -> Void)?
+    private var _hideNavBar = false {
+        didSet {
+            if !_hideNavBar {
+                collectionView.snp.updateConstraints {
+                    $0.top.equalToSuperview().offset(-STATUSBAR_HEIGHT - 44)
+                }
+            } else {
+                collectionView.snp.updateConstraints {
+                    $0.top.equalToSuperview().offset(0)
+                }
+            }
+            self.navigationController?.setNavigationBarHidden(self._hideNavBar, animated: true)
+            self.setNeedsStatusBarAppearanceUpdate()
+        }
+    }
     var flowLayout: UICollectionViewFlowLayout!
     var photos: [UIImage]
+    var photoUrls: [String]
+    var isUrl = false
     var currentIndex: Int {
         didSet {
             if showTitle {
-                self.title = "\(currentIndex + 1)/\(self.photos.count)"
+                self.title = "\(currentIndex + 1)/\(self.photos.count > 0 ? self.photos.count : self.photoUrls.count)"
             }
         }
     }
     var collectionView: UICollectionView!
 
-    override public var prefersStatusBarHidden: Bool {
-        return _hideNavBar
+    override public var preferredStatusBarStyle: UIStatusBarStyle {
+        if !_hideNavBar {
+            self.navigationController?.navigationBar.barStyle = .default
+            return .default
+        } else {
+            return .lightContent
+        }
     }
 
     public init(photos: [UIImage], currentIndex: Int) {
         self.photos = photos
+        self.photoUrls = []
+        self.currentIndex = currentIndex
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    public init(photoUrls: [String], currentIndex: Int) {
+        self.isUrl = true
+        self.photos = []
+        self.photoUrls = photoUrls
         self.currentIndex = currentIndex
         super.init(nibName: nil, bundle: nil)
     }
@@ -41,14 +72,18 @@ public class ZZImagePreviewController: UIViewController {
         super.viewDidLoad()
         commonInitView()
         if showTitle {
-            self.title = "\(currentIndex + 1)/\(photos.count)"
+            self.title = "\(currentIndex + 1)/\(isUrl ? self.photoUrls.count : self.photos.count)"
+        }
+
+        if #available(iOS 11.0, *) {
+            self.collectionView.contentInsetAdjustmentBehavior = .never
+        } else {
+            self.automaticallyAdjustsScrollViewInsets = false
         }
 
         self.view.onTouch { [weak self] _ in
             guard let self = self else { return }
             self._hideNavBar = !self._hideNavBar
-            self.navigationController?.setNavigationBarHidden(self._hideNavBar, animated: true)
-            self.setNeedsStatusBarAppearanceUpdate()
         }
         // Do any additional setup after loading the view.
     }
@@ -74,7 +109,7 @@ public class ZZImagePreviewController: UIViewController {
 
     func deleteCurrentPhoto() {
         photos.remove(at: currentIndex)
-        if photos.isEmpty {
+        if photos.isEmpty && photoUrls.isEmpty {
             navBack()
         } else {
             collectionView.reloadData()
@@ -82,10 +117,10 @@ public class ZZImagePreviewController: UIViewController {
         }
     }
 
-//    @objc func goBack() {
-//        onFinish?(photos)
-//        navBack()
-//    }
+    //    @objc func goBack() {
+    //        onFinish?(photos)
+    //        navBack()
+    //    }
 
     func calculateCurrentIndex() -> Int {
         var offsetX = collectionView.contentOffset.x
@@ -94,16 +129,18 @@ public class ZZImagePreviewController: UIViewController {
     }
 
     func commonInitView() {
-//        navigationItem.leftBarButtonItem = UIBarButtonItem.backItem(target: self, selector: #selector(goBack))
-//        UIBarButtonItem(image: self.navigationController!.navigationBar.backIndicatorImage, style: .plain, target: self, action: #selector(goBack))
+        //        navigationItem.leftBarButtonItem = UIBarButtonItem.backItem(target: self, selector: #selector(goBack))
+        //        UIBarButtonItem(image: self.navigationController!.navigationBar.backIndicatorImage, style: .plain, target: self, action: #selector(goBack))
         if enableDelete {
             navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deletePhoto))
         }
 
         let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = [0, 0, 0, 0]
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
+        layout.itemSize = [SCREEN_WIDTH + 20, SCREEN_HEIGHT]
         flowLayout = layout
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .black
@@ -113,11 +150,12 @@ public class ZZImagePreviewController: UIViewController {
         collectionView.scrollsToTop = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.contentSize = CGSize(CGFloat(self.photos.count) * (self.view.bounds.width + 20), 0)
+        collectionView.contentSize = CGSize(CGFloat(isUrl ? self.photoUrls.count : self.photos.count) * (self.view.bounds.width + 20), 0)
         collectionView.register(ZZImagePreviewCell.self, forCellWithReuseIdentifier: "Cell")
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints {
-            $0.top.bottom.equalToSuperview()
+            $0.top.equalToSuperview().offset(-STATUSBAR_HEIGHT - 44)
+            $0.bottom.equalToSuperview()
             $0.left.equalToSuperview().offset(-10)
             $0.right.equalToSuperview().offset(10)
         }
@@ -125,28 +163,31 @@ public class ZZImagePreviewController: UIViewController {
 
     override public func willMove(toParent parent: UIViewController?) {
         if parent == nil {
-            onFinish?(photos)
+            if isUrl {
+                onPhotoUrlFinish?(photoUrls)
+            } else {
+                onFinish?(photos)
+            }
         }
         super.willMove(toParent: parent)
     }
 
-    override public func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        flowLayout.itemSize = CGSize(self.view.bounds.width + 20, self.view.bounds.height)
-//        collectionView.collectionViewLayout = flowLayout
-        collectionView.setCollectionViewLayout(flowLayout, animated: false)
-    }
 }
 
 extension ZZImagePreviewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
+
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.photos.count
+        return isUrl ? self.photoUrls.count : self.photos.count
     }
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! ZZImagePreviewCell
-        cell.bindData(image: self.photos[indexPath.row])
+        if isUrl {
+            cell.bindUrl(url: self.photoUrls[indexPath.row])
+        } else {
+            cell.bindData(image: self.photos[indexPath.row])
+        }
+
         return cell
     }
 
@@ -156,7 +197,7 @@ extension ZZImagePreviewController: UICollectionViewDelegateFlowLayout, UICollec
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let index = calculateCurrentIndex()
-        if index < photos.count && currentIndex != index {
+        if index < (isUrl ? photoUrls.count : photos.count) && currentIndex != index {
             currentIndex = index
         }
     }
@@ -177,6 +218,10 @@ class ZZImagePreviewCell: UICollectionViewCell {
 
     func bindData(image: UIImage) {
         previewView.image = image
+    }
+
+    func bindUrl(url: String) {
+        previewView.imageUrl = url
     }
 
     func commonInitView() {
