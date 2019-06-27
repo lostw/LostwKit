@@ -29,7 +29,7 @@ class WebBackView: AlignmentRectView {
 
     func commonInitView() {
         backButton = UIButton()
-        backButton.setImage(UIImage.bundleImage(named: "icon_indicator"), for: .normal)
+        backButton.setImage(UIImage.bundleImage(named: "icon_back_white"), for: .normal)
         backButton.frame = CGRect(x: -4, y: (44 - 32) / 2 - 1.5, width: 32, height: 32)
         self.addSubview(backButton)
 
@@ -70,10 +70,6 @@ open class H5PageController: UIViewController {
     }()
     lazy var backItem: UIBarButtonItem = {
         return UIBarButtonItem(customView: self.backView)
-    }()
-
-    lazy var closeItem: UIBarButtonItem = {
-        return UIBarButtonItem(title: "关闭", style: .plain, target: self, action: #selector(closePage))
     }()
 
     override open func viewDidLoad() {
@@ -223,7 +219,7 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
 
         if self.isFirstPage {
             if webView.canGoBack {
-                self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.bundleImage(named: "icon_indicator"), style: .plain, target: self, action: #selector(historyBack))
+                self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.bundleImage(named: "icon_back_white"), style: .plain, target: self, action: #selector(historyBack))
             } else {
                 self.navigationItem.leftBarButtonItem = nil
             }
