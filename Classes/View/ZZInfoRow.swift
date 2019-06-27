@@ -51,7 +51,7 @@ open class ZZInfoRow: UIView {
         super.init(coder: aDecoder)
     }
 
-    @objc public override func onTouch(_ action: UIViewTapAction?) {
+    @objc open override func onTouch(_ action: UIViewTapAction?) {
         super.onTouch(action)
 
         self.toggleIndicatorView((action == nil ? false : true))

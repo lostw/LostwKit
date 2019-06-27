@@ -203,7 +203,7 @@ extension WKZScrollController: UIGestureRecognizerDelegate {
         return false
     }
 
-    public func addFixedBottomView(_ bottomView: UIView, isInput: Bool = false, animateIn: Bool = false) {
+    public func addFixedBottomView(_ bottomView: UIView, height: CGFloat = 49, isInput: Bool = false, animateIn: Bool = false) {
         self.view.addSubview(bottomView)
 
         self.fixedBottomView = bottomView
@@ -215,8 +215,8 @@ extension WKZScrollController: UIGestureRecognizerDelegate {
         if animateIn {
             bottomView.snp.makeConstraints { (make) in
                 make.left.right.equalToSuperview()
-                make.height.equalTo(isPhoneX() ? 83 : 49)
-                make.bottom.equalToSuperview().offset(isPhoneX() ? 83 : 49)
+                make.height.equalTo(isPhoneX() ? (34 + height) : height)
+                make.bottom.equalToSuperview().offset(isPhoneX() ? (34 + height) : height)
             }
 
             self.view.layoutIfNeeded()
@@ -228,7 +228,7 @@ extension WKZScrollController: UIGestureRecognizerDelegate {
                     })
 
                     self.scrollView.snp.updateConstraints { (make) in
-                        make.bottom.equalToSuperview().offset(isPhoneX() ? -83 : -49)
+                        make.bottom.equalToSuperview().offset(isPhoneX() ? -(34 + height) : -height)
                     }
 
                     self.view.layoutIfNeeded()
@@ -238,16 +238,16 @@ extension WKZScrollController: UIGestureRecognizerDelegate {
         } else {
             bottomView.snp.makeConstraints { (make) in
                 make.left.right.bottom.equalToSuperview()
-                make.height.equalTo(isPhoneX() ? 83 : 49)
+                make.height.equalTo(isPhoneX() ? (34 + height) : height)
             }
 
             self.scrollView.snp.updateConstraints { (make) in
-                make.bottom.equalToSuperview().offset(isPhoneX() ? -83 : -49)
+                make.bottom.equalToSuperview().offset(isPhoneX() ? -(34 + height) : -height)
             }
         }
     }
 
-    func removeFixedBottomView(animateIn: Bool = false) {
+    func removeFixedBottomView(animateIn: Bool = false, height: CGFloat = 49) {
         guard let bottomView = self.fixedBottomView else {
             return
         }
@@ -255,7 +255,7 @@ extension WKZScrollController: UIGestureRecognizerDelegate {
         if animateIn {
             UIView.animate(withDuration: 0.3, animations: {
                 bottomView.snp.updateConstraints({ (make) in
-                    make.bottom.equalToSuperview().offset(isPhoneX() ? 83 : 49)
+                    make.bottom.equalToSuperview().offset(isPhoneX() ? (34 + height) : height)
                 })
 
                 self.scrollView.snp.updateConstraints { (make) in

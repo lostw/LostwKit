@@ -189,7 +189,7 @@ extension UIView {
         }
     }
 
-    @objc public func onTouch(_ action: UIViewTapAction?) {
+    @objc open func onTouch(_ action: UIViewTapAction?) {
         if let action = action {
             self.touchHandler = TouchHandler(target: self, action: action)
         } else {
