@@ -51,7 +51,8 @@ open class XcodeLogConfiguration: ConsoleLogConfiguration {
 
         let stdoutFormatters: [LogFormatter]
         if mimicOSLogOutput && ConsoleLogConfiguration.shouldUseStandardStreams(mode: stdStreamsMode) {
-            stdoutFormatters = [ConcatenatingLogFormatter(formatters: [OSLogMimicFormatter(), origFormatter])]
+            let baseFormat = FieldBasedLogFormatter(fields: [.timestamp(.custom("HH:mm:ss.SSSSSS"))])
+            stdoutFormatters = [ConcatenatingLogFormatter(formatters: [baseFormat, origFormatter])]
         } else {
             stdoutFormatters = [FieldBasedLogFormatter(fields: [.timestamp(.default), .delimiter(.spacedPipe), .callingThread(.hex), .delimiter(.space), .custom(origFormatter)])]
         }
