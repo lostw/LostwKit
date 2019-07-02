@@ -114,23 +114,25 @@ public extension UIViewController {
         self.navBack()
     }
 
-    func navBack(delay: TimeInterval = 0) {
+    func navBack(step: Int = 1, delay: TimeInterval = 0) {
         if delay > 0 {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(1)) {
-                self.navigationController?.popViewController(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delay) {
+                self._navBack(step: step)
             }
         } else {
-            self.navigationController?.popViewController(animated: true)
+            self._navBack(step: step)
         }
     }
 
-    func navBack(step: Int) {
+    private func _navBack(step: Int) {
         if step <= 0 {
             return
         }
         let count = self.navigationController!.viewControllers.count
         if step >= count {
             self.navigationController!.popToRootViewController(animated: true)
+        } else if step == 1 {
+            self.navigationController!.popViewController(animated: true)
         } else {
             let i = count - step - 1
             self.navigationController?.popToViewController(self.navigationController!.viewControllers[i], animated: true)
