@@ -70,6 +70,7 @@ public class ZZImagePreviewController: UIViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+        self.view.clipsToBounds = true
         commonInitView()
         if showTitle {
             self.title = "\(currentIndex + 1)/\(isUrl ? self.photoUrls.count : self.photos.count)"

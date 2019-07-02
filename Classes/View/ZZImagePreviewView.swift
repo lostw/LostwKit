@@ -37,7 +37,7 @@ public class ZZImagePreviewView: UIView {
 
     func setupImageUrl(_ imageUrl: String) {
         scrollView.zoomScale = 1
-        imageView.af_setImage(withURL: URL(string: imageUrl)!)
+        imageView.loadImage(imageUrl, placeholderImage: nil)
         setNeedsLayout()
     }
 
