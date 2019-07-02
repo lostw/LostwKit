@@ -106,8 +106,10 @@ public extension UIViewController {
         }
     }
 
-    @objc func close() {
-        self.dismiss(animated: true)
+    @objc func close(delay: TimeInterval = 0) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delay) {
+            self.dismiss(animated: true)
+        }
     }
 
     @objc func pop() {
