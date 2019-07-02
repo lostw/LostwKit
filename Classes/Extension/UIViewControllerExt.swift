@@ -130,14 +130,16 @@ public extension UIViewController {
         if step <= 0 {
             return
         }
-        let count = self.navigationController!.viewControllers.count
-        if step >= count {
-            self.navigationController!.popToRootViewController(animated: true)
-        } else if step == 1 {
-            self.navigationController!.popViewController(animated: true)
-        } else {
-            let i = count - step - 1
-            self.navigationController?.popToViewController(self.navigationController!.viewControllers[i], animated: true)
+        if let nav = self.navigationController {
+            let count = nav.viewControllers.count
+            if step >= count {
+                nav.popToRootViewController(animated: true)
+            } else if step == 1 {
+                nav.popViewController(animated: true)
+            } else {
+                let i = count - step - 1
+                nav.popToViewController(nav.viewControllers[i], animated: true)
+            }
         }
     }
 
