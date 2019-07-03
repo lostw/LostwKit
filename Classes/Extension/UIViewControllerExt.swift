@@ -106,34 +106,40 @@ public extension UIViewController {
         }
     }
 
-    @objc func close() {
-        self.dismiss(animated: true)
+    @objc func close(delay: TimeInterval = 0) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delay) {
+            self.dismiss(animated: true)
+        }
     }
 
     @objc func pop() {
         self.navBack()
     }
 
-    func navBack(delay: TimeInterval = 0) {
+    func navBack(step: Int = 1, delay: TimeInterval = 0) {
         if delay > 0 {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(1)) {
-                self.navigationController?.popViewController(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delay) {
+                self._navBack(step: step)
             }
         } else {
-            self.navigationController?.popViewController(animated: true)
+            self._navBack(step: step)
         }
     }
 
-    func navBack(step: Int) {
+    private func _navBack(step: Int) {
         if step <= 0 {
             return
         }
-        let count = self.navigationController!.viewControllers.count
-        if step >= count {
-            self.navigationController!.popToRootViewController(animated: true)
-        } else {
-            let i = count - step - 1
-            self.navigationController?.popToViewController(self.navigationController!.viewControllers[i], animated: true)
+        if let nav = self.navigationController {
+            let count = nav.viewControllers.count
+            if step >= count {
+                nav.popToRootViewController(animated: true)
+            } else if step == 1 {
+                nav.popViewController(animated: true)
+            } else {
+                let i = count - step - 1
+                nav.popToViewController(nav.viewControllers[i], animated: true)
+            }
         }
     }
 
