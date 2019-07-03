@@ -135,11 +135,7 @@ public extension UIView {
     // MARK: - convience text Toast method
     func toast(_ message: String, style: ToastView.Style = .normal) {
         let view = ToastView(message: message, style: style)
-        if style == .success {
-            self.showToast(view, position: .center)
-        } else {
-            self.showToast(view)
-        }
+        self.showToast(view, position: .center)
     }
 
     // MARK: - Hide Toast Methods

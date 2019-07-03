@@ -8,8 +8,8 @@
 import UIKit
 
 open class PullToRefreshView: UIView {
-    var contentOffsetObserver: Any?
-    var contentSizeObserver: Any?
+    var contentOffsetObserver: NSKeyValueObservation?
+    var contentSizeObserver: NSKeyValueObservation?
 
     fileprivate var options: PullToRefreshOption
     fileprivate var backgroundView: UIView
@@ -129,12 +129,13 @@ open class PullToRefreshView: UIView {
         }
     }
 
-    fileprivate func removeRegister() {
+    func removeRegister() {
         contentSizeObserver = nil
         contentOffsetObserver = nil
     }
 
     deinit {
+        print("dealloc------")
         self.removeRegister()
     }
 

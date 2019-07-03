@@ -154,6 +154,12 @@ open class WKZListController: UIViewController {
             }
         }
     }
+
+    deinit {
+        // iOS 10及以下需要主动释放，否则会闪退
+        self.tableView.removePullRefresh()
+        self.tableView.removePushRefresh()
+    }
 }
 
 extension WKZListController: Pagable {

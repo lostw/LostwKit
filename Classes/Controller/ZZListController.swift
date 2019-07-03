@@ -97,6 +97,12 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
     var indicatorNoMoreData = false
     public var noDataManager = WKZEmptySetManager()
 
+    deinit {
+        // iOS 10及以下需要主动释放，否则会闪退
+        self.tableView.removePullRefresh()
+        self.tableView.removePushRefresh()
+    }
+
     override open func viewDidLoad() {
         super.viewDidLoad()
         self.commonInitView()
