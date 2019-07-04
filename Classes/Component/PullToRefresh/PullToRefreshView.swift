@@ -135,7 +135,6 @@ open class PullToRefreshView: UIView {
     }
 
     deinit {
-        print("dealloc------")
         self.removeRegister()
     }
 

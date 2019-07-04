@@ -62,6 +62,10 @@ open class WKZScrollController: UIViewController {
     var tap: UITapGestureRecognizer?
     public var isKeyboardShow = false
 
+    deinit {
+        self.scrollView.removePullRefresh()
+    }
+
     override open func viewDidLoad() {
         super.viewDidLoad()
         self.commonInitView()
