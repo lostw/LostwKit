@@ -10,6 +10,7 @@ import UIKit
 
 public class ZZPlaceholderView: UIView {
     public struct Style {
+        public var padding: UIEdgeInsets = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
         public var imageSize: CGSize?
         public var titleMarginTop: CGFloat = 20
         public var titleColor: UIColor = UIColor(hex: 0x7b888e)
@@ -18,7 +19,7 @@ public class ZZPlaceholderView: UIView {
         public var buttonSize: CGSize?
         public var configButton: ((UIButton) -> Void) = { button in
             button.titleLabel!.font = UIFont.systemFont(ofSize: 16)
-            button.titleLabel!.textColor = UIColor(hex: 0x333333)
+            button.setTitleColor(AppTheme.shared[.majorText], for: .normal)
         }
 
         public init() {}
@@ -28,9 +29,10 @@ public class ZZPlaceholderView: UIView {
         public var indicator = false
         public var images: [String]?
         public var title: String?
+        public var attributedTitle: NSAttributedString?
         public var actionTitle: String?
         public var action: ((UIButton) -> Void)?
-
+        public var pageAction: VoidClosure?
         public var style = Style()
 
         public init() {}
@@ -40,7 +42,7 @@ public class ZZPlaceholderView: UIView {
     var titleLabel: UILabel?
     var actionButton: UIButton?
 
-    let container = UIView()
+    let container = WKZLinearView()
 
     var action: ((UIButton) -> Void)?
 
@@ -54,99 +56,19 @@ public class ZZPlaceholderView: UIView {
     }
 
     func load(dataSource: DataSource) {
-        container.removeSubviews()
+        container.removeAllLinearViews()
+        container.padding = dataSource.style.padding
 
-        let style = dataSource.style
+        self.addImageView(dataSource)
+        self.addTitleLabel(dataSource)
+        self.addActionButton(dataSource)
 
-        var lastView: UIView!
-        if let imageNames = dataSource.images, !imageNames.isEmpty {
-            let imageView = UIImageView()
-            if imageNames.count == 1 {
-                imageView.image = UIImage(named: imageNames.first!)
-            } else {
-                let images = imageNames.map { (str) -> UIImage in
-                    return UIImage(named: str)!
-                }
-                imageView.animationImages = images
-                imageView.animationDuration = 0.4
-                imageView.animationRepeatCount = Int.max
-                imageView.startAnimating()
+        if let action = dataSource.pageAction {
+            self.onTouch { _ in
+                action()
             }
-            container.addSubview(imageView)
-            imageView.snp.makeConstraints { (make) in
-                make.centerX.equalToSuperview()
-                make.top.equalToSuperview().offset(4)
-                if let size = style.imageSize {
-                    make.width.equalTo(size.width)
-                    make.height.equalTo(size.height)
-                }
-            }
-
-            self.imageView = imageView
-            lastView = imageView
-        } else if dataSource.indicator {
-            let activity = UIActivityIndicatorView(style: .whiteLarge)
-            activity.color = UIColor(hex: 0x7b888e)
-            activity.startAnimating()
-            container.addSubview(activity)
-            activity.snp.makeConstraints { make in
-                make.centerX.equalToSuperview()
-                make.top.equalToSuperview().offset(4)
-            }
-
-            lastView = activity
-        }
-
-        if let title = dataSource.title {
-            let titleLabel = UILabel()
-            titleLabel.font = style.titleFont
-            titleLabel.textColor = style.titleColor
-            titleLabel.text = title
-            titleLabel.numberOfLines = 0
-            titleLabel.textAlignment = .center
-            container.addSubview(titleLabel)
-            titleLabel.snp.makeConstraints { (make) in
-                make.left.equalToSuperview()
-                make.right.equalToSuperview()
-                if lastView == nil {
-                    make.top.equalToSuperview().offset(4)
-                } else {
-                    make.top.equalTo(lastView.snp.bottom).offset(style.titleMarginTop)
-                }
-
-            }
-
-            self.titleLabel = titleLabel
-            lastView = titleLabel
-        }
-
-        if let actionTitle = dataSource.actionTitle {
-            let button = UIButton()
-            style.configButton(button)
-            button.setTitle(actionTitle, for: .normal)
-            container.addSubview(button)
-            button.snp.makeConstraints { (make) in
-                make.centerX.equalToSuperview()
-                if let size = style.buttonSize {
-                    make.width.equalTo(size.width)
-                    make.height.equalTo(size.height)
-                }
-                if lastView == nil {
-                    make.top.equalToSuperview().offset(4)
-                } else {
-                    make.top.equalTo(lastView.snp.bottom).offset(30)
-                }
-            }
-
-            self.action = dataSource.action
-            button.addTarget(self, action: #selector(doAction), for: .touchUpInside)
-
-            self.actionButton = button
-            lastView = button
-        }
-
-        lastView.snp.makeConstraints { (make) in
-            make.bottom.equalToSuperview().offset(-4)
+        } else {
+            self.onTouch(nil)
         }
     }
 
@@ -161,6 +83,88 @@ public class ZZPlaceholderView: UIView {
 
     @objc func doAction(_ sender: UIButton) {
         self.action?(sender)
+    }
+
+    func addImageView(_ dataSource: DataSource) {
+        if let imageNames = dataSource.images, !imageNames.isEmpty {
+            let imageView = UIImageView()
+            if imageNames.count == 1 {
+                imageView.image = UIImage(named: imageNames.first!)
+            } else {
+                let images = imageNames.map { (str) -> UIImage in
+                    return UIImage(named: str)!
+                }
+                imageView.animationImages = images
+                imageView.animationDuration = 0.4
+                imageView.animationRepeatCount = Int.max
+                imageView.startAnimating()
+            }
+            imageView.zLinearLayout.justifyContent = .center
+            container.addLinearView(imageView)
+            if let size = dataSource.style.imageSize {
+                imageView.snp.makeConstraints { (make) in
+                    make.width.equalTo(size.width)
+                    make.height.equalTo(size.height)
+                }
+            }
+
+            self.imageView = imageView
+        } else if dataSource.indicator {
+            let activity = UIActivityIndicatorView(style: .whiteLarge)
+            activity.color = UIColor(hex: 0x7b888e)
+            activity.startAnimating()
+            activity.zLinearLayout.justifyContent = .center
+            container.addLinearView(activity)
+        }
+    }
+
+    func addTitleLabel(_ dataSource: DataSource) {
+        let style = dataSource.style
+        if dataSource.title != nil || dataSource.attributedTitle != nil {
+            let titleLabel = UILabel()
+            titleLabel.font = style.titleFont
+            titleLabel.textColor = style.titleColor
+            titleLabel.numberOfLines = 0
+            titleLabel.textAlignment = .center
+            container.addLinearView(titleLabel)
+            if container.count > 0 {
+                titleLabel.zLinearLayout.margin.top = style.titleMarginTop
+            }
+            self.titleLabel = titleLabel
+
+            if let attr = dataSource.attributedTitle {
+                titleLabel.attributedText = attr
+            } else if let title = dataSource.title {
+                titleLabel.text = title
+            }
+        }
+    }
+
+    func addActionButton(_ dataSource: DataSource) {
+        let style = dataSource.style
+        if let actionTitle = dataSource.actionTitle {
+            let button = UIButton()
+            button.setTitle(actionTitle, for: .normal)
+            style.configButton(button)
+            container.addLinearView(button)
+            button.configureLinearStyle {
+                $0.justifyContent = .center
+                if self.container.count > 0 {
+                    button.zLinearLayout.margin.top = 30
+                }
+            }
+            if let size = style.buttonSize {
+                button.snp.makeConstraints { make in
+                    make.width.equalTo(size.width)
+                    make.height.equalTo(size.height)
+                }
+            }
+
+            self.action = dataSource.action
+            button.addTarget(self, action: #selector(doAction), for: .touchUpInside)
+
+            self.actionButton = button
+        }
     }
 
     func commonInitView() {

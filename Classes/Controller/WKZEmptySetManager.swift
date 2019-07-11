@@ -84,8 +84,11 @@ public class WKZEmptySetManager {
         self.addState(key: "empty", dataSource: empty)
 
         var error = ZZPlaceholderView.DataSource()
-        error.images = ["icon_record_none"]
-        error.title = "页面错误"
+        error.images = ["icon_record_fail"]
+        error.attributedTitle = "加载失败 点击重试".styled.make {
+            $0.find(.text("点击重试"))?.color(AppTheme.shared[.majorText])
+        }
+        error.style.padding = [-20, 0, 4, 0]
         self.addState(key: "error", dataSource: error)
     }
 
@@ -105,5 +108,11 @@ public class WKZEmptySetManager {
         var dataSource = self.stateView["loading"]!
         dataSource.title = text
         self.addState(key: "loading", dataSource: dataSource)
+    }
+
+    public func setErrorRefreshAction(_ action: @escaping VoidClosure) {
+        var dataSource = self.stateView["error"]!
+        dataSource.pageAction = action
+        self.addState(key: "error", dataSource: dataSource)
     }
 }

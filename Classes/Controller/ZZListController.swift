@@ -108,6 +108,10 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         self.commonInitView()
         self.noDataManager.masterView = self.tableView
         self.noDataManager.pageKey = .loading
+        self.noDataManager.setErrorRefreshAction { [weak self] in
+            self?.noDataManager.pageKey = .loading
+            self?.refresh()
+        }
     }
 
     open func commonInitView() {
