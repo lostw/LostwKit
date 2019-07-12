@@ -16,4 +16,8 @@ public extension Data {
     func toDictionary() -> [String: Any]? {
         return self.toJSONObject() as? [String: Any]
     }
+
+    func toArray() -> [Any]? {
+        return self.toJSONObject() as? [Any]
+    }
 }
