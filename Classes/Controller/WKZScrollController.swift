@@ -70,6 +70,10 @@ open class WKZScrollController: UIViewController {
         super.viewDidLoad()
         self.commonInitView()
         self.noDataMananger.masterView = self.scrollView
+        self.noDataMananger.setErrorRefreshAction { [weak self] in
+            self?.noDataMananger.pageKey = .loading
+            self?.fetch()
+        }
         // Do any additional setup after loading the view.
     }
 

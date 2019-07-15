@@ -57,7 +57,12 @@ public extension UIView {
 
 open class WKZLinearView: UIView {
     public var viewHeight: CGFloat = 44
-    public var padding = UIEdgeInsets.zero
+    public var padding = UIEdgeInsets.zero {
+        didSet {
+            isDirty = true
+            self.setNeedsUpdateConstraints()
+        }
+    }
     public var ignoreFirstTopMargin = true
     public var asNormal = false
     public var enableSeperatorLine = false {
@@ -73,7 +78,12 @@ open class WKZLinearView: UIView {
             self.lineLayer.strokeColor = self.lineColor.cgColor
         }
     }
-    public var lineInsets = UIEdgeInsets.zero
+    public var lineInsets = UIEdgeInsets.zero {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
+    private var isDirty = true
     lazy fileprivate var lineLayer: CAShapeLayer = {
         let layer = CAShapeLayer()
         layer.lineWidth = ONE_PX
@@ -199,7 +209,7 @@ open class WKZLinearView: UIView {
 
         var prevView: UIView?
         for (idx, view) in self.views.enumerated() {
-            if !view.zLinearLayout.isDirty {
+            if !isDirty && !view.zLinearLayout.isDirty {
                 prevView = view
                 continue
             }
