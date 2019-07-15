@@ -196,7 +196,7 @@ open class WKZTabBarController: UIViewController {
 
     override open func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        contentView.frame = CGRect(0, 40, view.bounds.width, view.bounds.height - 40)
+        contentView.frame = CGRect(0, 40, tabView.bounds.width, tabView.bounds.height - 40)
     }
 
     open func displayController(_ c: UIViewController) {

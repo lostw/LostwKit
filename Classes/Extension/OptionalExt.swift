@@ -17,6 +17,15 @@ public extension Optional where Wrapped == String {
         }
     }
 
+    var isBlank: Bool {
+        switch self {
+        case .none:
+            return true
+        case .some(let value):
+            return value.isEmpty
+        }
+    }
+
     var intValue: Int {
         switch self {
         case .none:

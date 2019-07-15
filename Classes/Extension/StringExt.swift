@@ -87,6 +87,23 @@ public extension String {
         return String(data: data, encoding: .utf8)
     }
 
+    func base64urlEncoded() -> String {
+        var base = base64Encoded()
+        base.replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
+        return base
+    }
+
+    func base64urlDecoded() -> String? {
+        var base64 = self.replacingOccurrences(of: "-", with: "+")
+                         .replacingOccurrences(of: "_", with: "/")
+        if base64.count % 4 != 0 {
+            base64.append(String(repeating: "=", count: 4 - base64.count % 4))
+        }
+        return base64.base64Decoded()
+    }
+
     mutating func appendQuery(_ params: [String: String]? = nil) {
         var link = self
 

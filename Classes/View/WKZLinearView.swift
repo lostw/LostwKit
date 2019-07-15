@@ -20,6 +20,7 @@ public class WKZLinearLayout {
         case containerHeight //使用容器设置的行高
     }
 
+    public var width: CGFloat?
     public var height: Height = .auto
     public var disableTopLine = false
     public var inFlow = true       // 是否在布局流中
@@ -247,6 +248,9 @@ open class WKZLinearView: UIView {
                     make.centerX.equalToSuperview()
                 case .end:
                     make.right.equalToSuperview().offset(-margin.right-self.padding.right)
+                }
+                if let width = layout.width, layout.justifyContent != .stretch {
+                    make.width.equalTo(width)
                 }
 
                 //默认view自约束高度

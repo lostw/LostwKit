@@ -152,11 +152,9 @@ public class ZZPlaceholderView: UIView {
                 if self.container.count > 0 {
                     button.zLinearLayout.margin.top = 30
                 }
-            }
-            if let size = style.buttonSize {
-                button.snp.makeConstraints { make in
-                    make.width.equalTo(size.width)
-                    make.height.equalTo(size.height)
+                if let size = style.buttonSize {
+                    $0.width = size.width
+                    $0.height = .manual(Double(size.height))
                 }
             }
 
