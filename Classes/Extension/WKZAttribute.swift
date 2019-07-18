@@ -106,6 +106,12 @@ public class WKZAttribute {
     }
 
     @discardableResult
+    public func firstLineHeadIndent(_ value: Float) -> WKZAttribute {
+        self.paragraphStyle.firstLineHeadIndent = CGFloat(value)
+        return self
+    }
+
+    @discardableResult
     public func headIndent(_ value: Float) -> WKZAttribute {
         self.paragraphStyle.headIndent = CGFloat(value)
         return self

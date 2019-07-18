@@ -71,6 +71,10 @@ public extension String {
         return self.utf8Data.toDictionary()
     }
 
+    func toArr() -> [Any]? {
+        return self.utf8Data.toArray()
+    }
+
     func toJSONObject() -> Any? {
         return self.utf8Data.toJSONObject()
     }
