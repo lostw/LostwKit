@@ -40,6 +40,9 @@ public class WKZEmptySetManager {
                     masterView.insertSubview(self.placeholderView, at: 0)
                 } else {
                     masterView.addSubview(self.placeholderView)
+                    self.placeholderView.snp.makeConstraints { (make) in
+                        make.edges.equalToSuperview()
+                    }
                 }
             }
         }
