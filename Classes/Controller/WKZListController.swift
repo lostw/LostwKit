@@ -96,6 +96,10 @@ open class WKZListController: UIViewController {
         self.refreshPage()
     }
 
+    open func cancel() {
+
+    }
+
     public func resetList() {
         self.list = []
         self.tableView.reloadData()

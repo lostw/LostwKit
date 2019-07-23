@@ -52,6 +52,7 @@ public protocol ZZJsonApi {
     func send(name: String, parameters: [String: Any]) -> Promise<T>
     func buildRequest(name: String, parameters: [String: Any]) -> DataRequest
     func parseResult(_ result: [String: Any]) throws -> T
+    func handleUniversalError(_ err: Error)
 }
 
 public extension ZZJsonApi {
@@ -73,6 +74,7 @@ public extension ZZJsonApi {
                         let response = try self.parseResult(dict)
                         seal.fulfill(response)
                     } catch let err {
+                        self.handleUniversalError(err)
                         seal.reject(err)
                     }
                 case .failure(let err):
@@ -82,6 +84,8 @@ public extension ZZJsonApi {
             }
         }
     }
+
+    func handleUniversalError(_ err: Error) {}
 }
 
 //public class WKZNetworkResponse: NSObject {

@@ -158,7 +158,7 @@ public extension String {
 
     // MARK: - 脱敏
     func mask(range: Range<Int>, charactor: Character = "*") -> String {
-        guard range.upperBound <= self.count - 1 else {
+        guard range.upperBound <= self.count else {
             return self
         }
 
@@ -183,7 +183,7 @@ public extension String {
 
         var range: Range<Int>!
         if count == 2 {
-            range = 1..<2
+            range = 0..<1
         } else {
             range = 1..<(count - 1)
         }
