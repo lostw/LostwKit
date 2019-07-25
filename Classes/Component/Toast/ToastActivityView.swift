@@ -7,7 +7,7 @@
 
 import UIKit
 
-public protocol ToastActivityView: AnyObject {
+public protocol ToastActivityView: UIView {
     var activityColor: UIColor? {get set}
     func setTitle(_ title: String?)
     func startAnimating()
