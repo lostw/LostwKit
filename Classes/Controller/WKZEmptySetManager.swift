@@ -36,7 +36,7 @@ public class WKZEmptySetManager {
     public var masterView: UIView! {
         didSet {
             if masterView != nil {
-                if masterView.isKind(of: UITableView.self) || masterView.isKind(of: UICollectionView.self) {
+                if masterView.isKind(of: UITableView.self) || masterView.isKind(of: UICollectionView.self) || masterView.isKind(of: UIScrollView.self) {
                     masterView.insertSubview(self.placeholderView, at: 0)
                 } else {
                     masterView.addSubview(self.placeholderView)

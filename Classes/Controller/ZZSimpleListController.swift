@@ -211,6 +211,15 @@ open class ZZSimpleListController<C: UITableViewCell, Model: Mapable>: UIViewCon
         }
     }
 
+    public func resetList() {
+        self.list = []
+        self.tableView.reloadData()
+        self.noDataManager.visible = true
+        self.noDataManager.setErrorText("")
+        self.noDataManager.pageKey = .loading
+        self.tableView.removePushRefresh()
+    }
+
     // MARK: - UITableViewDelegate UITableViewDataSource
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.list.count

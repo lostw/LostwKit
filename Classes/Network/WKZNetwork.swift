@@ -14,7 +14,7 @@ import PromiseKit
 public struct NetworkErrorDesc {
     public static let unknown = "网络错误"
     public static let messageNotFound = "服务错误，请稍后再试"
-    public static let parseFailure = "服务解析错误"
+    public static let parseFailure = "服务错误(1000)，请稍后再试"
 }
 
 public typealias ParameterConfiguration = ([String: Any]?) -> [String: Any]
@@ -28,13 +28,29 @@ public protocol ZZApiResponse {
     init(dict: [String: Any]) throws
 }
 
+public enum ZZApiErrorCode: Int {
+    case parseFailure = 1000
+    case parseFailureCode = 1001
+    case parseFailureMessage = 1002
+}
+
 public struct ZZApiError: Error, LocalizedError {
     public var code: String
     public var message: String
 
-    public init(code: String = "-1", message: String = "未知错误") {
+    public init(code: String = "-1", message: String? = nil) {
         self.code = code
-        self.message = message
+        if let message = message {
+            self.message = message
+        } else {
+            self.message = "服务错误(\(code))，请稍后再试"
+        }
+
+    }
+
+    public init(buildin errorCode: ZZApiErrorCode) {
+        self.code = "x\(errorCode.rawValue)"
+        self.message = "服务错误(\(errorCode.rawValue))，请稍后再试"
     }
 
     public init(networkError: Error, statusCode: Int?) {
