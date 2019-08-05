@@ -44,6 +44,16 @@ class TextFieldFilter: NSObject, UITextFieldDelegate {
             self.originDelegate?.textFieldDidBeginEditing?(textField)
         }
     }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let origin = self.originDelegate else {
+            return
+        }
+
+        if origin.responds(to: #selector(textFieldDidEndEditing(_:))) {
+            self.originDelegate?.textFieldDidEndEditing?(textField)
+        }
+    }
 }
 
 private var textFieldFilterKey: UInt8 = 0

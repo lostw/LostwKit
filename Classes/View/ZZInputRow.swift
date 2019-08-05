@@ -11,6 +11,7 @@ import UIKit
 public class ZZInputRow: UIView {
     public let field: UITextField = ZZTextField()
     public let titleLabel = UILabel()
+    public var onBlur: (() -> Void)?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -34,26 +35,32 @@ public class ZZInputRow: UIView {
     }
 
     func commonInitView() {
-        self.backgroundColor = UIColor.white
+        backgroundColor = .white
 
-        self.titleLabel.zFontSize(14).zColor(AppTheme.shared[.title])
-        self.addSubview(self.titleLabel)
-        self.titleLabel.snp.makeConstraints { (make) in
+        titleLabel.zFontSize(14).zColor(AppTheme.shared[.title])
+        addSubview(self.titleLabel)
+        titleLabel.snp.makeConstraints { (make) in
             make.left.equalToSuperview().offset(15)
             make.centerY.equalToSuperview()
             make.width.equalTo(80)
         }
 
-        self.field.font = UIFont.systemFont(ofSize: 14)
-        self.field.textColor = AppTheme.shared[.text]
-        self.field.clearButtonMode = .whileEditing
-        self.addSubview(self.field)
-        self.field.snp.makeConstraints { (make) in
+        field.font = UIFont.systemFont(ofSize: 14)
+        field.textColor = AppTheme.shared[.text]
+        field.clearButtonMode = .whileEditing
+        field.delegate = self
+        addSubview(self.field)
+        field.snp.makeConstraints { (make) in
             make.left.equalTo(self.titleLabel.snp.right).offset(0)
             make.centerY.equalToSuperview()
             make.height.equalTo(40)
             make.right.equalToSuperview().offset(-15)
         }
     }
+}
 
+extension ZZInputRow: UITextFieldDelegate {
+    public func textFieldDidEndEditing(_ textField: UITextField) {
+        onBlur?()
+    }
 }

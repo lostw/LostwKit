@@ -54,7 +54,7 @@ open class ZZSimpleListController<C: UITableViewCell, Model: Mapable>: UIViewCon
     public typealias M = Model
 
     public typealias ConfigureCellCallback = (C, M, IndexPath) -> Void
-    public typealias DidSelectItemCallback = (M, IndexPath) -> Void
+    public typealias CellItemCallback = (M, IndexPath) -> Void
     public typealias WillLoadTableCallback = () -> Void
     public typealias DidFetchData = ([String: Any]) -> Void
     public class ModelParser<T: Mapable> {
@@ -74,8 +74,9 @@ open class ZZSimpleListController<C: UITableViewCell, Model: Mapable>: UIViewCon
     public var parser = ModelParser<M>()
     public var isDataFetched: Bool = false
     public var configCell: ConfigureCellCallback?
-    public var didSelectItem: DidSelectItemCallback?
+    public var didSelectItem: CellItemCallback?
     public var willLoadTable: WillLoadTableCallback?
+    public var onDelete: CellItemCallback?
     public var didFetchData: DidFetchData?
     public var autoParse = true
     public var dataProvider: ZZListDataProvider! {
@@ -247,6 +248,20 @@ open class ZZSimpleListController<C: UITableViewCell, Model: Mapable>: UIViewCon
     //remove extra bottom line
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.1
+    }
+
+    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return self.onDelete != nil
+    }
+
+    public func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .delete
+    }
+
+    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            self.onDelete?(self.list[indexPath.row], indexPath)
+        }
     }
 
     // MARK: - Pageable
