@@ -17,7 +17,7 @@ public class ZZToggleRow: UIView {
         super.init(frame: frame)
         self.commonInitView()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -25,10 +25,10 @@ public class ZZToggleRow: UIView {
     @objc func toggle(sender: UISwitch) {
         self.onToggle?(sender.isOn)
     }
-    
+
     func commonInitView() {
         backgroundColor = .white
-        
+
         titleLabel = UILabel()
         self.addSubview(self.titleLabel)
         self.titleLabel.font = UIFont.systemFont(ofSize: 14)
@@ -46,7 +46,7 @@ public class ZZToggleRow: UIView {
         }
         switcher.addTarget(self, action: #selector(toggle), for: .valueChanged)
     }
-    
+
     /*
     override func layoutSubviews() {
         super.layoutSubviews()

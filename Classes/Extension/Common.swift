@@ -144,7 +144,7 @@ public func storageSizeDesc(_ size: UInt) -> String {
     if size == 0 {
         return "0K"
     }
-    
+
     var double = Double(size) / 1024
     var level = 0
     let unit = ["K", "M", "G"]

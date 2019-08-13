@@ -94,8 +94,12 @@ public extension ZZJsonApi {
                         seal.reject(err)
                     }
                 case .failure(let err):
-                    let code = $0.response?.statusCode ?? -1000
-                    seal.reject(ZZApiError(code: "http\(code)", message: err.localizedDescription))
+                    if let afError = err as? AFError, afError.isResponseSerializationError {
+                        seal.reject(ZZApiError(buildin: .parseFailure))
+                    } else {
+                        let code = $0.response?.statusCode ?? -1000
+                        seal.reject(ZZApiError(code: "http\(code)", message: err.localizedDescription))
+                    }
                 }
             }
         }

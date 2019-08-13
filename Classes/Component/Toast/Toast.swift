@@ -319,11 +319,6 @@ public extension UIView {
     }
 
     @available(*, deprecated, message: "use loading instead")
-    @objc func showIndicator(_ text: String) {
-        self.showIndicator(loadingText: text)
-    }
-
-    @available(*, deprecated, message: "use loading instead")
     @objc func showIndicator(loadingText: String? = nil) {
         self.loading(loadingText)
     }
@@ -331,11 +326,6 @@ public extension UIView {
     @available(*, deprecated, message: "use loading(updateText:) instead")
     func replaceIndicator(loadingText: String? = nil) {
         self.loadingUpdate(loadingText)
-    }
-
-    @available(*, deprecated, message: "use hideLoading instead")
-    @objc func hideIndicator() {
-        self.hideLoading()
     }
 
     @available(*, deprecated, message: "use clearLoading instead")

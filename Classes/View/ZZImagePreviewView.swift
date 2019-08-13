@@ -24,7 +24,7 @@ public class ZZImagePreviewView: UIView {
         super.init(frame: frame)
         self.commonInitView()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -44,7 +44,7 @@ public class ZZImagePreviewView: UIView {
     func reset() {
         scrollView.zoomScale = 1
     }
-    
+
     func commonInitView() {
         scrollView.bouncesZoom = true
         scrollView.maximumZoomScale = 4
@@ -80,7 +80,7 @@ public class ZZImagePreviewView: UIView {
                 height = scrollView.bounds.height
                 width = image.size.width / image.size.height * height
             }
-            
+
             scrollView.zoomScale = 1
             imageView.frame = scrollView.bounds.rectForCenterSize(CGSize(width, height))
             scrollView.contentSize = scrollView.bounds.size

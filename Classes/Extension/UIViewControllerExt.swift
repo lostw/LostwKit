@@ -166,7 +166,7 @@ public extension UIViewController {
 
         let controller = UIAlertController(title: title, message: message, preferredStyle: .alert)
         if style == .prompt {
-            let cancel = UIAlertAction(title: cancelTitle, style: .default, handler: { (_) in
+            let cancel = UIAlertAction(title: cancelTitle, style: .cancel, handler: { (_) in
                 if let callback = callback {
                     callback(false)
                 }

@@ -16,7 +16,7 @@ public extension UIButton {
         if isRound {
             btn.percentCornerRadius = 0.5
         }
-        
+
         return btn
     }
 
