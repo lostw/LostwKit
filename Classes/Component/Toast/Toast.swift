@@ -165,6 +165,14 @@ public extension UIView {
 
     // MARK: - convience text Toast method
     func toast(_ message: String, style: ToastView.Style = .normal) {
+        if UIApplication.shared.applicationState == .background {
+            return
+        }
+
+        if message.isEmpty {
+            return
+        }
+
         let view = ToastView(message: message, style: style)
         self.showToast(view, position: .center)
     }

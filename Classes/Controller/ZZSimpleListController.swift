@@ -28,8 +28,18 @@ public protocol ZZPagable: AnyObject {
 }
 
 public protocol ZZListDataProvider: AnyObject {
+    var parameters: [String: Any] {get set}
     var onDataFetched: (([Any], Bool, Error?) -> Void)? {get set}
     func fetch(at page: Int)
+    func configParameters(_ dict: [String: Any])
+}
+
+extension ZZListDataProvider {
+    public func configParameters(_ dict: [String: Any]) {
+        for (key, value) in dict {
+            self.parameters[key] = value
+        }
+    }
 }
 
 extension ZZPagable {
