@@ -26,7 +26,9 @@ public class ZZLaunchView: UIView {
         }
     }
     var onTouch: ZZLaunchViewCallback?
-
+    deinit {
+        print("======")
+    }
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.commonInitView()
