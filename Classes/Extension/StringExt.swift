@@ -206,6 +206,10 @@ public extension String {
     }
 
     subscript(i: Int, length: Int) -> Substring {
+        var length = length
+        if (self.count - i) < length {
+            length = self.count - i
+        }
         return self[index(startIndex, offsetBy: i)..<index(startIndex, offsetBy: i+length)]
     }
 }
