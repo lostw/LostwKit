@@ -69,14 +69,20 @@ public protocol ZZJsonApi {
     func buildRequest(name: String, parameters: [String: Any]) -> DataRequest
     func parseResult(_ result: [String: Any]) throws -> T
     func handleUniversalError(_ err: Error)
+    func send(request: DataRequest) -> Promise<T>
 }
 
 public extension ZZJsonApi {
     @discardableResult
     func send(name: String, parameters: [String: Any]) -> Promise<T> {
+        let request = self.buildRequest(name: name, parameters: parameters)
+        return send(request: request)
+    }
+
+    @discardableResult
+    func send(request: DataRequest) -> Promise<T> {
+        debugPrint(request)
         return Promise { seal in
-            let request = self.buildRequest(name: name, parameters: parameters)
-            debugPrint(request)
             request.responseJSON {
                 switch $0.result {
                 case .success(let value):

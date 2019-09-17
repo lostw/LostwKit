@@ -111,7 +111,6 @@ public extension Date {
 extension TimeInterval {
     func asDate(isMicro: Bool = false) -> Date {
         let date = Date(timeIntervalSince1970: (isMicro ? self / 1000 : self))
-        print(date)
         return date
     }
 }
