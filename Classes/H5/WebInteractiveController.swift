@@ -47,11 +47,11 @@ public class WebInteractiveController {
         // bridge会变成webview的WKNavigationDelegate, 通过setWebViewDelegate将代理再转出来
         self.bridge.setWebViewDelegate(vc)
         self.bridge.registerHandler("postMessage") { [unowned self] (data, callback) in
-            guard let dict = data as? [String: Any] else {
-                return
+            if let str = data as? String, let dict = str.toDict() {
+                self.dispatch(dict, callback: callback)
+            } else if let dict = data as? [String: Any] {
+                self.dispatch(dict, callback: callback)
             }
-
-            self.dispatch(dict, callback: callback)
         }
     }
 
