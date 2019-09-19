@@ -89,6 +89,8 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
     public var didFetchData: DidFetchData?
     public var autoParse = true
 
+    private var rowHeightList: [CGFloat] = []
+
     var requestType = 0
 
     var forPager: Bool {
@@ -194,6 +196,19 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         return self.list.count
     }
 
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if tableView.estimatedRowHeight != 0 {
+            if rowHeightList.count == list.count {
+                print("行高:", rowHeightList[indexPath.row])
+                return rowHeightList[indexPath.row] > 0 ? rowHeightList[indexPath.row] : UITableView.automaticDimension
+            } else {
+                return UITableView.automaticDimension
+            }
+        } else {
+            return tableView.rowHeight
+        }
+    }
+
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellIdentifier(at: indexPath), for: indexPath)
 
@@ -202,6 +217,11 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         }
 
         self.configCell?(cell as! C, self.list[indexPath.row], indexPath)
+
+        if rowHeightList.count == list.count {
+            let cellHeight = cell.systemLayoutSizeFitting(CGSize.init(width: tableView.bounds.width, height: 0), withHorizontalFittingPriority: UILayoutPriority.required, verticalFittingPriority: UILayoutPriority.fittingSizeLevel).height
+            rowHeightList[indexPath.row] = cellHeight
+        }
 
         return cell
     }
@@ -271,6 +291,7 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         self.tableView.stopPullRefreshEver()
         self.tableView.stopPushRefreshEver()
 
+        self.rowHeightList = [CGFloat](repeating: 0, count: list.count)
         self.tableView.reloadData()
     }
 }
