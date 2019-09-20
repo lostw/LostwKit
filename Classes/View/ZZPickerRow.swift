@@ -37,7 +37,7 @@ class ZZPickerToolbar: UIView {
 
         let confirmButton = UIButton()
         confirmButton.zColor(UIColor(hex: 0x528bd2)).zFontSize(14).zText("确定")
-        confirmButton.contentEdgeInsets = UIEdgeInsets(8, 10, 8, 10)
+        confirmButton.contentEdgeInsets = [8, 10, 8, 10]
         self.addSubview(confirmButton)
         confirmButton.snp.makeConstraints { (make) in
             make.right.equalToSuperview().offset(-12)
