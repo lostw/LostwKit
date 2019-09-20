@@ -60,11 +60,10 @@ extension ZZPagable {
     public func cancel() {}
 }
 
-open class ZZSimpleListController<C: UITableViewCell, Model: Mapable>: UIViewController, UITableViewDelegate, UITableViewDataSource, ZZPagable {
-    public typealias M = Model
+open class ZZSimpleListController<Cell: UITableViewCell, Model: Mapable>: UIViewController, UITableViewDelegate, UITableViewDataSource, ZZPagable {
 
-    public typealias ConfigureCellCallback = (C, M, IndexPath) -> Void
-    public typealias CellItemCallback = (M, IndexPath) -> Void
+    public typealias CellConfigCallback = (Cell, Model, IndexPath) -> Void
+    public typealias CellActionCallback = (Model, IndexPath) -> Void
     public typealias WillLoadTableCallback = () -> Void
     public typealias DidFetchData = ([String: Any]) -> Void
     public class ModelParser<T: Mapable> {
@@ -75,20 +74,21 @@ open class ZZSimpleListController<C: UITableViewCell, Model: Mapable>: UIViewCon
 
     public var parameters = [String: Any]()
 
-    public var list = [M]()
+    public var list = [Model]()
     public let tableView = UITableView()
     public var page: Int = 0
     public var pageSize: Int = 15
     public let cellIdentifier = defaultCellIdentifier
     public var isError = false
-    public var parser = ModelParser<M>()
+    public var parser: ModelParser<Model>? = ModelParser<Model>()
     public var isDataFetched: Bool = false
-    public var configCell: ConfigureCellCallback?
-    public var didSelectItem: CellItemCallback?
+    public var onConfig: CellConfigCallback?
+    public var onSelect: CellActionCallback?
+    public var onDelete: CellActionCallback?
+
     public var willLoadTable: WillLoadTableCallback?
-    public var onDelete: CellItemCallback?
     public var didFetchData: DidFetchData?
-    public var autoParse = true
+
     public var dataProvider: ZZListDataProvider! {
         didSet {
             setupSourceHandler()
@@ -124,7 +124,7 @@ open class ZZSimpleListController<C: UITableViewCell, Model: Mapable>: UIViewCon
         self.edgesForExtendedLayout = []
 
         self.tableView.tableFooterView = UIView()
-        self.tableView.backgroundColor = AppTheme.shared[.background]
+        self.tableView.backgroundColor = Theme.shared[.background]
 
         self.view.addSubview(self.tableView)
         self.tableView.estimatedRowHeight = 0
@@ -142,7 +142,7 @@ open class ZZSimpleListController<C: UITableViewCell, Model: Mapable>: UIViewCon
             }
         }
 
-        self.tableView.register(C.self, forCellReuseIdentifier: defaultCellIdentifier)
+        self.tableView.register(Cell.self, forCellReuseIdentifier: defaultCellIdentifier)
     }
 
     public func refresh() {
@@ -243,7 +243,7 @@ open class ZZSimpleListController<C: UITableViewCell, Model: Mapable>: UIViewCon
             return cell
         }
 
-        self.configCell?(cell as! C, self.list[indexPath.row], indexPath)
+        self.onConfig?(cell as! Cell, self.list[indexPath.row], indexPath)
 
         return cell
     }
@@ -251,7 +251,7 @@ open class ZZSimpleListController<C: UITableViewCell, Model: Mapable>: UIViewCon
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.row < self.list.count {
-            self.didSelectItem?(self.list[indexPath.row], indexPath)
+            self.onSelect?(self.list[indexPath.row], indexPath)
         }
     }
 
@@ -275,16 +275,14 @@ open class ZZSimpleListController<C: UITableViewCell, Model: Mapable>: UIViewCon
     }
 
     // MARK: - Pageable
-    public func parseItem(_ item: Any) -> M? {
-
-        if !autoParse {
-            return item as? M
+    public func parseItem(_ item: Any) -> Model? {
+        if let parser = self.parser {
+            if let item = item as? [String: Any] {
+                return parser.parse(item)
+            }
         }
 
-        if let item = item as? [String: Any] {
-            return parser.parse(item)
-        }
-        return nil
+        return item as? Model
     }
 
     public func toggleLoadMore(_ more: Bool) {

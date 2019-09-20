@@ -154,7 +154,7 @@ public class ZZAlertController: UIViewController {
             cancelButton.setTitle(cancelTitle, for: .normal)
             cancelButton.frame = CGRect(width, 0, width, height)
             cancelButton.tag = 100
-            cancelButton.setTitleColor(AppTheme.shared[.promptText], for: .normal)
+            cancelButton.setTitleColor(Theme.shared[.promptText], for: .normal)
             wrapper.addSubview(cancelButton)
 
             let confirmButton = self.buildButton()

@@ -61,7 +61,7 @@ open class WKZTextView: UITextView {
         self.placeholderLayer.contentsScale = UIScreen.main.scale
         self.layer.addSublayer(self.placeholderLayer)
 
-        self.textColor = AppTheme.shared[.text]
+        self.textColor = Theme.shared[.text]
     }
 
     override open func layoutSubviews() {

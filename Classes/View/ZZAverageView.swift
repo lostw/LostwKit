@@ -47,7 +47,7 @@ public class ZZAverageView: UIView {
         }
 
         if enableSeperatorLine && views.count > 1 {
-            let lineColor = self.lineColor ?? AppTheme.shared[.border]
+            let lineColor = self.lineColor ?? Theme.shared[.border]
             for idx in 1..<views.count {
                 let line = UIView()
                 line.backgroundColor = lineColor

@@ -120,7 +120,7 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         self.edgesForExtendedLayout = []
 
         self.tableView.tableFooterView = UIView()
-        self.tableView.backgroundColor = AppTheme.shared[.background]
+        self.tableView.backgroundColor = Theme.shared[.background]
 
         self.view.addSubview(self.tableView)
         self.tableView.estimatedRowHeight = 0

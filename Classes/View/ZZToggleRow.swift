@@ -32,7 +32,7 @@ public class ZZToggleRow: UIView {
         titleLabel = UILabel()
         self.addSubview(self.titleLabel)
         self.titleLabel.font = UIFont.systemFont(ofSize: 14)
-        self.titleLabel.textColor = AppTheme.shared[.title]
+        self.titleLabel.textColor = Theme.shared[.title]
         self.titleLabel.snp.makeConstraints { (make) in
             make.centerY.equalToSuperview()
             make.left.equalToSuperview().offset(15)

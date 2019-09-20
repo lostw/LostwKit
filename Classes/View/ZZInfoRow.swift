@@ -36,7 +36,7 @@ open class ZZInfoRow: UIView {
         let row = ZZInfoRow()
 
         row.showIcon(icon)
-        row.titleLabel.zText(title).zColor(AppTheme.shared[.title]).zFontSize(15)
+        row.titleLabel.zText(title).zColor(Theme.shared[.title]).zFontSize(15)
         row.valueLabel.textAlignment = .right
 
         return row
@@ -92,7 +92,7 @@ open class ZZInfoRow: UIView {
 
         self.addSubview(self.titleLabel)
         self.titleLabel.font = UIFont.systemFont(ofSize: 14)
-        self.titleLabel.textColor = AppTheme.shared[.title]
+        self.titleLabel.textColor = Theme.shared[.title]
         self.titleLabel.snp.makeConstraints { (make) in
             make.centerY.equalToSuperview()
             make.left.equalToSuperview().offset(15)
@@ -100,7 +100,7 @@ open class ZZInfoRow: UIView {
 
         self.addSubview(self.valueLabel)
         self.valueLabel.font = UIFont.systemFont(ofSize: 14)
-        self.valueLabel.textColor = AppTheme.shared[.text]
+        self.valueLabel.textColor = Theme.shared[.text]
         self.valueLabel.snp.makeConstraints { (make) in
             make.centerY.equalToSuperview()
             make.left.equalToSuperview().offset(100)

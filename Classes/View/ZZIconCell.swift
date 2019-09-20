@@ -47,7 +47,7 @@ public class ZZIconCell: UIView {
         titleLabel.textAlignment = .center
         self.addSubview(self.titleLabel)
         self.titleLabel.font = UIFont.systemFont(ofSize: 14)
-        self.titleLabel.textColor = AppTheme.shared[.title]
+        self.titleLabel.textColor = Theme.shared[.title]
         self.titleLabel.snp.makeConstraints { (make) in
             make.left.right.equalToSuperview()
 //            make.bottom.equalTo(self.snp.centerY).offset(-4)

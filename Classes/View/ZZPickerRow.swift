@@ -28,7 +28,7 @@ class ZZPickerToolbar: UIView {
         self.backgroundColor = .white
 
         titleLabel = UILabel()
-        titleLabel.zFontSize(15).zColor(AppTheme.shared[.title])
+        titleLabel.zFontSize(15).zColor(Theme.shared[.title])
         self.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { (make) in
             make.centerY.equalToSuperview()
@@ -115,7 +115,7 @@ open class ZZPickerRow: UIView {
         self.addSubview(field)
 
         titleLabel = UILabel()
-        titleLabel.zFontSize(14).zColor(AppTheme.shared[.title])
+        titleLabel.zFontSize(14).zColor(Theme.shared[.title])
         self.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { (make) in
             make.left.equalToSuperview().offset(15)
@@ -124,7 +124,7 @@ open class ZZPickerRow: UIView {
         }
 
         valueLabel = UILabel()
-        valueLabel.zFontSize(14).zColor(AppTheme.shared[.text])
+        valueLabel.zFontSize(14).zColor(Theme.shared[.text])
         self.addSubview(valueLabel)
         valueLabel.snp.makeConstraints { (make) in
             make.left.equalTo(titleLabel.snp.right)

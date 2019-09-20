@@ -166,7 +166,7 @@ open class WKZTabBarController: UIViewController {
 
     open func commonInitView() {
         self.edgesForExtendedLayout = []
-        self.view.backgroundColor = AppTheme.shared[.background]
+        self.view.backgroundColor = Theme.shared[.background]
         self.configureLayout()
     }
 
@@ -176,7 +176,7 @@ open class WKZTabBarController: UIViewController {
             make.edges.equalToSuperview()
         }
 
-        tabBar.highlightedColor = AppTheme.shared[.majorText]
+        tabBar.highlightedColor = Theme.shared[.majorText]
         tabBar.didTouchButtonCallback = { [weak self] idx in
             guard let self = self else { return }
             self.selectedIndex = idx

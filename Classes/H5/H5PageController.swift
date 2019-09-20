@@ -90,7 +90,7 @@ public class H5PageController: UIViewController, UINavigationBack {
 
     // MARK: - private methods
     func commonInitView() {
-        self.view.backgroundColor = AppTheme.shared[.background]
+        self.view.backgroundColor = Theme.shared[.background]
 
         self.addWebView()
         if let config = self.configuration {

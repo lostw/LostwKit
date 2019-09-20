@@ -107,9 +107,9 @@ public class ZZLaunchView: UIView {
             }
 
             let label = UILabel()
-            label.zText("跳过").zFontSize(14).zColor(AppTheme.shared[.majorText]).zAlign(.center).zBgColor(.clear)
+            label.zText("跳过").zFontSize(14).zColor(Theme.shared[.majorText]).zAlign(.center).zBgColor(.clear)
             label.layer.cornerRadius = 20
-            label.layer.borderColor = AppTheme.shared[.border].cgColor
+            label.layer.borderColor = Theme.shared[.border].cgColor
             label.layer.borderWidth = 3
             view.addSubview(label)
             label.snp.makeConstraints { (make) in
@@ -122,7 +122,7 @@ public class ZZLaunchView: UIView {
             skipLabel = label
 
             let animationLayer = CAShapeLayer()
-            animationLayer.strokeColor = AppTheme.shared[.majorText].cgColor
+            animationLayer.strokeColor = Theme.shared[.majorText].cgColor
             animationLayer.fillColor = UIColor.clear.cgColor
             animationLayer.frame = CGRect(0, 0, 40, 40)
             animationLayer.path = UIBezierPath(arcCenter: CGPoint(x: 20, y: 20), radius: 18.5, startAngle: -CGFloat.pi / 2, endAngle: CGFloat.pi * 1.5, clockwise: true).cgPath

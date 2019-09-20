@@ -89,7 +89,7 @@ public class WKZEmptySetManager {
         var error = ZZPlaceholderView.DataSource()
         error.images = ["icon_record_fail"]
         error.attributedTitle = "加载失败 点击重试".styled.make {
-            $0.find(.text("点击重试"))?.color(AppTheme.shared[.majorText])
+            $0.find(.text("点击重试"))?.color(Theme.shared[.majorText])
         }
         error.style.padding = [-20, 0, 4, 0]
         self.addState(key: "error", dataSource: error)

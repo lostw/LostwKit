@@ -19,7 +19,7 @@ public class ZZPlaceholderView: UIView {
         public var buttonSize: CGSize?
         public var configButton: ((UIButton) -> Void) = { button in
             button.titleLabel!.font = UIFont.systemFont(ofSize: 16)
-            button.setTitleColor(AppTheme.shared[.majorText], for: .normal)
+            button.setTitleColor(Theme.shared[.majorText], for: .normal)
         }
 
         public init() {}
