@@ -106,12 +106,22 @@ public extension UIViewController {
         }
     }
 
-    @objc func close(delay: TimeInterval = 0) {
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delay) {
+    /// 用于返回按钮事件绑定
+    @objc func close() {
+        self.dismiss(animated: true)
+    }
+
+    func closeDelay(_ delay: TimeInterval = 0) {
+        if delay > 0 {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delay) {
+                self.dismiss(animated: true)
+            }
+        } else {
             self.dismiss(animated: true)
         }
     }
 
+    /// 用于返回按钮事件绑定
     @objc func pop() {
         self.navBack()
     }

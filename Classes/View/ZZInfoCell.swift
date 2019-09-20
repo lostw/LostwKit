@@ -40,7 +40,7 @@ public class ZZInfoCell: UIView {
         titleLabel.textAlignment = .center
         self.addSubview(self.titleLabel)
         self.titleLabel.font = UIFont.systemFont(ofSize: 14)
-        self.titleLabel.textColor = AppTheme.shared[.title]
+        self.titleLabel.textColor = Theme.shared[.title]
         self.titleLabel.snp.makeConstraints { (make) in
             make.left.right.equalToSuperview()
             self.titleBottomConstraint = make.bottom.equalTo(self.snp.centerY).offset(-4).constraint
@@ -50,7 +50,7 @@ public class ZZInfoCell: UIView {
         valueLabel.textAlignment = .center
         self.addSubview(self.valueLabel)
         self.valueLabel.font = UIFont.systemFont(ofSize: 14)
-        self.valueLabel.textColor = AppTheme.shared[.promptText]
+        self.valueLabel.textColor = Theme.shared[.promptText]
         self.valueLabel.snp.makeConstraints { (make) in
             make.left.right.equalToSuperview()
             self.gapConstraint = make.top.equalTo(self.titleLabel.snp.bottom).offset(8).constraint

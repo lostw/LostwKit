@@ -9,7 +9,7 @@ import Foundation
 
 public extension UIButton {
     static func primary(isRound: Bool = true) -> UIButton {
-        let btn = WKZStateButton(color: AppTheme.shared[.primary], disabled: AppTheme.shared[.disabled])
+        let btn = WKZStateButton(color: Theme.shared[.primary], disabled: Theme.shared[.disabled])
 
         btn.setTitleColor(.white, for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
@@ -21,7 +21,7 @@ public extension UIButton {
     }
 
     static func major(isRound: Bool = true) -> UIButton {
-        let btn = WKZStateButton(color: AppTheme.shared[.major])
+        let btn = WKZStateButton(color: Theme.shared[.major])
 
         btn.setTitleColor(UIColor.white, for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)

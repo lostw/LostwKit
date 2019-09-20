@@ -96,7 +96,7 @@ open class WKZScrollController: UIViewController {
         self.edgesForExtendedLayout = []
 
         self.view.addSubview(self.scrollView)
-        self.scrollView.backgroundColor = AppTheme.shared[.background]
+        self.scrollView.backgroundColor = Theme.shared[.background]
         self.scrollView.snp.makeConstraints { (make) in
 //            if #available(iOS 11.0, *) {
 //                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)

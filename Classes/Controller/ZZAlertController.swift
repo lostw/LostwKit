@@ -154,7 +154,7 @@ public class ZZAlertController: UIViewController {
             cancelButton.setTitle(cancelTitle, for: .normal)
             cancelButton.frame = CGRect(width, 0, width, height)
             cancelButton.tag = 100
-            cancelButton.setTitleColor(AppTheme.shared[.promptText], for: .normal)
+            cancelButton.setTitleColor(Theme.shared[.promptText], for: .normal)
             wrapper.addSubview(cancelButton)
 
             let confirmButton = self.buildButton()
@@ -164,7 +164,7 @@ public class ZZAlertController: UIViewController {
             wrapper.addSubview(confirmButton)
 
             let seperator = UIView()
-            seperator.frame = CGRect(0, 0, 1, height)
+            seperator.frame = CGRect(width, 0, 1, height)
             seperator.backgroundColor = UIColor(hex: 0xeeeeee)
             wrapper.addSubview(seperator)
         }
@@ -204,9 +204,9 @@ public class ZZAlertController: UIViewController {
     func buildMessageLabel() -> UILabel {
         let label = UILabel()
         if #available(iOS 10, *) {
-            label.font = UIFont(name: ".SFUIText-Semibold", size: 13)
+            label.font = UIFont(name: ".SFUIText", size: 13)
         } else {
-            label.font = UIFont.boldSystemFont(ofSize: 13)
+            label.font = UIFont.systemFont(ofSize: 13)
         }
         label.textColor = .black
         label.textAlignment = .center

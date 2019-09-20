@@ -36,7 +36,7 @@ public extension UIView {
 
     @discardableResult
     func addBottomLine(color: UIColor? = nil, left: CGFloat = 0, right: CGFloat = 0) -> UIView {
-        let color = color ?? AppTheme.shared[.border]
+        let color = color ?? Theme.shared[.border]
         let line = UIView()
         line.backgroundColor = color
         self.addSubview(line)
@@ -51,7 +51,7 @@ public extension UIView {
     }
 
     func addTopLine(color: UIColor? = nil, left: CGFloat = 0, right: CGFloat = 0) {
-        let color = color ?? AppTheme.shared[.border]
+        let color = color ?? Theme.shared[.border]
         let line = UIView()
         line.backgroundColor = color
         self.addSubview(line)

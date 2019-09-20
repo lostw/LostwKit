@@ -31,10 +31,10 @@ public class OptionSectionView: UIView {
     var isHighlight: Bool = false {
         didSet {
             if self.isHighlight {
-                self.titleLabel.textColor = AppTheme.shared[.majorText]
+                self.titleLabel.textColor = Theme.shared[.majorText]
                 self.triangle.transform = CATransform3DMakeRotation(.pi, 0, 0, 1)
             } else {
-                self.titleLabel.textColor = AppTheme.shared[.text]
+                self.titleLabel.textColor = Theme.shared[.text]
                 self.triangle.transform = CATransform3DIdentity
             }
         }
@@ -55,7 +55,7 @@ public class OptionSectionView: UIView {
     }
 
     func commonInitView() {
-        self.titleLabel.textColor = AppTheme.shared[.text]
+        self.titleLabel.textColor = Theme.shared[.text]
         self.titleLabel.font = UIFont.systemFont(ofSize: 14)
         self.addSubview(self.titleLabel)
 
@@ -289,7 +289,7 @@ extension OptionDropView: UITableViewDelegate, UITableViewDataSource {
         if cell == nil {
             cell = UITableViewCell.init(style: .default, reuseIdentifier: OptionDropView.identifier)
             cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
-            cell.tintColor = AppTheme.shared[.majorText]
+            cell.tintColor = Theme.shared[.majorText]
 
             cell.layoutMargins = UIEdgeInsets.zero
         }
@@ -297,10 +297,10 @@ extension OptionDropView: UITableViewDelegate, UITableViewDataSource {
         if let delegate = self.delegate {
             let idx = delegate.dropView(self, defaultIndexForSection: self.currentSection)
             if idx == indexPath.row {
-                cell.textLabel?.textColor = AppTheme.shared[.majorText]
+                cell.textLabel?.textColor = Theme.shared[.majorText]
                 cell.accessoryType = .checkmark
             } else {
-                cell.textLabel?.textColor = AppTheme.shared[.text]
+                cell.textLabel?.textColor = Theme.shared[.text]
                 cell.accessoryType = .none
             }
             var text = delegate.dropView?(self, dropTitleAt: IndexPath(row: indexPath.row, section: self.currentSection))

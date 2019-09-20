@@ -144,12 +144,12 @@ public class ZZCodeButton: UIButton, ZZCounterdownButton {
 
     func commonInitView() {
         self.backgroundColor = UIColor.clear
-        self.setTitleColor(AppTheme.shared[.majorText], for: .normal)
+        self.setTitleColor(Theme.shared[.majorText], for: .normal)
         self.setTitleColor(UIColor(hex: 0x9f9f9f), for: .disabled)
         self.titleLabel?.font = UIFont.systemFont(ofSize: 12)
 
         self.layer.cornerRadius = 3
         self.layer.borderWidth = 1
-        self.layer.borderColor = AppTheme.shared[.majorText].cgColor
+        self.layer.borderColor = Theme.shared[.majorText].cgColor
     }
 }

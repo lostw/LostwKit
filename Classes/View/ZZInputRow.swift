@@ -24,7 +24,7 @@ public class ZZInputRow: UIView {
 
     public func setPlaceholder(_ p: String?) {
         if let p = p {
-            self.field.attributedPlaceholder = NSMutableAttributedString(string: p, attributes: [.foregroundColor: AppTheme.shared[.promptText]])
+            self.field.attributedPlaceholder = NSMutableAttributedString(string: p, attributes: [.foregroundColor: Theme.shared[.promptText]])
         } else {
             self.field.attributedPlaceholder = nil
         }
@@ -37,7 +37,7 @@ public class ZZInputRow: UIView {
     func commonInitView() {
         backgroundColor = .white
 
-        titleLabel.zFontSize(14).zColor(AppTheme.shared[.title])
+        titleLabel.zFontSize(14).zColor(Theme.shared[.title])
         addSubview(self.titleLabel)
         titleLabel.snp.makeConstraints { (make) in
             make.left.equalToSuperview().offset(15)
@@ -46,7 +46,7 @@ public class ZZInputRow: UIView {
         }
 
         field.font = UIFont.systemFont(ofSize: 14)
-        field.textColor = AppTheme.shared[.text]
+        field.textColor = Theme.shared[.text]
         field.clearButtonMode = .whileEditing
         field.delegate = self
         addSubview(self.field)
