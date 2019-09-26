@@ -103,7 +103,7 @@ public extension Date {
 
     func addingDays(dDays: Int) -> Date {
         let aTimeInterval = self.timeIntervalSinceReferenceDate + 86400 * Double(dDays)
-        let newDate = Date.init(timeIntervalSinceReferenceDate: aTimeInterval)
+        let newDate = Date(timeIntervalSinceReferenceDate: aTimeInterval)
         return newDate
     }
 }

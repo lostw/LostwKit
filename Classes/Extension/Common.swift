@@ -62,6 +62,23 @@ public func genderTextByIdcard(_ idcard: String?) -> String {
     return genderBit % 2 == 1 ? "男" : "女"
 }
 
+public func deviceIdentifier() -> String {
+    var systemInfo = utsname()
+    uname(&systemInfo)
+
+    let machine = systemInfo.machine
+    let mirror = Mirror(reflecting: machine)
+    var identifier = ""
+
+    for child in mirror.children {
+        if let value = child.value as? Int8, value != 0 {
+            identifier.append(String(UnicodeScalar(UInt8(value))))
+        }
+    }
+
+    return identifier
+}
+
 //func implodeQuery(_ path: String, params: [String: Any]?) -> String {
 //    var link = path
 //    if let query = params?.toQuery() {

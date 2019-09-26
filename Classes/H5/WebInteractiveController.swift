@@ -9,8 +9,9 @@
 import UIKit
 import WebViewJavascriptBridge
 
+public typealias H5CmdCallback = WVJBResponseCallback
 public protocol H5Command: AnyObject {
-    func execute(_ data: [String: Any], callback: WVJBResponseCallback?, context: WebInteractiveController)
+    func execute(_ data: [String: Any], callback: H5CmdCallback?, context: H5BridageController)
 }
 
 public protocol H5BridgeConfiguration {
@@ -32,7 +33,7 @@ struct PageInfo {
     var commands = [String: H5Command]()
 }
 
-public class WebInteractiveController {
+public class H5BridageController {
     public var bridge: WebViewJavascriptBridge
     var configuration: H5BridgeConfiguration
     public weak var vc: UIViewController?
@@ -90,11 +91,19 @@ public class WebInteractiveController {
         configuration.didTriggerCommand(type: type, vc: self.vc)
     }
 
-    public func triggerCallback(_ name: String?, data: Any?) {
-        guard let name = name else {
+//    public func triggerCallback(_ name: String?, data: Any?) {
+//        guard let name = name else {
+//            return
+//        }
+//        self.bridge.callHandler(name, data: data)
+//    }
+
+    public func triggerCallback(_ callback: WVJBResponseCallback?, data: Any?) {
+        guard let callback = callback else {
             return
         }
-        self.bridge.callHandler(name, data: data)
+        let data = data ?? [:]
+        callback(ZZJSON.stringify(data))
     }
 
     func createAction(type: String) -> H5Command? {
