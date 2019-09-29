@@ -36,6 +36,7 @@ public class Theme {
         self.colorDict[.subText] = UIColor(hex: 0xbbbbbb)
         self.colorDict[.border] = UIColor(hex: 0xe0e0e0)
         self.colorDict[.disabled] = UIColor(hex: 0xcacaca)
+        self.colorDict[.error] = UIColor(hex: 0xec7f7c)
     }
 
     public subscript(key: ColorType) -> UIColor {
