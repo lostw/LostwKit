@@ -88,7 +88,7 @@ public extension UIView {
         var layer: CALayer! = objc_getAssociatedObject(self, &dotBadgeLayerKey) as? CALayer
         if layer == nil {
             layer = CALayer()
-            layer.frame = CGRect(self.bounds.width - 4, 0, 6, 6)
+            layer.frame = CGRect(x: self.bounds.width - 4, y: 0, width: 6, height: 6)
             layer.cornerRadius = 3
             layer.backgroundColor = UIColor.red.cgColor
             layer.zPosition = 100

@@ -82,7 +82,7 @@ public class ZZImagePreviewView: UIView {
             }
 
             scrollView.zoomScale = 1
-            imageView.frame = scrollView.bounds.rectForCenterSize(CGSize(width, height))
+            imageView.frame = scrollView.bounds.rectForCenterSize(CGSize(width: width, height: height))
             scrollView.contentSize = scrollView.bounds.size
         }
     }

@@ -75,7 +75,7 @@ public class ZZAlertController: UIViewController {
         if showClose {
             let closeView = UIImageView(image: #imageLiteral(resourceName: "icon_pay_close"))
             closeView.contentMode = .center
-            closeView.frame = CGRect(ContentWidth - 32, 2, 30, 30)
+            closeView.frame = CGRect(x: ContentWidth - 32, y: 2, width: 30, height: 30)
             view.addSubview(closeView)
             closeView.onTouch({ [unowned self](_) in
                 self.dismiss(animated: true, completion: nil)
@@ -85,8 +85,8 @@ public class ZZAlertController: UIViewController {
         if let title = self.titleText, !title.isEmpty {
             titleLabel = self.buildTitleLabel()
             titleLabel.text = title
-            let size = titleLabel.sizeThatFits(CGSize(labelWidth, CGFloat.greatestFiniteMagnitude))
-            titleLabel.frame = CGRect(ContentPadding, height, labelWidth, size.height)
+            let size = titleLabel.sizeThatFits(CGSize(width: labelWidth, height: CGFloat.greatestFiniteMagnitude))
+            titleLabel.frame = CGRect(x: ContentPadding, y: height, width: labelWidth, height: size.height)
             view.addSubview(titleLabel)
 
             height += size.height
@@ -97,8 +97,8 @@ public class ZZAlertController: UIViewController {
 
             messageLabel = self.buildMessageLabel()
             messageLabel.text = message
-            let size = messageLabel.sizeThatFits(CGSize(labelWidth, CGFloat.greatestFiniteMagnitude))
-            messageLabel.frame = CGRect(ContentPadding, height, labelWidth, size.height)
+            let size = messageLabel.sizeThatFits(CGSize(width: labelWidth, height: CGFloat.greatestFiniteMagnitude))
+            messageLabel.frame = CGRect(x: ContentPadding, y: height, width: labelWidth, height: size.height)
             view.addSubview(messageLabel)
 
             height += size.height
@@ -107,8 +107,8 @@ public class ZZAlertController: UIViewController {
 
             messageLabel = self.buildMessageLabel()
             messageLabel.attributedText = attr
-            let size = messageLabel.sizeThatFits(CGSize(labelWidth, CGFloat.greatestFiniteMagnitude))
-            messageLabel.frame = CGRect(ContentPadding, height, labelWidth, size.height)
+            let size = messageLabel.sizeThatFits(CGSize(width: labelWidth, height: CGFloat.greatestFiniteMagnitude))
+            messageLabel.frame = CGRect(x: ContentPadding, y: height, width: labelWidth, height: size.height)
             view.addSubview(messageLabel)
 
             height += size.height
@@ -117,7 +117,7 @@ public class ZZAlertController: UIViewController {
         height += ContentTop
 
         let line = UIView()
-        line.frame = CGRect(0, height, ContentWidth, 1)
+        line.frame = CGRect(x: 0, y: height, width: ContentWidth, height: 1)
         line.backgroundColor = UIColor(hex: 0xeeeeee)
         view.addSubview(line)
         height += 1
@@ -135,7 +135,7 @@ public class ZZAlertController: UIViewController {
         }
 
         let wrapper = UIView()
-        wrapper.frame = CGRect(0, height, ContentWidth, 44)
+        wrapper.frame = CGRect(x: 0, y: height, width: ContentWidth, height: 44)
         view.addSubview(wrapper)
         height += 44
 
@@ -152,19 +152,19 @@ public class ZZAlertController: UIViewController {
 
             let cancelButton = self.buildButton()
             cancelButton.setTitle(cancelTitle, for: .normal)
-            cancelButton.frame = CGRect(width, 0, width, height)
+            cancelButton.frame = CGRect(x: width, y: 0, width: width, height: height)
             cancelButton.tag = 100
             cancelButton.setTitleColor(Theme.shared[.promptText], for: .normal)
             wrapper.addSubview(cancelButton)
 
             let confirmButton = self.buildButton()
             confirmButton.setTitle(confirmTitle, for: .normal)
-            confirmButton.frame = CGRect(0, 0, width, height)
+            confirmButton.frame = CGRect(x: 0, y: 0, width: width, height: height)
             confirmButton.tag = 101
             wrapper.addSubview(confirmButton)
 
             let seperator = UIView()
-            seperator.frame = CGRect(width, 0, 1, height)
+            seperator.frame = CGRect(x: width, y: 0, width: 1, height: height)
             seperator.backgroundColor = UIColor(hex: 0xeeeeee)
             wrapper.addSubview(seperator)
         }
