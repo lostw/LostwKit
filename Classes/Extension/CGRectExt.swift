@@ -58,6 +58,28 @@ extension UIEdgeInsets: ExpressibleByArrayLiteral {
     }
 }
 
+public extension CGSize {
+    func size(scaleTo size: CGSize) -> CGSize {
+        var result = self
+        let ratio = result.width / result.height
+        let fitRatio = size.width / size.height
+
+        if ratio > fitRatio {
+            if result.width > size.width {
+                result.width = size.width
+                result.height = size.width / fitRatio
+            }
+        } else {
+            if result.height > size.height {
+                result.height = size.height
+                result.width = size.height * fitRatio
+            }
+        }
+
+        return result
+    }
+}
+
 extension CGSize: ExpressibleByArrayLiteral {
     public typealias ArrayLiteralElement = CGFloat
 
