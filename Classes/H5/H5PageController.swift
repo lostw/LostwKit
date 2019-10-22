@@ -172,7 +172,7 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if self.pageName == nil && self.title == nil {
+        if self.pageName == nil && (self.title == nil || self.title == "加载中") {
             self.title = webView.title
         }
 
