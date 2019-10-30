@@ -199,7 +199,6 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if tableView.estimatedRowHeight != 0 {
             if rowHeightList.count == list.count {
-                print("行高:", rowHeightList[indexPath.row])
                 return rowHeightList[indexPath.row] > 0 ? rowHeightList[indexPath.row] : UITableView.automaticDimension
             } else {
                 return UITableView.automaticDimension
