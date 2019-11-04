@@ -59,7 +59,7 @@ open class ZZPickerRow: UIView {
         view.backgroundColor = .white
         return view
     }()
-    static let toolbar = ZZPickerToolbar(frame: CGRect(0, 0, SCREEN_WIDTH, 44))
+    static let toolbar = ZZPickerToolbar(frame: [0, 0, SCREEN_WIDTH, 44])
 
     public var field: UITextField!
     public var titleLabel: UILabel!

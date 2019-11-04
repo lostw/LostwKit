@@ -124,7 +124,7 @@ public class ZZLaunchView: UIView {
             let animationLayer = CAShapeLayer()
             animationLayer.strokeColor = Theme.shared[.majorText].cgColor
             animationLayer.fillColor = UIColor.clear.cgColor
-            animationLayer.frame = CGRect(0, 0, 40, 40)
+            animationLayer.frame = [0, 0, 40, 40]
             animationLayer.path = UIBezierPath(arcCenter: CGPoint(x: 20, y: 20), radius: 18.5, startAngle: -CGFloat.pi / 2, endAngle: CGFloat.pi * 1.5, clockwise: true).cgPath
             animationLayer.strokeStart = 0
             animationLayer.strokeEnd = 0

@@ -36,7 +36,7 @@ public class ToastView: UIView {
         if style == .success {
             let image = UIImage.bundleImage(named: "icon_toast_success")
             let iconView = UIImageView(image: image)
-            var rect = CGRect(0, 0, 23, 23)
+            var rect = CGRect(x: 0, y: 0, width: 23, height: 23)
             rect.origin.x = (viewWidth - iconView.bounds.width) / 2
             rect.origin.y = height
             iconView.frame = rect
@@ -51,7 +51,7 @@ public class ToastView: UIView {
             let label = UILabel()
             label.zText(title).zFontSize(16).zColor(UIColor.white).zLines(1)
             let size = label.sizeThatFits(CGSize(width: maxWidth, height: 1000))
-            let rect = CGRect((viewWidth - size.width)/2, height, size.width, size.height)
+            let rect = CGRect(x: (viewWidth - size.width)/2, y: height, width: size.width, height: size.height)
             label.frame = rect
             self.addSubview(label)
 
@@ -60,13 +60,13 @@ public class ToastView: UIView {
             height += rect.size.height + 6
         }
 
-        messageLabel.frame = CGRect(8, height, messageSize.width, messageSize.height)
+        messageLabel.frame = CGRect(x: 8, y: height, width: messageSize.width, height: messageSize.height)
         self.addSubview(messageLabel)
         self.messageLabel = messageLabel
 
         height += messageSize.height + 10
 
-        self.bounds = CGRect(0, 0, viewWidth, height)
+        self.bounds = CGRect(x: 0, y: 0, width: viewWidth, height: height)
     }
 
     required init?(coder aDecoder: NSCoder) {

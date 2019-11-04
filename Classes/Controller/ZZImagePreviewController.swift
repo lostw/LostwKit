@@ -93,7 +93,7 @@ public class ZZImagePreviewController: UIViewController {
         super.viewWillAppear(animated)
 
         if currentIndex > 0 {
-            collectionView.setContentOffset(CGPoint((view.bounds.width + 20) * CGFloat(currentIndex), 0), animated: false)
+            collectionView.setContentOffset(CGPoint(x: (view.bounds.width + 20) * CGFloat(currentIndex), y: 0), animated: false)
         }
     }
 
@@ -151,7 +151,7 @@ public class ZZImagePreviewController: UIViewController {
         collectionView.scrollsToTop = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.contentSize = CGSize(CGFloat(isUrl ? self.photoUrls.count : self.photos.count) * (self.view.bounds.width + 20), 0)
+        collectionView.contentSize = CGSize(width: CGFloat(isUrl ? self.photoUrls.count : self.photos.count) * (self.view.bounds.width + 20), height: 0)
         collectionView.register(ZZImagePreviewCell.self, forCellWithReuseIdentifier: "Cell")
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints {

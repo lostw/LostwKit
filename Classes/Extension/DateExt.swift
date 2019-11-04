@@ -103,12 +103,12 @@ public extension Date {
 
     func addingDays(dDays: Int) -> Date {
         let aTimeInterval = self.timeIntervalSinceReferenceDate + 86400 * Double(dDays)
-        let newDate = Date.init(timeIntervalSinceReferenceDate: aTimeInterval)
+        let newDate = Date(timeIntervalSinceReferenceDate: aTimeInterval)
         return newDate
     }
 }
 
-extension TimeInterval {
+public extension TimeInterval {
     func asDate(isMicro: Bool = false) -> Date {
         let date = Date(timeIntervalSince1970: (isMicro ? self / 1000 : self))
         return date

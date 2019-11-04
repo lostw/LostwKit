@@ -35,6 +35,7 @@ public struct NavConfig {
 public extension UIViewController {
     func showController(_ controller: UIViewController, present: Bool = false, animated: Bool = true) {
         if present {
+            controller.modalPresentationStyle = .fullScreen
             self.present(controller, animated: animated, completion: nil)
         } else {
             controller.hidesBottomBarWhenPushed = true
@@ -161,7 +162,7 @@ public extension UIViewController {
         self.alert(title: title, message: message, buttonTitles: buttonTitles, style: .prompt, callback: callback)
     }
 
-    func alert(title: String? = nil, message: String, buttonTitles: [String]? = nil, style: AlertStyle = .alert, callback: AlertCallback? = nil) {
+    func alert(title: String? = "提示", message: String, buttonTitles: [String]? = nil, style: AlertStyle = .alert, callback: AlertCallback? = nil) {
         var confirmTitle = "确认"
         var cancelTitle = "取消"
         if let titles = buttonTitles {

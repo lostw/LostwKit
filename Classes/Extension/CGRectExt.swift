@@ -9,10 +9,6 @@
 import Foundation
 import UIKit
 public extension CGRect {
-    init(_ x: CGFloat, _ y: CGFloat, _ width: CGFloat, _ height: CGFloat) {
-        self.init(x: x, y: y, width: width, height: height)
-    }
-
     func rectForCenterSize(_ size: CGSize) -> CGRect {
         return CGRect(x: (self.width - size.width)/2,
                       y: (self.height - size.height)/2,
@@ -63,8 +59,24 @@ extension UIEdgeInsets: ExpressibleByArrayLiteral {
 }
 
 public extension CGSize {
-    init(_ width: CGFloat, _ height: CGFloat) {
-        self.init(width: width, height: height)
+    func size(scaleTo size: CGSize) -> CGSize {
+        var result = self
+        let ratio = result.width / result.height
+        let fitRatio = size.width / size.height
+
+        if ratio > fitRatio {
+            if result.width > size.width {
+                result.width = size.width
+                result.height = size.width / fitRatio
+            }
+        } else {
+            if result.height > size.height {
+                result.height = size.height
+                result.width = size.height * fitRatio
+            }
+        }
+
+        return result
     }
 }
 
@@ -86,10 +98,6 @@ extension CGSize: ExpressibleByArrayLiteral {
 }
 
 public extension CGPoint {
-    init(_ x: CGFloat, _ y: CGFloat) {
-        self.init(x: x, y: y)
-    }
-
     func scaled(to size: CGSize) -> CGPoint {
         return CGPoint(x: self.x * size.width, y: self.y * size.height)
     }

@@ -16,7 +16,7 @@ public class H5PageController: UIViewController, UINavigationBack {
     var pageOb: NSKeyValueObservation?
 
     var webViewBuilder: WebViewManager!
-    var interactiveController: WebInteractiveController?
+    var interactiveController: H5BridageController?
     var configuration: H5BridgeConfiguration?
 
     public var link: String!
@@ -78,6 +78,10 @@ public class H5PageController: UIViewController, UINavigationBack {
         self.progressBar?.progress = 0.1
     }
 
+    public func reloadPage() {
+        self.webView.reload()
+    }
+
     // MARK: - public methods
 
     /// 启用交互
@@ -94,7 +98,7 @@ public class H5PageController: UIViewController, UINavigationBack {
 
         self.addWebView()
         if let config = self.configuration {
-            self.interactiveController = WebInteractiveController(webview: self.webView, configuration: config, vc: self)
+            self.interactiveController = H5BridageController(webview: self.webView, configuration: config, vc: self)
         }
 
         if self.progressEnabled {
@@ -168,7 +172,7 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if self.pageName == nil && self.title == nil {
+        if self.pageName == nil && (self.title == nil || self.title == "加载中") {
             self.title = webView.title
         }
 
