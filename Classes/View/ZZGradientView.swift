@@ -9,12 +9,34 @@
 import UIKit
 
 open class ZZGradientView: UIView {
+    public enum Direction {
+        case left, top, leftTop, rightTop
+    }
     override open class var layerClass: AnyClass {
         return CAGradientLayer.self
     }
 
     public var backedLayer: CAGradientLayer {
         return self.layer as! CAGradientLayer
+    }
+
+    public var direction: Direction = .left {
+        didSet {
+            switch direction {
+            case .left:
+                backedLayer.startPoint = [0, 0]
+                backedLayer.endPoint = [1, 0]
+            case .top:
+                backedLayer.startPoint = [0, 0]
+                backedLayer.endPoint = [0, 1]
+            case .leftTop:
+                backedLayer.startPoint = [0, 0]
+                backedLayer.endPoint = [1, 1]
+            case .rightTop:
+                backedLayer.startPoint = [1, 1]
+                backedLayer.endPoint = [0, 1]
+            }
+        }
     }
 
     /*

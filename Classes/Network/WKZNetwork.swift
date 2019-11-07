@@ -35,6 +35,7 @@ public enum ZZApiErrorCode: Int {
 }
 
 public struct ZZApiError: Error, LocalizedError {
+    public static let silence = ZZApiError(code: "-", message: "")
     public var code: String
     public var message: String
 
