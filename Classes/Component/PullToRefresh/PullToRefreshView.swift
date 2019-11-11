@@ -152,7 +152,7 @@ open class PullToRefreshView: UIView {
         }
 
         if self.pull {
-            let throttle = -self.bounds.height
+            let throttle = -self.bounds.height - scrollView.contentInset.top
 
             if offsetY < throttle {
                 if scrollView.isDragging && self.state == .pulling {
