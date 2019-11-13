@@ -9,15 +9,15 @@
 import UIKit
 import WebKit
 
-public class H5PageController: UIViewController, UINavigationBack {
-    var webView: WKWebView!
+open class H5PageController: UIViewController, UINavigationBack {
+    public var webView: WKWebView!
 
     var progressOb: NSKeyValueObservation?
     var pageOb: NSKeyValueObservation?
 
-    var webViewBuilder: WebViewManager!
-    var interactiveController: H5BridageController?
-    var configuration: H5BridgeConfiguration?
+    public var webViewBuilder: WebViewManager!
+    public var interactiveController: H5BridageController?
+    public var configuration: H5BridgeConfiguration?
 
     public var link: String!
     public var pageName: String?
@@ -29,8 +29,9 @@ public class H5PageController: UIViewController, UINavigationBack {
     }
 
     var progressBar: UIProgressView?
+    public var storageData: [String: Any]?
 
-    public convenience init(link: String, name: String? = nil, params: [String: String]? = nil, builder: WebViewManager = H5PageManager.defaultWebviewBuilder) {
+    public convenience init(link: String, name: String? = nil, params: [String: String]? = nil, builder: WebViewManager = WebViewManager.default) {
         self.init()
 
         var link = link
@@ -55,7 +56,7 @@ public class H5PageController: UIViewController, UINavigationBack {
         return true
     }
 
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         self.title = self.pageName ?? "加载中"
 
@@ -71,15 +72,50 @@ public class H5PageController: UIViewController, UINavigationBack {
     }
 
     public func loadPage(link: String) {
-        guard let url = URL(string: link) else {
-                return
+        if let request = self.buildRequest() {
+            self.webView.load(request)
+            self.progressBar?.progress = 0.1
         }
-        self.webView.load(URLRequest(url: url))
-        self.progressBar?.progress = 0.1
+    }
+
+    open func buildRequest() -> URLRequest? {
+        guard let url = URL(string: link) else {
+            return nil
+        }
+        return URLRequest(url: url)
     }
 
     public func reloadPage() {
         self.webView.reload()
+    }
+
+    // 页面结束加载时可以设置额外的localStorage
+    func loadExtraLocalStorage() {
+        // 用于恢复上个页面的localstorage
+        if let dict = self.storageData {
+            let js = """
+            var obj = \(dict.toJsonString()!)
+            for (var item in obj) {
+                localStorage.setItem(item, obj[item])
+            }
+            """
+            webView.evaluateJavaScript(js, completionHandler: nil)
+        }
+    }
+
+    public func asyncGetLocalStorage(_ callback: @escaping ([String: Any]?) -> Void) {
+        let js = """
+            var dict = {}
+            for ( var i = 0, len = localStorage.length; i < len; ++i ) {
+            var key = localStorage.key( i )
+            dict[key] = localStorage.getItem(key)
+                    }
+            dict
+            """
+
+        self.webView.evaluateJavaScript(js) { info, _ in
+            callback(info as? [String: Any])
+        }
     }
 
     // MARK: - public methods
@@ -183,6 +219,8 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
                 self.progressBar!.isHidden = true
             })
         }
+
+        self.loadExtraLocalStorage()
     }
 
     // js alert 支持
@@ -199,9 +237,5 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
         }
 
         return nil
-    }
-
-    @objc func closePage() {
-        self.navBack()
     }
 }

@@ -9,27 +9,30 @@
 import UIKit
 import WebKit
 
-public class H5PageManager {
-    public static let shared = H5PageManager()
-    public static let defaultWebviewBuilder = WebViewManager(configuration: WKWebViewConfiguration())
-}
-
 public class WebViewManager {
+    public static let `default` = WebViewManager(configuration: WKWebViewConfiguration())
+
     var reusable: Set<WKWebView> = Set()
     var configuration: WKWebViewConfiguration!
+
+    public var customUserAgent: String?
 
     public init(configuration: WKWebViewConfiguration) {
         self.configuration = configuration
         // 生成一个webview, 加速第一次打开
-        self.prepare()
+//        self.prepare()
     }
 
     private func buildWebView() -> WKWebView {
-        return WKWebView(frame: .zero, configuration: self.configuration)
+        let webview = WKWebView(frame: .zero, configuration: self.configuration)
+        webview.customUserAgent = customUserAgent
+        return webview
     }
 
-    private func prepare() {
-        self.reusable.insert(self.buildWebView())
+    public func prepare() {
+        if self.reusable.isEmpty {
+            self.reusable.insert(self.buildWebView())
+        }
     }
 
     public func get(configure: ((WKWebView) -> Void)? = nil) -> WKWebView {
@@ -54,6 +57,7 @@ public class WebViewManager {
         webView.scrollView.delegate = nil
         webView.stopLoading()
         webView.loadHTMLString("", baseURL: nil)
+        webView.customUserAgent = customUserAgent
         self.reusable.insert(webView)
     }
 }

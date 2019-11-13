@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'SnapKit'
   s.dependency 'Alamofire'
-  s.dependency 'SDWebImage'
+  s.dependency 'SDWebImage', '~> 5.3.0'
   s.dependency 'PromiseKit/CorePromise'
   s.dependency 'WebViewJavascriptBridge'
 #  s.dependency 'RxSwift',    '~> 4.0'
