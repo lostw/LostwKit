@@ -15,7 +15,6 @@ open class H5PageController: UIViewController, UINavigationBack {
     var progressOb: NSKeyValueObservation?
     var pageOb: NSKeyValueObservation?
 
-    public var webViewBuilder: WebViewManager!
     public var interactiveController: H5BridageController?
     public var configuration: H5BridgeConfiguration?
 
@@ -27,11 +26,15 @@ open class H5PageController: UIViewController, UINavigationBack {
             plugin?.owner = self
         }
     }
+    public var customScheme: String?
+
+    var startTime: CFAbsoluteTime = 0
+    var endTime: CFAbsoluteTime = 0
 
     var progressBar: UIProgressView?
     public var storageData: [String: Any]?
 
-    public convenience init(link: String, name: String? = nil, params: [String: String]? = nil, builder: WebViewManager = WebViewManager.default) {
+    public convenience init(link: String, name: String? = nil, params: [String: String]? = nil, webView: WKWebView? = nil) {
         self.init()
 
         var link = link
@@ -39,7 +42,7 @@ open class H5PageController: UIViewController, UINavigationBack {
 
         self.pageName = name
         self.link = link
-        self.webViewBuilder = builder
+        self.webView = webView
     }
 
     deinit {
@@ -72,16 +75,21 @@ open class H5PageController: UIViewController, UINavigationBack {
     }
 
     public func loadPage(link: String) {
-        if let request = self.buildRequest() {
-            self.webView.load(request)
-            self.progressBar?.progress = 0.1
+        var parsed = link
+        if let customScheme = self.customScheme {
+            parsed.replaceFirst(matching: "http", with: customScheme)
         }
+
+        guard let url = URL(string: parsed) else {
+            return
+        }
+
+        let request = self.buildRequest(url)
+        self.webView.load(request)
+        self.progressBar?.progress = 0.1
     }
 
-    open func buildRequest() -> URLRequest? {
-        guard let url = URL(string: link) else {
-            return nil
-        }
+    open func buildRequest(_ url: URL) -> URLRequest {
         return URLRequest(url: url)
     }
 
@@ -171,12 +179,14 @@ open class H5PageController: UIViewController, UINavigationBack {
     }
 
     func addWebView() {
-        self.webView = webViewBuilder.get()
+        if self.webView == nil {
+            self.webView = WebManager.default.getWebView()
+        }
         self.webView.navigationDelegate = self
         self.webView.uiDelegate = self
         self.view.addSubview(self.webView)
-        self.webView.snp.makeConstraints { (make) in
-            make.edges.equalToSuperview()
+        self.webView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
     }
 }
@@ -203,6 +213,7 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
     }
 
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        self.startTime = CFAbsoluteTimeGetCurrent()
         self.progressBar?.isHidden = false
         self.progressBar?.progress = 0
     }
@@ -221,6 +232,9 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
         }
 
         self.loadExtraLocalStorage()
+
+        self.endTime = CFAbsoluteTimeGetCurrent()
+        ZLog.debug("\(self.endTime - self.startTime)")
     }
 
     // js alert 支持
