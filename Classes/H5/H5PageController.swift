@@ -9,36 +9,41 @@
 import UIKit
 import WebKit
 
-public class H5PageController: UIViewController, UINavigationBack {
-    var webView: WKWebView!
+open class H5PageController: UIViewController, UINavigationBack {
+    public var webView: WKWebView!
 
     var progressOb: NSKeyValueObservation?
     var pageOb: NSKeyValueObservation?
 
-    var webViewBuilder: WebViewManager!
-    var interactiveController: H5BridageController?
-    var configuration: H5BridgeConfiguration?
+    public var interactiveController: H5BridageController?
+    public var configuration: H5BridgeConfiguration?
 
     public var link: String!
-    public var pageName: String?
+    public var pageTitle: String?
     public var progressEnabled = true
     public var plugin: H5PageControllerPlugin? {
         didSet {
             plugin?.owner = self
         }
     }
+    public var customScheme: String?
+    public var pageName: String?
+
+    var startTime: CFAbsoluteTime = 0
+    var endTime: CFAbsoluteTime = 0
 
     var progressBar: UIProgressView?
+    public var storageData: [String: Any]?
 
-    public convenience init(link: String, name: String? = nil, params: [String: String]? = nil, builder: WebViewManager = H5PageManager.defaultWebviewBuilder) {
+    public convenience init(link: String, pageTitle: String? = nil, params: [String: String]? = nil, webView: WKWebView? = nil) {
         self.init()
 
         var link = link
         link.appendQuery(params)
 
-        self.pageName = name
+        self.pageTitle = pageTitle
         self.link = link
-        self.webViewBuilder = builder
+        self.webView = webView
     }
 
     deinit {
@@ -55,14 +60,21 @@ public class H5PageController: UIViewController, UINavigationBack {
         return true
     }
 
-    override public func viewDidLoad() {
+    public func setLink(_ link: String, params: [String: String]? = nil) {
+        var link = link
+        link.appendQuery(params)
+        self.link = link
+    }
+
+    override open func viewDidLoad() {
         super.viewDidLoad()
-        self.title = self.pageName ?? "加载中"
+        self.title = self.pageTitle ?? "加载中"
 
         self.commonInitView()
         self.phaseLoadPage()
     }
 
+    /// 插件机制
     func phaseLoadPage() {
         let shouldLoad = self.plugin?.willLoadPage(link: self.link) ?? true
         if shouldLoad {
@@ -71,15 +83,71 @@ public class H5PageController: UIViewController, UINavigationBack {
     }
 
     public func loadPage(link: String) {
-        guard let url = URL(string: link) else {
-                return
+        var parsed = link
+        if let customScheme = self.customScheme {
+            parsed.replaceFirst(matching: "http", with: customScheme)
         }
-        self.webView.load(URLRequest(url: url))
+
+        guard let url = URL(string: parsed) else {
+            return
+        }
+
+        let request = self.buildRequest(url)
+        self.webView.load(request)
         self.progressBar?.progress = 0.1
+    }
+
+    /// 生成URLRequest，继承可以增加自定义的配置
+    open func buildRequest(_ url: URL) -> URLRequest {
+        return URLRequest(url: url)
     }
 
     public func reloadPage() {
         self.webView.reload()
+    }
+
+    /// 页面结束加载时可以设置额外的localStorage
+    func loadExtraLocalStorage() {
+        // 用于恢复上个页面的localstorage
+        if let dict = self.storageData {
+            let js = """
+            var obj = \(dict.toJsonString()!)
+            for (var item in obj) {
+                localStorage.setItem(item, obj[item])
+            }
+            """
+            webView.evaluateJavaScript(js, completionHandler: nil)
+        }
+    }
+
+    /// 获取页面的localStorage
+    public func asyncGetLocalStorage(_ callback: @escaping ([String: Any]?) -> Void) {
+        let js = """
+            var dict = {}
+            for ( var i = 0, len = localStorage.length; i < len; ++i ) {
+            var key = localStorage.key( i )
+            dict[key] = localStorage.getItem(key)
+                    }
+            dict
+            """
+
+        self.webView.evaluateJavaScript(js) { info, _ in
+            callback(info as? [String: Any])
+        }
+    }
+
+    /// 增加刷新
+    public func toggleRefresh(_ flag: Bool) {
+        if flag {
+            self.webView.scrollView.addPullRefresh { [weak self] in
+                guard let self = self else { return }
+
+                self.webView.reload()
+                self.webView.scrollView.stopPullRefreshEver()
+            }
+        } else {
+            self.webView.scrollView.removePullRefresh()
+        }
     }
 
     // MARK: - public methods
@@ -130,17 +198,19 @@ public class H5PageController: UIViewController, UINavigationBack {
 
     func resetNavigationBar() {
         self.navigationItem.titleView = nil
-        self.navigationItem.title = self.pageName ?? self.webView.title ?? "加载中"
+        self.navigationItem.title = self.pageTitle ?? self.webView.title ?? "加载中"
         self.navigationItem.rightBarButtonItem = nil
     }
 
     func addWebView() {
-        self.webView = webViewBuilder.get()
+        if self.webView == nil {
+            self.webView = WebManager.default.getWebView()
+        }
         self.webView.navigationDelegate = self
         self.webView.uiDelegate = self
         self.view.addSubview(self.webView)
-        self.webView.snp.makeConstraints { (make) in
-            make.edges.equalToSuperview()
+        self.webView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
     }
 }
@@ -167,12 +237,13 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
     }
 
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        self.startTime = CFAbsoluteTimeGetCurrent()
         self.progressBar?.isHidden = false
         self.progressBar?.progress = 0
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if self.pageName == nil && (self.title == nil || self.title == "加载中") {
+        if self.pageTitle == nil && (self.title == nil || self.title == "加载中") {
             self.title = webView.title
         }
 
@@ -183,6 +254,11 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
                 self.progressBar!.isHidden = true
             })
         }
+
+        self.loadExtraLocalStorage()
+
+        self.endTime = CFAbsoluteTimeGetCurrent()
+        ZLog.debug("\(self.endTime - self.startTime)")
     }
 
     // js alert 支持
@@ -199,9 +275,5 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
         }
 
         return nil
-    }
-
-    @objc func closePage() {
-        self.navBack()
     }
 }

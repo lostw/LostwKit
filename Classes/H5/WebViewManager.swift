@@ -9,30 +9,76 @@
 import UIKit
 import WebKit
 
-public class H5PageManager {
-    public static let shared = H5PageManager()
-    public static let defaultWebviewBuilder = WebViewManager(configuration: WKWebViewConfiguration())
-}
+public class WebManager {
+    public static let `default`: WebManager = {
+        let manager = WebManager(configuration: WKWebViewConfiguration())
+        manager.prepare()
+        return manager
+    }()
 
-public class WebViewManager {
     var reusable: Set<WKWebView> = Set()
-    var configuration: WKWebViewConfiguration!
+    public var configuration: WKWebViewConfiguration
+    public var bridageConfig: H5BridgeConfiguration?
+    var urlScheme: String?
+
+    public var controllerBuilder: (() -> H5PageController)?
+    public var h5Class: AnyClass?
+
+    public var customUserAgent: String?
 
     public init(configuration: WKWebViewConfiguration) {
         self.configuration = configuration
-        // 生成一个webview, 加速第一次打开
-        self.prepare()
     }
 
-    private func buildWebView() -> WKWebView {
-        return WKWebView(frame: .zero, configuration: self.configuration)
+    @available(iOS 11, *)
+    public func enableNativeCache(with handler: WKURLSchemeHandler) {
+        let customScheme = "zzscheme"
+        self.urlScheme = customScheme
+        // 同时处理http跟https的资源
+        self.configuration.setURLSchemeHandler(handler, forURLScheme: customScheme)
+        self.configuration.setURLSchemeHandler(handler, forURLScheme: customScheme + "s")
     }
 
-    private func prepare() {
-        self.reusable.insert(self.buildWebView())
+    public func getH5Page(link: String, name: String? = nil, params: [String: String]? = nil, h5Controller: H5PageController? = nil) -> H5PageController {
+        var h5: H5PageController!
+
+        if let vc = h5Controller {
+            h5 = vc
+        } else {
+            h5 = controllerBuilder?()
+        }
+
+        if h5 == nil {
+            h5 = H5PageController()
+        }
+
+        h5.setLink(link, params: params)
+        h5.pageTitle = name
+        h5.webView = self.getWebView()
+
+        if let bridageConfig = self.bridageConfig {
+            h5.enableCommunication(configuration: bridageConfig)
+        }
+        if let customScheme = self.urlScheme {
+            h5.customScheme = customScheme
+        }
+
+        return h5
     }
 
-    public func get(configure: ((WKWebView) -> Void)? = nil) -> WKWebView {
+    public func configH5Page(_ h5: H5PageController) {
+        h5.webView = self.getWebView()
+
+    }
+
+    // MAKR: - 预加载webview
+    public func prepare() {
+        if self.reusable.isEmpty {
+            self.reusable.insert(self.buildWebView())
+        }
+    }
+
+    public func getWebView(configure: ((WKWebView) -> Void)? = nil) -> WKWebView {
         if let item = reusable.popFirst() {
 
             DispatchQueue.main.async {
@@ -48,12 +94,9 @@ public class WebViewManager {
         return webview
     }
 
-    func reuse(_ webView: WKWebView) {
-        webView.navigationDelegate = nil
-        webView.uiDelegate = nil
-        webView.scrollView.delegate = nil
-        webView.stopLoading()
-        webView.loadHTMLString("", baseURL: nil)
-        self.reusable.insert(webView)
+    private func buildWebView() -> WKWebView {
+        let webview = WKWebView(frame: .zero, configuration: self.configuration)
+        webview.customUserAgent = customUserAgent
+        return webview
     }
 }
