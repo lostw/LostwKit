@@ -31,6 +31,7 @@ Pod::Spec.new do |s|
   s.dependency 'SDWebImage', '~> 5.3.0'
   s.dependency 'PromiseKit/CorePromise'
   s.dependency 'WebViewJavascriptBridge'
+  s.dependency 'KeychainAccess', '~> 4.1.0'
 #  s.dependency 'RxSwift',    '~> 4.0'
 #  s.dependency 'RxCocoa',    '~> 4.0'
 

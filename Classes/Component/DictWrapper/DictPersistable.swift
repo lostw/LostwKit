@@ -1,11 +1,11 @@
 //
-//  UserDefaultPersistable.swift
+//  DictPersistable.swift
 //  Alamofire
 //
-//  Created by William on 2019/4/2.
+//  Created by William on 2019/11/15.
 //
 
-import Foundation
+import UIKit
 
 public protocol DictPersistable: AnyObject {
     var key: String {get}
@@ -37,25 +37,5 @@ public extension DictPersistable {
     public func clear() {
         dict = [:]
         persist()
-    }
-}
-
-open class UserDefaultsDictWrapper: DictPersistable {
-    public var key: String
-    public var dict: [String: Any] = [:]
-
-    public init(key: String) {
-        self.key = key
-    }
-
-    public func persist() {
-        UserDefaults.standard.set(dict.toJsonString(), forKey: key)
-    }
-
-    public func recover() {
-        if let json = UserDefaults.standard.string(forKey: key),
-            let dict = json.utf8Data.toDictionary() {
-            self.dict = dict
-        }
     }
 }
