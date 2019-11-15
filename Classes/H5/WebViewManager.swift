@@ -21,6 +21,9 @@ public class WebManager {
     public var bridageConfig: H5BridgeConfiguration?
     var urlScheme: String?
 
+    public var controllerBuilder: (() -> H5PageController)?
+    public var h5Class: AnyClass?
+
     public var customUserAgent: String?
 
     public init(configuration: WKWebViewConfiguration) {
@@ -36,8 +39,23 @@ public class WebManager {
         self.configuration.setURLSchemeHandler(handler, forURLScheme: customScheme + "s")
     }
 
-    public func getH5Page(link: String, name: String? = nil, params: [String: String]? = nil) -> H5PageController {
-        let h5 = H5PageController(link: link, name: name, params: params, webView: self.getWebView())
+    public func getH5Page(link: String, name: String? = nil, params: [String: String]? = nil, h5Controller: H5PageController? = nil) -> H5PageController {
+        var h5: H5PageController!
+
+        if let vc = h5Controller {
+            h5 = vc
+        } else {
+            h5 = controllerBuilder?()
+        }
+
+        if h5 == nil {
+            h5 = H5PageController()
+        }
+
+        h5.setLink(link, params: params)
+        h5.pageTitle = name
+        h5.webView = self.getWebView()
+
         if let bridageConfig = self.bridageConfig {
             h5.enableCommunication(configuration: bridageConfig)
         }
@@ -46,6 +64,11 @@ public class WebManager {
         }
 
         return h5
+    }
+
+    public func configH5Page(_ h5: H5PageController) {
+        h5.webView = self.getWebView()
+
     }
 
     // MAKR: - 预加载webview

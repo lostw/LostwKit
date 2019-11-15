@@ -339,14 +339,14 @@ extension MemoryCache {
 
         var finish = false
         pthread_mutex_lock(&lock)
-        if (countLimit == 0) {
+        if countLimit == 0 {
             linedMap.removeAll()
             finish = true
-        } else if (linedMap.totalCount <= count) {
+        } else if linedMap.totalCount <= count {
             finish = true
         }
         pthread_mutex_unlock(&lock)
-        if (finish) { return }
+        if finish { return }
 
         // 从尾节点开始向前删除节点，直到满足缓存策略
         while (finish == false) {
@@ -367,16 +367,16 @@ extension MemoryCache {
         var finish = false
         let now = CACurrentMediaTime()
         pthread_mutex_lock(&lock)
-        if (ageLimit <= 0) {
+        if ageLimit <= 0 {
             linedMap.removeAll()
             finish = true
-        } else if (linedMap.tail == nil || (now - linedMap.tail!.time) <= age) {
+        } else if linedMap.tail == nil || (now - linedMap.tail!.time) <= age {
             finish = true
         }
         pthread_mutex_unlock(&lock)
-        if (finish) { return }
+        if finish { return }
 
-        while (finish == false) {
+        while finish == false {
             if (pthread_mutex_trylock(&lock) == 0) {
                 if ((linedMap.tail != nil) && (now - linedMap.tail!.time) > age) {
                     linedMap.removeTailNode()
