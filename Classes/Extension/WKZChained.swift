@@ -133,7 +133,7 @@ public extension UIButton {
             return objc_getAssociatedObject(self, &buttonHandlerKey) as? () -> Void
         }
         set {
-            objc_setAssociatedObject(self, &buttonHandlerKey, newValue, .OBJC_ASSOCIATION_RETAIN)
+            objc_setAssociatedObject(self, &buttonHandlerKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 
