@@ -1,124 +1,131 @@
-////
-////  ZZConnection.swift
-////  Zhangzhilicai
-////
-////  Created by william on 16/10/2017.
-////  Copyright © 2017 william. All rights reserved.
-////
 //
-//import Foundation
-//import Alamofire
+//  ZZConnection.swift
+//  Zhangzhilicai
 //
-//class ZZConnectionManager {
-//    static let shared = ZZConnectionManager()
+//  Created by william on 16/10/2017.
+//  Copyright © 2017 william. All rights reserved.
 //
-//    var session: SessionManager = Alamofire.SessionManager(configuration: URLSessionConfiguration.default)
-//    var queue = [String: ZZConnection]()
-//    func enqueue(_ connection: ZZConnection) {
-//        self.queue[connection.cacheKey] = connection
-//    }
-//
-//    func dequeue(_ connection: ZZConnection) {
-//        self.queue.removeValue(forKey: connection.cacheKey)
-//    }
-//
-//}
-//
-//class ZZConnection {
-//    enum CacehPolicy {
-//        case today, second(TimeInterval), day(TimeInterval)
-//        var expiredInterval: TimeInterval {
-//            switch self {
-//            case .second(let interval): return interval + Date().timeIntervalSince1970
-//            case .day(let interval): return interval * 86400 + Date().timeIntervalSince1970
-//            case .today: return Date().endOfThisDay().timeIntervalSince1970
-//            }
-//        }
-//    }
-//
-//    var configuration: URLSessionConfiguration?
-//
-//    var request: DataRequest
-//
-//    var relativePath: String!
-//    var parameters: [String: Any]?
-//
-//    var useCache = false
-//    var cachePolicy: CacehPolicy = .second(300)
-//    var cacheKey: String {
-//        return ""
-////        return AppManager.shared.network.apiDescription(self.relativePath, params: self.parameters)
-//    }
-//
-//    init(name: String, parameters: [String: Any]? = nil, configuration: URLSessionConfiguration? = nil) {
-//        self.request = self.buildRequest(name: name, parameters: parameters, configuration: URLSessionConfiguration? = nil)
-//    }
-//
-//    func buildRequest(name: String, parameters: [String: Any]? = nil, configuration: URLSessionConfiguration? = nil) -> DataRequest {
-//        var session: SessionManager!
-//        if let configuration = configuration {
-//            session = SessionManager(configuration: configuration)
-//        } else {
-//            session = ZZConnectionManager.shared.session
-//        }
-//
-//        return sessionManager.request(tzAppURL + name, method: .post, parameters: postDict, encoding: JSONEncoding.default)
-//    }
-//
-//    deinit {
-//        print("zzconnection deinit")
-//    }
-//
-//    func send() {
-////        if useCache {
-////            if let cache = WKZCache.shared.object(forKey: self.cacheKey) as? [String: Any] {
-////                let response = self.convertCacheToResponse(cache)
-////                response.isFromCache = true
-////                if let callback = self.completion {
-////                    callback(response)
-////                }
-////
-////                return
-////            }
-////        }
-//
-//        ZZConnectionManager.shared.enqueue(self)
-//
-//        let request =  self.buildRequest(name: name, parameters: parameters)
-//        debugPrint(request)
-//        request.responseJSON {
-//            switch $0.result {
-//            case .success(let value):
-//                guard let dict = value as? [String: Any] else {
-//                    seal.reject(ZZApiError(message: NetworkErrorDesc.parseFailure))
-//                    return
-//                }
-//
-//                ZLog.info(dict.toJsonString(pretty: true)!)
-//                do {
-//                    let response = try T(dict: dict)
-//                    seal.fulfill(response)
-//                } catch let err {
-//                    seal.reject(err)
-//                }
-//            case .failure(let err):
-//                seal.reject(ZZApiError(code: "http\($0.response!.statusCode)", message: err.localizedDescription))
-//            }
-//        }
-////        AppManager.shared.network.api(self.relativePath, params: self.parameters ?? [String: Any](), method: self.method) { response in
-////            if response.isSuccess() {
-////                WKZCache.shared.setObject(response.rawDict, forKey: self.cacheKey, expiredAt:  self.cachePolicy.expiredInterval)
-////            }
-////
-////            if let callback = self.completion {
-////                callback(response)
-////            }
-////
-////            ZZConnection.dequeue(self)
-////        }
-//    }
-//
-//    private func convertCacheToResponse(_ dict: [String: Any]) -> WKZNetworkResponse {
-//        return WKZNetworkResponse(dict: dict, data: nil)
-//    }
-//}
+
+import Foundation
+import Alamofire
+import PromiseKit
+
+public protocol ZZNetworkResponseParser {
+    func parse<T>(_ value: T) throws -> [String: Any]
+}
+
+public class ZZNetworkManager {
+    var baseURL: String
+    var session: SessionManager
+    var parser: ZZNetworkResponseParser
+    public init(baseURL: String, parser: ZZNetworkResponseParser) {
+        self.baseURL = baseURL
+        self.session = Alamofire.SessionManager(configuration: URLSessionConfiguration.default)
+        self.session.startRequestsImmediately = false
+        self.parser = parser
+    }
+
+    public func getRequest(_ path: String, parameters: [String: Any]? = nil, headers: [String: String]? = nil) -> ZZRequest {
+        let request = session.request(baseURL + path, method: .get, parameters: parameters, encoding: URLEncoding.methodDependent, headers: headers)
+        return ZZRequest(request: request, parser: parser)
+    }
+
+    public func postRequest(_ path: String, parameters: [String: Any]? = nil, headers: [String: String]? = nil) -> ZZRequest {
+        let request = session.request(baseURL + path, method: .post, parameters: parameters, encoding: URLEncoding.methodDependent, headers: headers)
+        return ZZRequest(request: request, parser: parser)
+    }
+}
+
+class ZZConnectionManager {
+    static let shared = ZZConnectionManager()
+
+    var session: SessionManager = Alamofire.SessionManager(configuration: URLSessionConfiguration.default)
+    var queue = [String: ZZRequest]()
+    func enqueue(_ connection: ZZRequest) {
+        self.queue[connection.cacheKey] = connection
+    }
+
+    func dequeue(_ connection: ZZRequest) {
+        self.queue.removeValue(forKey: connection.cacheKey)
+    }
+
+}
+
+public typealias ZZRequestCallback = ([String: Any]?, Error?) -> Void
+public class ZZRequest {
+    enum CacehPolicy {
+        case today, second(TimeInterval), day(TimeInterval)
+        var expiredInterval: TimeInterval {
+            switch self {
+            case .second(let interval): return interval + Date().timeIntervalSince1970
+            case .day(let interval): return interval * 86400 + Date().timeIntervalSince1970
+            case .today: return Date().endOfThisDay().timeIntervalSince1970
+            }
+        }
+    }
+
+    var configuration: URLSessionConfiguration?
+
+    var request: DataRequest
+    var parser: ZZNetworkResponseParser
+
+    var relativePath: String!
+    var parameters: [String: Any]?
+
+    var useCache = false
+    var cachePolicy: CacehPolicy = .second(300)
+    var cacheKey: String
+
+    init(request: DataRequest, parser: ZZNetworkResponseParser) {
+        self.request = request
+        self.parser = parser
+        self.cacheKey = "\(Int(Date().timeIntervalSince1970))\(Int.random(in: 1000..<10000))"
+    }
+
+    public func resume() {
+        self.request.resume()
+    }
+
+    public func suspend() {
+        self.request.suspend()
+    }
+
+    public func cancel() {
+        self.request.cancel()
+    }
+
+    deinit {
+        print("zzconnection deinit")
+    }
+
+    func responseJSON(callback: ZZRequestCallback? = nil) {
+        debugPrint(request)
+        ZZConnectionManager.shared.enqueue(self)
+        self.request.responseJSON {
+            switch $0.result {
+            case .success(let value):
+                guard let dict = value as? [String: Any] else {
+                    callback?(nil, ZZApiError.parseFailure)
+                    return
+                }
+
+                ZLog.info(dict.toJsonString(pretty: true)!)
+                do {
+                    let response = try self.parser.parse(dict)
+                    callback?(response, nil)
+                } catch let err {
+                   callback?(nil, err)
+                }
+            case .failure(let err):
+                if let afError = err as? AFError, afError.isResponseSerializationError {
+                    callback?(nil, ZZApiError(buildin: .parseFailure))
+                } else {
+                    let code = $0.response?.statusCode ?? -1000
+                    callback?(nil, ZZApiError(code: "http\(code)", message: err.localizedDescription))
+                }
+            }
+            ZZConnectionManager.shared.dequeue(self)
+        }
+        self.request.resume()
+    }
+}
