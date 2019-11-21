@@ -11,7 +11,7 @@ import WebViewJavascriptBridge
 
 public typealias H5CmdCallback = WVJBResponseCallback
 public protocol H5Command: AnyObject {
-    func execute(_ data: [String: Any], callback: H5CmdCallback?, context: H5BridageController)
+    func execute(_ data: [String: Any], callback: H5CmdCallback?, context: H5BridgeController)
 }
 
 public protocol H5BridgeConfiguration {
@@ -33,7 +33,7 @@ struct PageInfo {
     var commands = [String: H5Command]()
 }
 
-public class H5BridageController {
+public class H5BridgeController {
     public var bridge: WebViewJavascriptBridge
     var configuration: H5BridgeConfiguration
     public weak var vc: UIViewController?
@@ -54,6 +54,9 @@ public class H5BridageController {
             } else if let dict = data as? [String: Any] {
                 self.dispatch(dict, callback: callback)
             }
+        }
+        self.bridge.registerHandler("logMessage") { data, _ in
+            ZLog.info("[H5log]\(data)")
         }
     }
 

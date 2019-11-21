@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
   s.resource_bundles = {
     'Resource' => ['Resource/*.xcassets'],
   }
+  s.resource = 'Resource/*.js'
   s.requires_arc = true
   
   s.swift_version = "5.0"

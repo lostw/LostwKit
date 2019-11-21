@@ -15,7 +15,7 @@ open class H5PageController: UIViewController, UINavigationBack {
     var progressOb: NSKeyValueObservation?
     var pageOb: NSKeyValueObservation?
 
-    public var interactiveController: H5BridageController?
+    public var bridgeController: H5BridgeController?
     public var configuration: H5BridgeConfiguration?
 
     public var link: String!
@@ -166,7 +166,7 @@ open class H5PageController: UIViewController, UINavigationBack {
 
         self.addWebView()
         if let config = self.configuration {
-            self.interactiveController = H5BridageController(webview: self.webView, configuration: config, vc: self)
+            self.bridgeController = H5BridgeController(webview: self.webView, configuration: config, vc: self)
         }
 
         if self.progressEnabled {
@@ -188,7 +188,7 @@ open class H5PageController: UIViewController, UINavigationBack {
 
         pageOb = self.webView.observe(\.url, options: [.new]) { [unowned self] (_, info) in
             if let url = info.newValue??.absoluteString {
-                self.interactiveController?.reload()
+                self.bridgeController?.reload()
                 self.resetNavigationBar()
 
                 ZLog.info("[h5]\(url)")
@@ -258,7 +258,7 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
         self.loadExtraLocalStorage()
 
         self.endTime = CFAbsoluteTimeGetCurrent()
-        ZLog.debug("\(self.endTime - self.startTime)")
+        ZLog.debug("load time: \(self.endTime - self.startTime)")
     }
 
     // js alert 支持

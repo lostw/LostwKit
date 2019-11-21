@@ -22,7 +22,18 @@ public class WebManager {
     var urlScheme: String?
 
     public var controllerBuilder: (() -> H5PageController)?
-    public var h5Class: AnyClass?
+    public var debug = false {
+        didSet {
+            if debug {
+                enableDebugJS()
+
+                if !reusable.isEmpty {
+                    reusable.removeAll()
+                    prepare()
+                }
+            }
+        }
+    }
 
     public var customUserAgent: String?
 
@@ -66,9 +77,18 @@ public class WebManager {
         return h5
     }
 
-    public func configH5Page(_ h5: H5PageController) {
-        h5.webView = self.getWebView()
+    func enableDebugJS() {
+        let userContentController = configuration.userContentController
+//        configuration.userContentController = userContentController
 
+        let frameworkBundle = Bundle(for: ZZCrypto.self)
+        // h5日志
+        let filePath = frameworkBundle.path(forResource: "debug", ofType: "js")
+        // swiftlint:disable force_try
+        let jsContent = try! String(contentsOfFile: filePath!, encoding: .utf8)
+        // swiftlint:enable force_try
+        let h5Script = WKUserScript(source: jsContent, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        userContentController.addUserScript(h5Script)
     }
 
     // MAKR: - 预加载webview
