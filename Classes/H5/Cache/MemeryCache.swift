@@ -57,7 +57,7 @@ class LinkedNodeMap: NSObject {
         dict[node.key] = node
         totalCost += node.cost
         totalCount += 1
-        if let _ = head {
+        if head != nil  {
             node.next = head
             head?.prev = node
             head = node
@@ -73,7 +73,7 @@ class LinkedNodeMap: NSObject {
     func bringNodeToHead(_ node: LinkedNode) {
         if head == node { return }
 
-        if (tail == node) {
+        if tail == node {
             tail = node.prev
             tail?.next = nil
         } else {
@@ -272,12 +272,12 @@ extension MemoryCache {
         linedMap.bringNodeToHead(node)
 
         // 判断缓存是否满了，缓存数量、缓存大小
-        if (linedMap.totalCost > costLimit) {
+        if linedMap.totalCost > costLimit {
             queue.async {
                 self.trim(withCount: self.costLimit)
             }
         }
-        if (linedMap.totalCount > countLimit) {
+        if linedMap.totalCount > countLimit {
             linedMap.removeTailNode()
         }
 
@@ -317,9 +317,9 @@ extension MemoryCache {
         pthread_mutex_unlock(&lock)
         if finish { return }
 
-        while (finish == false) {
-            if (pthread_mutex_trylock(&lock) == 0) {
-                if (linedMap.totalCost > cost) {
+        while !finish {
+            if pthread_mutex_trylock(&lock) == 0 {
+                if linedMap.totalCost > cost {
                     linedMap.removeTailNode()
                 } else {
                     finish = true
@@ -349,9 +349,9 @@ extension MemoryCache {
         if finish { return }
 
         // 从尾节点开始向前删除节点，直到满足缓存策略
-        while (finish == false) {
-            if (pthread_mutex_trylock(&lock) == 0) {
-                if (linedMap.totalCount > count) {
+        while !finish {
+            if pthread_mutex_trylock(&lock) == 0 {
+                if linedMap.totalCount > count {
                     linedMap.removeTailNode()
                 } else {
                     finish = true
@@ -376,9 +376,9 @@ extension MemoryCache {
         pthread_mutex_unlock(&lock)
         if finish { return }
 
-        while finish == false {
-            if (pthread_mutex_trylock(&lock) == 0) {
-                if ((linedMap.tail != nil) && (now - linedMap.tail!.time) > age) {
+        while !finish {
+            if pthread_mutex_trylock(&lock) == 0 {
+                if (linedMap.tail != nil) && (now - linedMap.tail!.time) > age {
                     linedMap.removeTailNode()
                 } else {
                     finish = true

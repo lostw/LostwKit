@@ -13,45 +13,40 @@ public class DiskFileCache: NSObject, Cacheable {
 
     /// 缓存总大小
     public var totalCost: UInt {
-        get {
-            if !self.isValidFileDir(fileCacheDir) {
+        if !self.isValidFileDir(fileCacheDir) {
+            return 0
+        }
 
-                return 0
-            }
-
-            var fileSize: UInt = 0
-            do {
-                let files = try FileManager.default.contentsOfDirectory(atPath: fileCacheDir!.path)
-                for file in files {
-                    let fileUrl = fileCacheDir!.appendingPathComponent(file)
-                    if let attributes = try? FileManager.default.attributesOfItem(atPath: fileUrl.path) {
-                        fileSize += (attributes[FileAttributeKey.size] as? UInt) ?? 0
-                    }
+        var fileSize: UInt = 0
+        do {
+            let files = try FileManager.default.contentsOfDirectory(atPath: fileCacheDir!.path)
+            for file in files {
+                let fileUrl = fileCacheDir!.appendingPathComponent(file)
+                if let attributes = try? FileManager.default.attributesOfItem(atPath: fileUrl.path) {
+                    fileSize += (attributes[FileAttributeKey.size] as? UInt) ?? 0
                 }
-
-                return fileSize
-            } catch {
-
-                return 0
             }
+
+            return fileSize
+        } catch {
+
+            return 0
         }
     }
 
     /// 缓存总数量
     public var totalCount: UInt {
-        get {
-            if !self.isValidFileDir(fileCacheDir) {
-                return 0
-            }
-            do {
-                let files = try FileManager.default.contentsOfDirectory(atPath: fileCacheDir!.path)
-
-                return UInt(files.count)
-            } catch {
-
-                return 0
-            }
+        if !self.isValidFileDir(fileCacheDir) {
+            return 0
         }
+        do {
+            let files = try FileManager.default.contentsOfDirectory(atPath: fileCacheDir!.path)
+
+            return UInt(files.count)
+        } catch {
+            return 0
+        }
+
     }
 
     /// 缓存限制
