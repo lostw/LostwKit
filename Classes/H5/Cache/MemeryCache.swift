@@ -57,7 +57,7 @@ class LinkedNodeMap: NSObject {
         dict[node.key] = node
         totalCost += node.cost
         totalCount += 1
-        if head != nil  {
+        if head != nil {
             node.next = head
             head?.prev = node
             head = node
