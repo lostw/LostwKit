@@ -94,12 +94,12 @@ public class H5BridgeController {
         configuration.didTriggerCommand(type: type, vc: self.vc)
     }
 
-//    public func triggerCallback(_ name: String?, data: Any?) {
-//        guard let name = name else {
-//            return
-//        }
-//        self.bridge.callHandler(name, data: data)
-//    }
+    public func callH5Func(named name: String?, data: Any?) {
+        guard let name = name else {
+            return
+        }
+        self.bridge.callHandler(name, data: data)
+    }
 
     public func triggerCallback(_ callback: WVJBResponseCallback?, data: Any?) {
         guard let callback = callback else {
