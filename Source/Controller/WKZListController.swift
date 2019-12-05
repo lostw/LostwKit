@@ -49,6 +49,7 @@ open class WKZCollectionCell: UICollectionViewCell {
 
 open class WKZListController: UIViewController {
     public var list = [Any]()
+    public var newPaths = [IndexPath]()
     public var tableView = UITableView()
     public var page: Int = 0
     let cellIdentifier = defaultCellIdentifier
@@ -61,7 +62,6 @@ open class WKZListController: UIViewController {
     open var forPager: Bool {
         return true
     }
-    var indicatorNoMoreData = false
     public var noDataManager = WKZEmptySetManager()
 
     override open func viewDidLoad() {
@@ -167,6 +167,7 @@ open class WKZListController: UIViewController {
 }
 
 extension WKZListController: Pagable {
+
     @objc open func parseItem(_ item: Any) -> Any? {
         if let parser = self.parser {
             return parser.parse(item)
@@ -183,11 +184,8 @@ extension WKZListController: Pagable {
                 guard let self = self else { return }
                 self.fetch()
             }
-            if self.indicatorNoMoreData {
-                self.tableView.loadMoreView?.state = .pulling
-            }
         } else {
-            if self.indicatorNoMoreData && self.list.count > 0 {
+            if self.list.count > 0 {
                 self.tableView.addPushRefresh { [weak self] in
                     guard let self = self else { return }
                     self.fetch()
