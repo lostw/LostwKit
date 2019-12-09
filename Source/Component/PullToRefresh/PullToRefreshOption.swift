@@ -32,9 +32,9 @@ public struct PullToRefreshOption {
 }
 
 public enum PullToRefreshState {
-    case pulling
-    case triggered
-    case refreshing
-    case stop
-    case finish
+    case pulling // 初始状态
+    case triggered //已触发
+    case refreshing //触发
+    case stop //结束
+    case finish //完成
 }

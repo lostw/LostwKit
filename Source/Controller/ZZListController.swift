@@ -12,6 +12,7 @@ public typealias PageableCompletionCallback = ([Any], Bool) -> Void
 public protocol Pagable: AnyObject {
     associatedtype M
     var list: [M] {get set}
+    var newPaths: [IndexPath] {get set}
     var page: Int {get set}
 
     var isDataFetched: Bool {get set}
@@ -38,7 +39,19 @@ extension Pagable {
                     self.list.removeAll()
                 }
 
-                self.list += comingList.compactMap { self.parseItem($0) }
+                var datas = [M]()
+                var paths = [IndexPath]()
+                for item in comingList {
+                    if let m = self.parseItem(item) {
+                        datas.append(m)
+                        let indexPath = IndexPath(row: (self.list.count + datas.count - 1), section: 0)
+                        print(indexPath)
+                        paths.append(IndexPath(row: (self.list.count + datas.count - 1), section: 0))
+                    }
+                }
+
+                self.list += datas
+                self.newPaths = paths
                 self.page += 1
 
                 self.didLoadData(at: self.page)
@@ -60,6 +73,8 @@ extension Pagable {
 }
 
 open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewController, UITableViewDelegate, UITableViewDataSource, Pagable {
+    public var newPaths: [IndexPath] = []
+
     public typealias M = Model
 
     public typealias ConfigureCellCallback = (C, M, IndexPath) -> Void
@@ -289,8 +304,12 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
 
         self.tableView.stopPullRefreshEver()
         self.tableView.stopPushRefreshEver()
+        if page == 1 {
+            self.tableView.reloadData()
+        } else {
+            self.tableView.insertRows(at: self.newPaths, with: .bottom)
+        }
 
         self.rowHeightList = [CGFloat](repeating: 0, count: list.count)
-        self.tableView.reloadData()
     }
 }

@@ -9,7 +9,6 @@ import UIKit
 
 open class PullToRefreshView: UIView {
     var contentOffsetObserver: NSKeyValueObservation?
-    var contentSizeObserver: NSKeyValueObservation?
 
     fileprivate var options: PullToRefreshOption
     fileprivate var backgroundView: UIView
@@ -17,7 +16,6 @@ open class PullToRefreshView: UIView {
     fileprivate var indicator: UIActivityIndicatorView
     fileprivate var scrollViewInsets: UIEdgeInsets = UIEdgeInsets.zero
     fileprivate var refreshCompletion: (() -> Void)?
-    fileprivate var pull: Bool = true
 
     open override var tintColor: UIColor! {
         didSet {
@@ -93,7 +91,6 @@ open class PullToRefreshView: UIView {
         self.indicator.autoresizingMask = self.arrow.autoresizingMask
         self.indicator.hidesWhenStopped = true
         self.indicator.color = options.indicatorColor
-        self.pull = down
 
         super.init(frame: frame)
         self.addSubview(indicator)
@@ -120,17 +117,9 @@ open class PullToRefreshView: UIView {
             guard let this = self else { return }
             this.scrollViewDidScroll(scrollView)
         }
-
-        if !pull {
-            contentSizeObserver = scrollView.observe(\UIScrollView.contentSize) { [weak self] (scrollView, _) in
-                guard let this = self else { return }
-                this.positionY = scrollView.contentSize.height
-            }
-        }
     }
 
     func removeRegister() {
-        contentSizeObserver = nil
         contentOffsetObserver = nil
     }
 
@@ -151,29 +140,17 @@ open class PullToRefreshView: UIView {
             self.arrow.alpha = alpha
         }
 
-        if self.pull {
-            let throttle = -self.bounds.height - scrollView.contentInset.top
+        let throttle = -self.bounds.height - scrollView.contentInset.top
 
-            if offsetY < throttle {
-                if scrollView.isDragging && self.state == .pulling {
-                    self.state = .triggered
-                } else if !scrollView.isDragging && self.state == .triggered {
-                    self.state = .refreshing
-                }
-            } else {
-                if self.state == .triggered {
-                    self.state = .pulling
-                }
+        if offsetY < throttle {
+            if scrollView.isDragging && self.state == .pulling {
+                self.state = .triggered
+            } else if !scrollView.isDragging && self.state == .triggered {
+                self.state = .refreshing
             }
         } else {
-            guard scrollView.contentSize.height > scrollView.bounds.size.height else {
-                return
-            }
-            if self.state != .refreshing {
-                let throttle = scrollView.contentSize.height - scrollView.bounds.height - 120
-                if offsetY > throttle {
-                    self.state = .refreshing
-                }
+            if self.state == .triggered {
+                self.state = .pulling
             }
         }
     }
@@ -189,11 +166,7 @@ open class PullToRefreshView: UIView {
         scrollViewInsets = scrollView.contentInset
 
         var insets = scrollView.contentInset
-        if pull {
-            insets.top += self.frame.size.height
-        } else {
-            insets.bottom += self.frame.size.height
-        }
+        insets.top += self.frame.size.height
         scrollView.bounces = false
         UIView.animate(withDuration: PullToRefreshConst.animationDuration,
                                    delay: 0,

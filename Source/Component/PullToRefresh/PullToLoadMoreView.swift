@@ -1,14 +1,13 @@
 //
-//  PullToRefreshFooterView.swift
-//  PullDemo
+//  PullToLoadMoreView.swift
+//  Alamofire
 //
-//  Created by william on 10/11/2017.
-//  Copyright © 2017 william. All rights reserved.
+//  Created by xftt on 2019/12/4.
 //
 
 import UIKit
 
-open class PullToRefreshFooterView: UIView {
+open class PullToLoadMoreView: UIView {
     var contentOffsetObserver: Any?
     var contentSizeObserver: Any?
 
@@ -19,16 +18,15 @@ open class PullToRefreshFooterView: UIView {
             }
         }
     }
-
     private var scrollViewInset: UIEdgeInsets!
 
     fileprivate var options: PullToRefreshOption
     fileprivate var backgroundView: UIView
     fileprivate var contentLabel: UILabel
-    //    fileprivate var indicator: UIActivityIndicatorView
     fileprivate var scrollViewInsets: UIEdgeInsets = UIEdgeInsets.zero
     fileprivate var refreshCompletion: (() -> Void)?
-    fileprivate var pull: Bool = false
+
+    var lastOffset = "复位"
 
     fileprivate var positionY: CGFloat = 0 {
         didSet {
@@ -41,7 +39,7 @@ open class PullToRefreshFooterView: UIView {
         }
     }
 
-    public var state: PullToRefreshState = PullToRefreshState.pulling {
+    var state: PullToRefreshState = PullToRefreshState.pulling {
         didSet {
             if self.state == oldValue {
                 return
@@ -50,15 +48,12 @@ open class PullToRefreshFooterView: UIView {
             case .stop:
                 stopAnimating()
             case .finish:
-                //                self.stopAnimating()
                 self.showEnd()
             case .refreshing:
                 startAnimating()
-            case .pulling: //starting point
-                //                arrowRotationBack()
+            case .pulling: //starting point\
                 self.contentLabel.text = "加载中..."
             case .triggered:
-                //                arrowRotation()
                 break
             }
         }
@@ -73,7 +68,7 @@ open class PullToRefreshFooterView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public init(options: PullToRefreshOption, frame: CGRect, refreshCompletion :(() -> Void)?, down: Bool=true) {
+    public init(options: PullToRefreshOption, frame: CGRect, refreshCompletion: (() -> Void)?, down: Bool=true) {
         self.options = options
         self.refreshCompletion = refreshCompletion
 
@@ -89,25 +84,16 @@ open class PullToRefreshFooterView: UIView {
         self.contentLabel.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
 
         super.init(frame: frame)
-
         self.addSubview(backgroundView)
         self.addSubview(contentLabel)
         self.autoresizingMask = .flexibleWidth
     }
 
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-
-    }
-
     open override func willMove(toSuperview superView: UIView!) {
-        //superview NOT superView, DO NEED to call the following method
-        //superview dealloc will call into this when my own dealloc run later!!
         self.removeRegister()
         guard let scrollView = superView as? UIScrollView else {
             return
         }
-
         contentOffsetObserver = scrollView.observe(\UIScrollView.contentOffset) { [weak self] (scrollView, _) in
             guard let this = self else { return }
 
@@ -122,25 +108,35 @@ open class PullToRefreshFooterView: UIView {
                 return
             }
 
-            if this.state != .refreshing {
-                let throttle = scrollView.contentSize.height - scrollView.bounds.height - 120
-                if offsetY > throttle {
-                    this.state = .refreshing
-                }
+            let throttle = scrollView.contentSize.height - scrollView.bounds.height - 120
+
+            if offsetY > throttle && this.lastOffset == "复位" {
+                this.lastOffset = "超出"
+                print(this.lastOffset)
+            }
+            if offsetY <= throttle && this.lastOffset == "超出" {
+                this.lastOffset = "复位"
+                print(this.lastOffset)
+            }
+
+            if this.state == .pulling && offsetY > throttle {
+                print("触发了调用")
+                this.state = .refreshing
+            }
+            if this.state == .stop && offsetY <= throttle {
+                print("触发了重置")
+                this.state = .pulling
             }
         }
-
-        if !pull {
-            contentSizeObserver = scrollView.observe(\UIScrollView.contentSize) { [weak self] (scrollView, _) in
-                guard let this = self else { return }
-                this.positionY = scrollView.contentSize.height
-            }
+        contentSizeObserver = scrollView.observe(\UIScrollView.contentSize) { [weak self] (scrollView, _) in
+            guard let this = self else { return }
+            this.positionY = scrollView.contentSize.height
         }
     }
 
     fileprivate func removeRegister() {
-        contentSizeObserver = nil
         contentOffsetObserver = nil
+        contentSizeObserver = nil
     }
 
     deinit {
@@ -150,8 +146,6 @@ open class PullToRefreshFooterView: UIView {
     // MARK: private
 
     fileprivate func startAnimating() {
-        //        self.indicator.startAnimating()
-
         guard let scrollView = superview as? UIScrollView else {
             return
         }
@@ -160,7 +154,6 @@ open class PullToRefreshFooterView: UIView {
         var insets = scrollView.contentInset
         insets.bottom += self.frame.size.height
 
-        //        scrollView.bounces = false
         UIView.animate(withDuration: PullToRefreshConst.animationDuration,
                        delay: 0,
                        options: [],
@@ -179,21 +172,13 @@ open class PullToRefreshFooterView: UIView {
     }
 
     fileprivate func stopAnimating() {
-        //        self.indicator.stopAnimating()
-        //        self.arrow.isHidden = false
         guard let scrollView = superview as? UIScrollView else {
             return
         }
-        //        scrollView.bounces = true
-        self.state = .pulling
         let duration = PullToRefreshConst.animationDuration
-        UIView.animate(withDuration: duration,
-                       animations: {
-                        scrollView.contentInset = self.scrollViewInsets
-                        //                        self.arrow.transform = CGAffineTransform.identity
-        }, completion: { _ in
-            //            self.state = .pulling
-        })
+        UIView.animate(withDuration: duration) {
+            scrollView.contentInset = self.scrollViewInsets
+        }
     }
 
     func showEnd() {
