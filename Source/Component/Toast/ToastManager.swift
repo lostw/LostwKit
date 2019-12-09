@@ -56,5 +56,5 @@ public class ToastManager {
      */
     public var position: ToastPosition = .bottom
 
-    public var loadingViewBuilder: (() -> ToastActivityView)?
+    public var loadingViewBuilder: (() -> IndicatorView)?
 }

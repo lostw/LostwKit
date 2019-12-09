@@ -249,112 +249,31 @@ public extension UIView {
     }
 
     // MARK: - indicator
-    private var _indicator: _Indicator {
-        var obj = objc_getAssociatedObject(self, &ToastKeys.indicator) as? _Indicator
+    public var activity: Indicator {
+        var obj = objc_getAssociatedObject(self, &ToastKeys.indicator) as? Indicator
         if obj == nil {
-            obj = _Indicator()
+            obj = Indicator(withIn: self)
             objc_setAssociatedObject(self, &ToastKeys.indicator, obj!, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
 
         return obj!
     }
 
-    private class _Indicator {
-        var count: Int = 0
-        lazy var slave: ToastActivityView = {
-            let style = ToastManager.shared.style
-
-            var activityView: ToastActivityView!
-            if let builder = ToastManager.shared.loadingViewBuilder {
-                activityView = builder()
-            } else {
-                activityView = DefaultActivityView()
-            }
-
-            activityView.frame =
-            CGRect(x: 0.0, y: 0.0, width: style.activitySize.width, height: style.activitySize.height)
-            activityView.backgroundColor = style.activityBackgroundColor
-            activityView.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
-            activityView.layer.cornerRadius = style.cornerRadius
-
-            if style.displayShadow {
-                activityView.layer.shadowColor = style.shadowColor.cgColor
-                activityView.layer.shadowOpacity = style.shadowOpacity
-                activityView.layer.shadowRadius = style.shadowRadius
-                activityView.layer.shadowOffset = style.shadowOffset
-            }
-
-            activityView.activityColor = style.activityIndicatorColor
-
-            return activityView
-        }()
-    }
-
     func loading(_ text: String? = nil) {
-        _indicator.count += 1
-        if _indicator.count > 0 {
-            let indicatorView = _indicator.slave
-            indicatorView.setTitle(text)
-
-            let point = ToastPosition.center.centerPoint(forToast: indicatorView, inSuperview: self)
-            makeToastActivity(indicatorView, point: point)
-        }
+        self.activity.show(text)
     }
 
     /// 更新当前加载框的文本，不影响计数
     func loadingUpdate(_ text: String? = nil) {
-        _indicator.slave.setTitle(text)
+        self.activity.update(text)
     }
 
     func hideLoading() {
-        _indicator.count -= 1
-        if _indicator.count <= 0 {
-            let activityView = _indicator.slave
-            if activityView.superview != nil {
-                UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseIn, .beginFromCurrentState], animations: {
-                    activityView.alpha = 0.0
-                }, completion: { _ in
-                    activityView.removeFromSuperview()
-                    self.isUserInteractionEnabled = true
-                })
-            }
-        }
+        self.activity.hide()
     }
 
     func clearLoading() {
-        _indicator.count = 1
-        self.hideLoading()
-    }
-
-    @available(*, deprecated, message: "use loading instead")
-    @objc func showIndicator(loadingText: String? = nil) {
-        self.loading(loadingText)
-    }
-
-    @available(*, deprecated, message: "use loading(updateText:) instead")
-    func replaceIndicator(loadingText: String? = nil) {
-        self.loadingUpdate(loadingText)
-    }
-
-    @available(*, deprecated, message: "use clearLoading instead")
-    func hideAllIndicator() {
-        self.clearLoading()
-    }
-
-    private func makeToastActivity(_ toast: ToastActivityView, point: CGPoint) {
-        guard toast.superview == nil else {
-            return
-        }
-        toast.alpha = 0.0
-        toast.center = point
-
-        self.isUserInteractionEnabled = false
-        self.addSubview(toast)
-
-        UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: .curveEaseOut, animations: {
-            toast.alpha = 1.0
-        })
-        toast.startAnimating()
+        self.activity.reset()
     }
 
     /**
