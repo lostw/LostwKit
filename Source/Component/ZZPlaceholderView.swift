@@ -55,7 +55,7 @@ public class ZZPlaceholderView: UIView {
         super.init(coder: aDecoder)
     }
 
-    func load(dataSource: DataSource) {
+    public func load(dataSource: DataSource) {
         container.removeAllLinearViews()
         container.padding = dataSource.style.padding
 
@@ -72,7 +72,7 @@ public class ZZPlaceholderView: UIView {
         }
     }
 
-    func load(customView: UIView) {
+    public func load(customView: UIView) {
         container.removeSubviews()
 
         container.addSubview(customView)
