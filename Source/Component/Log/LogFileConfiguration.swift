@@ -19,7 +19,7 @@ class LogFileConfiguration: BasicLogConfiguration {
         }
 
         let fmt = DateFormatter()
-        fmt.dateFormat = "yyyy-MM-dd.hhmmdd'.log'"
+        fmt.dateFormat = "yyyy-MM-dd.HHmmss'.log'"
 
         let filePath = directoryURL.appendingPathComponent(fmt.string(from: Date()))
         if let recorder = FileLogRecorder(filePath: filePath.path, formatters: formatters) {
