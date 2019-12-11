@@ -109,22 +109,10 @@ open class PullToLoadMoreView: UIView {
             }
 
             let throttle = scrollView.contentSize.height - scrollView.bounds.height - 120
-
-            if offsetY > throttle && this.lastOffset == "复位" {
-                this.lastOffset = "超出"
-                print(this.lastOffset)
-            }
-            if offsetY <= throttle && this.lastOffset == "超出" {
-                this.lastOffset = "复位"
-                print(this.lastOffset)
-            }
-
             if this.state == .pulling && offsetY > throttle {
-                print("触发了调用")
                 this.state = .refreshing
             }
             if this.state == .stop && offsetY <= throttle {
-                print("触发了重置")
                 this.state = .pulling
             }
         }

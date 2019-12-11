@@ -25,17 +25,6 @@ open class PullToRefreshView: UIView {
         }
     }
 
-    fileprivate var positionY: CGFloat = 0 {
-        didSet {
-            if self.positionY == oldValue {
-                return
-            }
-            var frame = self.frame
-            frame.origin.y = positionY
-            self.frame = frame
-        }
-    }
-
     public var state: PullToRefreshState = PullToRefreshState.pulling {
         didSet {
             if self.state == oldValue {

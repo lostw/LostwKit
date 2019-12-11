@@ -7,23 +7,12 @@
 
 import UIKit
 
-public protocol ToastActivityView: UIView {
-    var activityColor: UIColor? {get set}
-    func setTitle(_ title: String?)
-    func startAnimating()
-    func stopAnimating()
-
-}
-
-class DefaultActivityView: UIView, ToastActivityView {
+class DefaultActivityView: UIView, IndicatorView {
     var activityView: UIActivityIndicatorView!
     var titleLabel: UILabel!
-    var activityColor: UIColor? {
-        get {
-            return activityView.color
-        }
-        set {
-            activityView.color = newValue
+    override var tintColor: UIColor! {
+        didSet {
+            activityView.color = tintColor
         }
     }
 
@@ -63,7 +52,5 @@ class DefaultActivityView: UIView, ToastActivityView {
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview().offset(-15)
         }
-
     }
-
 }
