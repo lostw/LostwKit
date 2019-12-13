@@ -207,11 +207,19 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
     }
 
     // MARK: - UITableViewDelegate UITableViewDataSource
-    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.list.count
     }
 
-    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 0
+    }
+
+    open func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return nil
+    }
+
+    open func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if tableView.estimatedRowHeight != 0 {
             if rowHeightList.count == list.count {
                 return rowHeightList[indexPath.row] > 0 ? rowHeightList[indexPath.row] : UITableView.automaticDimension
@@ -223,7 +231,7 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         }
     }
 
-    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.cellIdentifier(at: indexPath), for: indexPath)
 
         guard indexPath.row < self.list.count else {
@@ -240,7 +248,7 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
         return cell
     }
 
-    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.row < self.list.count {
             self.didSelectItem?(self.list[indexPath.row], indexPath)
@@ -248,7 +256,7 @@ open class ZZListController<C: UITableViewCell, Model: Mapable>: UIViewControlle
     }
 
     //remove extra bottom line
-    public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    open func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 0.1
     }
 
