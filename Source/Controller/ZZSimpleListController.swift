@@ -292,7 +292,7 @@ open class ZZSimpleListController<Cell: UITableViewCell, Model: Mapable>: UIView
                 self.fetch()
             }
             if self.indicatorNoMoreData {
-                self.tableView.loadMoreView?.state = .pulling
+                self.tableView.stopPushRefreshEver(false)
             }
         } else {
             if self.indicatorNoMoreData && self.list.count > 0 {

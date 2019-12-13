@@ -7,14 +7,29 @@
 import Foundation
 import UIKit
 
-public extension UIScrollView {
+public typealias RefreshCompletion = () -> Void
 
-    var refreshView: PullToRefreshView? {
-        return viewWithTag(PullToRefreshConst.pullTag) as? PullToRefreshView
+public extension UIScrollView {
+    private struct AssociateKeys {
+        static var pull        = "com.refresh.pull"
+        static var push        = "com.refresh.push"
+    }
+    var pullManager: PullRefreshManager? {
+        get {
+            return objc_getAssociatedObject(self, &AssociateKeys.pull) as? PullRefreshManager
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociateKeys.pull, newValue, .OBJC_ASSOCIATION_RETAIN)
+        }
     }
 
-    var loadMoreView: PullToLoadMoreView? {
-        return viewWithTag(PullToRefreshConst.pushTag) as? PullToLoadMoreView
+    var pushManager: PushInvisibleManager? {
+        get {
+            return objc_getAssociatedObject(self, &AssociateKeys.push) as? PushInvisibleManager
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociateKeys.push, newValue, .OBJC_ASSOCIATION_RETAIN)
+        }
     }
 
     func decorateRefreshViewWithColor(_ color: UIColor) {
@@ -22,83 +37,63 @@ public extension UIScrollView {
         let layer = CAShapeLayer()
         layer.backgroundColor = color.cgColor
         layer.frame = CGRect(x: 0, y: -1000, width: self.frame.size.width, height: 1000+PullToRefreshConst.height)
-        self.refreshView?.layer.insertSublayer(layer, at: 0)
-        self.refreshView?.tintColor = UIColor.white
+        self.pullManager?.slaveView.layer.insertSublayer(layer, at: 0)
+        self.pullManager?.slaveView.tintColor = UIColor.white
     }
 
-    func addPullRefresh(options: PullToRefreshOption = PullToRefreshOption(), refreshCompletion :(() -> Void)?) {
-        guard self.refreshView == nil else {
+    func addPullRefresh(options: PullToRefreshOption = PullToRefreshOption(), refreshCompletion: RefreshCompletion?) {
+        guard self.pullManager == nil else {
             return
         }
+
         let refreshViewFrame = CGRect(x: 0, y: -PullToRefreshConst.height, width: self.frame.size.width, height: PullToRefreshConst.height)
-        let refreshView = PullToRefreshView(options: options, frame: refreshViewFrame, refreshCompletion: refreshCompletion)
+        let refreshView = PullRefreshViewSimple(frame: refreshViewFrame, options: options)
         refreshView.tag = PullToRefreshConst.pullTag
         addSubview(refreshView)
-    }
 
-    func addPushRefresh(options: PullToRefreshOption = PullToRefreshOption(), refreshCompletion :(() -> Void)?) {
-        guard self.loadMoreView == nil else {
-            return
-        }
-
-        let refreshViewFrame = CGRect(x: 0, y: contentSize.height, width: self.frame.size.width, height: PullToRefreshConst.pushHeight)
-        let refreshView = PullToLoadMoreView(options: options, frame: refreshViewFrame, refreshCompletion: refreshCompletion)
-        refreshView.owner = self
-        refreshView.tag = PullToRefreshConst.pushTag
-        addSubview(refreshView)
+        let manager = PullRefreshManager(withIn: self, refreshView: refreshView, refreshCompletion: refreshCompletion!)
+        self.pullManager = manager
     }
 
     func startPullRefresh() {
-        let refreshView = self.refreshView
-        refreshView?.state = .refreshing
+        self.pullManager?.state = .refreshing
     }
 
-    func stopPullRefreshEver(_ ever: Bool = false) {
-        let refreshView = self.refreshView
-        if ever {
-            refreshView?.state = .finish
-        } else {
-            refreshView?.state = .stop
-        }
+    func stopPullRefreshEver() {
+        self.pullManager?.state = .stop
     }
 
     func removePullRefresh() {
-        self.refreshView?.removeFromSuperview()
+        self.pullManager = nil
+    }
+
+    func addPushRefresh(options: PullToRefreshOption = PullToRefreshOption(), refreshCompletion :(() -> Void)?) {
+        guard self.pushManager == nil else {
+            return
+        }
+
+        let refreshViewFrame = CGRect(x: 0, y: -PullToRefreshConst.height, width: self.frame.size.width, height: PullToRefreshConst.height)
+        let refreshView = PullToLoadMoreView(frame: refreshViewFrame, options: options)
+        refreshView.tag = PullToRefreshConst.pullTag
+        addSubview(refreshView)
+
+        let manager = PushInvisibleManager(withIn: self, refreshView: refreshView, refreshCompletion: refreshCompletion!)
+        self.pushManager = manager
     }
 
     func startPushRefresh() {
-        let refreshView = self.loadMoreView
-        refreshView?.state = .refreshing
+        self.pushManager?.state = .refreshing
     }
 
     func stopPushRefreshEver(_ ever: Bool = false) {
-        let refreshView = self.loadMoreView
         if ever {
-            print("触发了结束")
-            refreshView?.state = .finish
+            self.pushManager?.state = .finish
         } else {
-            print("触发了停止")
-            refreshView?.state = .stop
+            self.pushManager?.state = .stop
         }
     }
 
     func removePushRefresh() {
-        self.loadMoreView?.removeFromSuperview()
-    }
-
-    // If you want to PullToRefreshView fixed top potision, Please call this function in scrollViewDidScroll
-    func fixedPullToRefreshViewForDidScroll() {
-        let pullToRefreshView = self.refreshView
-        if !PullToRefreshConst.fixedTop || pullToRefreshView == nil {
-            return
-        }
-        var frame = pullToRefreshView!.frame
-        if self.contentOffset.y < -PullToRefreshConst.height {
-            frame.origin.y = self.contentOffset.y
-            pullToRefreshView!.frame = frame
-        } else {
-            frame.origin.y = -PullToRefreshConst.height
-            pullToRefreshView!.frame = frame
-        }
+        self.pushManager = nil
     }
 }

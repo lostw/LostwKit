@@ -8,7 +8,7 @@
 import UIKit
 
 public protocol IndicatorView: UIView {
-    func setTitle(_ title: String?)
+    var text: String? { get set }
     func startAnimating()
     func stopAnimating()
 }
@@ -21,8 +21,12 @@ public class Indicator: NSObject {
             return view
         }
 
+        if let view = ToastManager.shared.loadingViewBuilder?() {
+            return view
+        }
+
         let style = ToastManager.shared.style
-        let activityView = DefaultActivityView()
+        let activityView = DefaultIndicatorView()
         activityView.frame =
         CGRect(x: 0.0, y: 0.0, width: style.activitySize.width, height: style.activitySize.height)
         activityView.layer.cornerRadius = style.cornerRadius
@@ -69,7 +73,7 @@ public class Indicator: NSObject {
     public func show(_ text: String? = nil) {
         count += 1
         if count > 0 {
-            slaveView.setTitle(text)
+            slaveView.text = text
         }
 
         guard slaveView.superview == nil else {
@@ -88,7 +92,7 @@ public class Indicator: NSObject {
     /// update text while not changing count
     /// - Parameter text: text to be shown
     public func update(_ text: String?) {
-        slaveView.setTitle(text)
+        slaveView.text = text
     }
 
     /// hide indciatorView by decreasing count

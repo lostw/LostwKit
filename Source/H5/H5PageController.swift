@@ -49,6 +49,8 @@ open class H5PageController: UIViewController, UINavigationBack {
     deinit {
         self.progressOb = nil
         self.pageOb = nil
+
+        self.webView.scrollView.removePullRefresh()
     }
 
     public func shouldGoBack() -> Bool {
@@ -259,6 +261,10 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
 
         self.endTime = CFAbsoluteTimeGetCurrent()
         ZLog.debug("load time: \(self.endTime - self.startTime)")
+    }
+
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        ZLog.info(error.localizedDescription)
     }
 
     // js alert 支持
