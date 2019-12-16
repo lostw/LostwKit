@@ -15,7 +15,7 @@ class DefaultIndicatorView: UIView, IndicatorView {
             return self.titleLabel.text
         }
         set {
-            self.titleLabel.text = text
+            self.titleLabel.text = newValue
         }
     }
 
