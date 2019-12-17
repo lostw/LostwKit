@@ -56,7 +56,7 @@ public extension UIView {
         line.backgroundColor = color
         self.addSubview(line)
         line.snp.makeConstraints { (make) in
-            make.top.equalToSuperview().offset(1-ONE_PX_ADJUST)
+            make.top.equalToSuperview().offset(ONE_PX_ADJUST)
             make.left.equalToSuperview().offset(left)
             make.right.equalToSuperview().offset(-right)
             make.height.equalTo(ONE_PX)

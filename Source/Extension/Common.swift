@@ -18,8 +18,8 @@ public let STATUSBAR_HEIGHT = UIApplication.shared.statusBarFrame.height
 public let SCREEN_WIDTH = UIScreen.main.bounds.width
 public let SCREEN_HEIGHT = UIScreen.main.bounds.height
 
-public let ONE_PX = 1 / UIScreen.main.scale
-public let ONE_PX_ADJUST = ONE_PX / 2
+public let ONE_PX = 1.0 / UIScreen.main.scale
+public let ONE_PX_ADJUST = ONE_PX / 2.0
 
 public let defaultCellIdentifier = "DefaultCell"
 
