@@ -7,9 +7,18 @@
 
 import UIKit
 
-class DefaultActivityView: UIView, IndicatorView {
+class DefaultIndicatorView: UIView, IndicatorView {
     var activityView: UIActivityIndicatorView!
-    var titleLabel: UILabel!
+    let titleLabel = UILabel()
+    var text: String? {
+        get {
+            return self.titleLabel.text
+        }
+        set {
+            self.titleLabel.text = newValue
+        }
+    }
+
     override var tintColor: UIColor! {
         didSet {
             activityView.color = tintColor
@@ -23,10 +32,6 @@ class DefaultActivityView: UIView, IndicatorView {
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    func setTitle(_ title: String?) {
-        self.titleLabel.text = title
     }
 
     func startAnimating() {
@@ -45,7 +50,6 @@ class DefaultActivityView: UIView, IndicatorView {
             make.centerY.equalToSuperview().offset(-10)
         }
 
-        titleLabel = UILabel()
         titleLabel.zFontSize(14).zColor(.white)
         self.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { (make) in

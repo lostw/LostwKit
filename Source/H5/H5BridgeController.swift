@@ -56,7 +56,7 @@ public class H5BridgeController {
             }
         }
         self.bridge.registerHandler("logMessage") { data, _ in
-            ZLog.info("[H5log]\(data)")
+            ZLog.info("[H5log]\(data!)")
         }
     }
 
