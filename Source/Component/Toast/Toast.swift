@@ -27,7 +27,6 @@ import UIKit
 
 public class Toast {
     unowned var masterView: UIView
-    weak var container: UIView?
     var queue: [UIView] = []
     var activeToasts: [UIView] = []
 
@@ -115,7 +114,6 @@ public class Toast {
 
     // MARK: - Private Show/Hide Methods
     private func show(_ toast: UIView, duration: TimeInterval, point: CGPoint) {
-        guard let container = self.container else { return }
         toast.center = point
         //        toast.alpha = 0.0
         toast.transform = CGAffineTransform.init(scaleX: 0, y: 0)
@@ -128,7 +126,7 @@ public class Toast {
         }
 
         activeToasts.append(toast)
-        container.addSubview(toast)
+        masterView.addSubview(toast)
 
         UIView.animate(withDuration: ToastManager.shared.style.fadeDuration, delay: 0.0, options: [.curveEaseOut, .allowUserInteraction], animations: {
             //            toast.alpha = 1.0
