@@ -36,12 +36,12 @@ struct PageInfo {
 public class H5BridgeController {
     public var bridge: WebViewJavascriptBridge
     var configuration: H5BridgeConfiguration
-    public weak var vc: UIViewController?
+    public weak var vc: H5PageController?
 
     var currentPage: PageInfo!
     var didTriggerAction: ((String) -> Void)?
 
-    public init(webview: WKWebView, configuration: H5BridgeConfiguration, vc: (UIViewController & WKNavigationDelegate)) {
+    public init(webview: WKWebView, configuration: H5BridgeConfiguration, vc: (H5PageController & WKNavigationDelegate)) {
         self.configuration = configuration
         self.vc = vc
         self.bridge = WebViewJavascriptBridge(webview)
