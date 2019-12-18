@@ -65,7 +65,7 @@ public class WebManager {
 
         h5.setLink(link, params: params)
         h5.pageTitle = name
-        h5.webView = self.getWebView()
+        h5.session = self
 
         if let bridageConfig = self.bridageConfig {
             h5.enableCommunication(configuration: bridageConfig)

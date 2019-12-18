@@ -12,13 +12,21 @@ import WebKit
 open class H5PageController: UIViewController, UINavigationBack {
     public var webView: WKWebView!
 
+    // 初始化当前页面的manager, 可以传递相同的配置
+    unowned public var session: WebManager = WebManager.default
+
     var progressOb: NSKeyValueObservation?
     var pageOb: NSKeyValueObservation?
 
+    /// 封装了javascriptBridage
     public var bridgeController: H5BridgeController?
+
+    /// 配置交互，由在js环境调用postMessage(_ dict: [String: Any])
     public var configuration: H5BridgeConfiguration?
 
     public var link: String!
+
+    /// 页面标题
     public var pageTitle: String?
     public var progressEnabled = true
     public var plugin: H5PageControllerPlugin? {
@@ -26,7 +34,10 @@ open class H5PageController: UIViewController, UINavigationBack {
             plugin?.owner = self
         }
     }
+
+    /// 替换http scheme, 用于hook相应的scheme做请求的捕获处理
     public var customScheme: String?
+    /// 页面id, 方便查找相应的页面
     public var pageName: String?
 
     var startTime: CFAbsoluteTime = 0
@@ -35,7 +46,13 @@ open class H5PageController: UIViewController, UINavigationBack {
     var progressBar: UIProgressView?
     public var storageData: [String: Any]?
 
-    public convenience init(link: String, pageTitle: String? = nil, params: [String: String]? = nil, webView: WKWebView? = nil) {
+
+    /// 初始化
+    /// - Parameters:
+    ///   - link: 网页链接
+    ///   - pageTitle: 页面标题
+    ///   - params: 会转化为get参数拼接在链接上
+    public convenience init(link: String, pageTitle: String? = nil, params: [String: String]? = nil) {
         self.init()
 
         var link = link
@@ -152,19 +169,9 @@ open class H5PageController: UIViewController, UINavigationBack {
         }
     }
 
-    // MARK: - public methods
-
-    /// 启用交互
-    ///
-    /// - Parameters:
-    ///   - configuration: 配置交互方法、类型名
-    public func enableCommunication(configuration: H5BridgeConfiguration) {
-        self.configuration = configuration
-    }
-
     // MARK: - private methods
     func commonInitView() {
-        self.view.backgroundColor = Theme.shared[.background]
+        self.view.backgroundColor = Theme.shared.background
 
         self.addWebView()
         if let config = self.configuration {
@@ -205,9 +212,8 @@ open class H5PageController: UIViewController, UINavigationBack {
     }
 
     func addWebView() {
-        if self.webView == nil {
-            self.webView = WebManager.default.getWebView()
-        }
+        // 从session中获取webview
+        self.webView = self.session.getWebView()
         self.webView.navigationDelegate = self
         self.webView.uiDelegate = self
         self.view.addSubview(self.webView)
