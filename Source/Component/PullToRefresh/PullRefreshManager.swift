@@ -28,7 +28,7 @@ public class PullRefreshManager {
     }
     var scrollInsets: UIEdgeInsets = .zero
 
-    init(withIn scrollView: UIScrollView, refreshView: PullRefreshView, refreshCompletion: @escaping RefreshCompletion) {
+    public init(withIn scrollView: UIScrollView, refreshView: PullRefreshView, refreshCompletion: @escaping RefreshCompletion) {
         self.scrollView = scrollView
         self.slaveView = refreshView
         self.completion = refreshCompletion

@@ -7,8 +7,8 @@
 
 import UIKit
 
-final class PullRefreshViewSimple: UIView, PullRefreshView {
-    var state: PullRefreshState = .pulling(0) {
+public class PullRefreshViewSimple: UIView, PullRefreshView {
+    public var state: PullRefreshState = .pulling(0) {
         didSet {
             switch state {
             case .pulling(let progress):
@@ -40,7 +40,7 @@ final class PullRefreshViewSimple: UIView, PullRefreshView {
     var arrow: PullToRefreshArrow!
     var indicator: UIActivityIndicatorView!
 
-    init(frame: CGRect, options: PullToRefreshOption) {
+    public init(frame: CGRect, options: PullToRefreshOption) {
         self.options = options
         super.init(frame: frame)
         self.commonInitView()
@@ -50,7 +50,7 @@ final class PullRefreshViewSimple: UIView, PullRefreshView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         self.arrow.center = CGPoint(x: self.frame.size.width / 2, y: self.frame.size.height / 2)
         self.indicator.center = self.arrow.center
