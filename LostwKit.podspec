@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name = "LostwKit"
-  s.version = "1.1.2"
+  s.version = "1.1.4"
   s.summary = "my personal kit for convience"
 
   s.description = <<-DESC
@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = "9.2"
   s.watchos.deployment_target = "2.2"
 
-  s.dependency 'SnapKit'
+  s.dependency 'SnapKit', '~> 4.2.0'
   s.dependency 'Alamofire'
   s.dependency 'SDWebImage', '~> 5.3.0'
   s.dependency 'PromiseKit/CorePromise'
