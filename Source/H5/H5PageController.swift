@@ -46,7 +46,6 @@ open class H5PageController: UIViewController, UINavigationBack {
     var progressBar: UIProgressView?
     public var storageData: [String: Any]?
 
-
     /// 初始化
     /// - Parameters:
     ///   - link: 网页链接

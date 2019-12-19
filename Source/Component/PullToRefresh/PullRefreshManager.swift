@@ -48,7 +48,7 @@ public class PullRefreshManager {
             let throttle = -self.slaveView.bounds.height
 
             switch self.state {
-            case .pulling(_):
+            case .pulling:
                 if offsetY < throttle && self.scrollView.isDragging {
                     self.state = .triggered
                 } else {

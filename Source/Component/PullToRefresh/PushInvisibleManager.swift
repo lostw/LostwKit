@@ -64,7 +64,7 @@ public class PushInvisibleManager {
             let offsetY = scrollView.contentOffset.y
             let throttle = scrollView.contentSize.height - scrollView.bounds.height - 120
             switch self.state {
-            case .pulling(_):
+            case .pulling:
                 if offsetY > throttle {
                     self.state = .refreshing
                 }
@@ -76,7 +76,6 @@ public class PushInvisibleManager {
                 break
             case .stopped:
                 self.state = .pulling(0)
-                break
             case .finish:
                 break
             }

@@ -48,7 +48,6 @@ final class PullToLoadMoreView: UIView, PullRefreshView {
         self.contentLabel.text = "加载中..."
         self.contentLabel.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height)
 
-
         self.addSubview(contentLabel)
         self.autoresizingMask = .flexibleWidth
     }

@@ -67,7 +67,7 @@ public class WebManager {
         h5.pageTitle = name
         h5.session = self
         h5.configuration = self.bridageConfig
-        
+
         if let customScheme = self.urlScheme {
             h5.customScheme = customScheme
         }
