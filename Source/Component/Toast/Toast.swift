@@ -47,6 +47,12 @@ public class Toast {
         self.showToast(view, position: position)
     }
 
+    /// convience method for show Error
+    /// - Parameter error: Error
+    public func error(_ error: Error) {
+        show(error.localizedDescription)
+    }
+
     func showToast(_ toast: UIView, duration: TimeInterval = ToastManager.shared.duration, position: ToastPosition = ToastManager.shared.position, completion: ((_ didTap: Bool) -> Void)? = nil) {
         let point = position.centerPoint(forToast: toast, inSuperview: self.masterView)
         show(toast, duration: duration, point: point, completion: completion)

@@ -79,18 +79,9 @@ public func deviceIdentifier() -> String {
     return identifier
 }
 
-//func implodeQuery(_ path: String, params: [String: Any]?) -> String {
-//    var link = path
-//    if let query = params?.toQuery() {
-//        if link.range(of: "?") == nil {
-//            link = "\(link)?\(query)"
-//        } else {
-//            link = "\(link)&\(query)"
-//        }
-//    }
-//
-//    return link
-//}
+public func delay(_ time: TimeInterval, queue: DispatchQueue = DispatchQueue.main, action: @escaping VoidClosure) {
+    queue.asyncAfter(deadline: .now() + time, execute: action)
+}
 
 public func toCurrency(_ value: Double) -> String {
     let formatter = NumberFormatter()

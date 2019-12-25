@@ -6,16 +6,26 @@
 //
 
 import Foundation
+/**
+ Keys used for associated objects.
+ */
+struct ToastKeys {
+    static var toast        = "com.toast-swift.toast"
+    static var configuration        = "com.toast-swift.timer"
+    static var indicator = "com.toast-swift.activityView"
+}
+
+public extension UIViewController {
+    var activity: Indicator {
+        return view.activity
+    }
+
+    var toast: Toast {
+        return view.toast
+    }
+}
 
 public extension UIView {
-    /**
-     Keys used for associated objects.
-     */
-    internal struct ToastKeys {
-        static var toast        = "com.toast-swift.toast"
-        static var configuration        = "com.toast-swift.timer"
-        static var indicator = "com.toast-swift.activityView"
-    }
     // MARK: - toast
     internal class _ToastConfiguration {
         var duration: TimeInterval = 3
