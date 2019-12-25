@@ -128,4 +128,10 @@ public class WKZAttribute {
         self.paragraphStyle.lineBreakMode = value
         return self
     }
+
+    @discardableResult
+    public func link(_ value: String) -> WKZAttribute {
+        self.attrs[.link] = value
+        return self
+    }
 }
