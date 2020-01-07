@@ -15,6 +15,9 @@ public protocol H5Command: AnyObject {
 }
 
 public protocol H5BridgeConfiguration {
+    var useMultipleEntry: Bool {get}
+    var allCommands: [String: H5Command] { get }
+
     var commandKey: String {get}
     func command(for type: String) -> H5Command?
     func didTriggerCommand(type: String, vc: UIViewController?)
@@ -58,11 +61,31 @@ public class H5BridgeController {
         self.bridge.registerHandler("logMessage") { data, _ in
             ZLog.info("[H5log]\(data!)")
         }
+
+        if configuration.useMultipleEntry {
+            for (key, value) in configuration.allCommands {
+                self.bridge.registerHandler(key) { [weak self] (data, callback) in
+                    guard let self = self else { return }
+                    let dict = self.parseRawData(data)
+                    self.executeCommand(named: key, with: dict, callback: callback)
+                }
+            }
+        }
     }
 
     public func reload() {
         self.currentPage = PageInfo()
         configuration.didLoadPage(vc: self.vc)
+    }
+
+    func parseRawData(_ data: Any?) -> [String: Any] {
+        if let str = data as? String, let dict = str.toDict() {
+            return dict
+        } else if let dict = data as? [String: Any] {
+            return dict
+        } else {
+            return [:]
+        }
     }
 
     func dispatch(_ data: [String: Any], callback: WVJBResponseCallback?) {
@@ -91,6 +114,14 @@ public class H5BridgeController {
 
         command!.execute(data, callback: callback, context: self)
 
+        configuration.didTriggerCommand(type: type, vc: self.vc)
+    }
+
+    func executeCommand(named type: String, with data: [String: Any], callback: WVJBResponseCallback?) {
+        guard let command = configuration.allCommands[type] else {
+            return
+        }
+        command.execute(data, callback: callback, context: self)
         configuration.didTriggerCommand(type: type, vc: self.vc)
     }
 
