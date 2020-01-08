@@ -10,10 +10,15 @@ import Foundation
 public protocol H5PageControllerPlugin {
     var owner: H5PageController? {get set}
     func willLoadPage(link: String?) -> Bool
+    func shouldProcessURL(_ url: URL) -> Bool
 }
 
 extension H5PageControllerPlugin {
-    func willLoadPage(link: String?) -> Bool {
+    public func willLoadPage(link: String?) -> Bool {
+        return true
+    }
+
+    public func shouldProcessURL(_ url: URL) -> Bool {
         return true
     }
 }

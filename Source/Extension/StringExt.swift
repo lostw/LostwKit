@@ -111,7 +111,7 @@ public extension String {
     mutating func appendQuery(_ params: [String: String]? = nil) {
         var link = self
 
-        if let parameters = params {
+        if let parameters = params, !parameters.isEmpty {
             var query = [String]()
             for (key, value) in parameters {
                 query.append("\(key)=\(value.URLEncoded)")

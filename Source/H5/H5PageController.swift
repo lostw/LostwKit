@@ -40,6 +40,8 @@ open class H5PageController: UIViewController, UINavigationBack {
     /// 页面id, 方便查找相应的页面
     public var pageName: String?
 
+    public var shouldProcessURL: ((URL) -> Bool)?
+
     var startTime: CFAbsoluteTime = 0
     var endTime: CFAbsoluteTime = 0
 
@@ -224,8 +226,13 @@ open class H5PageController: UIViewController, UINavigationBack {
 
 extension H5PageController: WKNavigationDelegate, WKUIDelegate {
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        guard let url = navigationAction.request.url else {
+            decisionHandler(.cancel)
+            return
+        }
         var policy = WKNavigationActionPolicy.allow
-        let urlStr = navigationAction.request.url?.absoluteString ?? ""
+
+        let urlStr = url.absoluteString
 
         //处理支付宝支付、微信支付、拨打电话
         if urlStr.starts(with: "alipays://")
@@ -233,11 +240,13 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
             || urlStr.starts(with: "weixin://")
             || urlStr.starts(with: "tel://") {
             if #available(iOS 10.0, *) {
-                UIApplication.shared.open(navigationAction.request.url!, options: [:], completionHandler: nil)
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
             } else {
-                UIApplication.shared.openURL(navigationAction.request.url!)
+                UIApplication.shared.openURL(url)
             }
             policy = .cancel
+        } else if let plugin = self.plugin {
+            policy = plugin.shouldProcessURL(url) ? .allow : .cancel
         }
 
         decisionHandler(policy)
