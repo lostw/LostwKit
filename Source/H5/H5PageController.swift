@@ -246,7 +246,7 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
             }
             policy = .cancel
         } else if let plugin = self.plugin {
-            policy = plugin.shouldProcessURL(url) ? .allow : .cancel
+            policy = plugin.shouldProcessRequest(navigationAction.request) ? .allow : .cancel
         }
 
         decisionHandler(policy)

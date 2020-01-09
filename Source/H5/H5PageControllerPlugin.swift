@@ -10,7 +10,7 @@ import Foundation
 public protocol H5PageControllerPlugin {
     var owner: H5PageController? {get set}
     func willLoadPage(link: String?) -> Bool
-    func shouldProcessURL(_ url: URL) -> Bool
+    func shouldProcessRequest(_ request: URLRequest) -> Bool
 }
 
 extension H5PageControllerPlugin {
@@ -18,7 +18,7 @@ extension H5PageControllerPlugin {
         return true
     }
 
-    public func shouldProcessURL(_ url: URL) -> Bool {
+    public func shouldProcessRequest(_ request: URLRequest) -> Bool {
         return true
     }
 }
