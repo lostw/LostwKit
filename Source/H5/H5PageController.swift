@@ -68,7 +68,9 @@ open class H5PageController: UIViewController, UINavigationBack {
         self.progressOb = nil
         self.pageOb = nil
 
-        self.webView.scrollView.removePullRefresh()
+        if let webView = self.webView {
+            webView.scrollView.removePullRefresh()
+        }
     }
 
     public func shouldGoBack() -> Bool {
