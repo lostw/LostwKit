@@ -23,11 +23,11 @@ public extension Dictionary {
     }
 
     func toJsonString(pretty: Bool = false) -> String? {
-        return ZZJSON.stringify(self, pretty: pretty)
+        return ZZJson.stringify(self, pretty: pretty)
     }
 }
 
-public class ZZJSON {
+public class ZZJson {
     public static func stringify(_ object: Any, pretty: Bool = false) -> String? {
         var options: JSONSerialization.WritingOptions = []
         if pretty {
@@ -39,5 +39,9 @@ public class ZZJSON {
         }
         let str = String(data: data, encoding: .utf8)
         return str
+    }
+
+    public static func toData(_ object: Any) -> Data? {
+        return try? JSONSerialization.data(withJSONObject: object, options: [])
     }
 }

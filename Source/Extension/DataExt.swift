@@ -20,4 +20,10 @@ public extension Data {
     func toArray() -> [Any]? {
         return self.toJSONObject() as? [Any]
     }
+
+    func base64UrlString() -> String {
+        return base64EncodedString().replacingOccurrences(of: "+", with: "-")
+        .replacingOccurrences(of: "/", with: "_")
+        .replacingOccurrences(of: "=", with: "")
+    }
 }

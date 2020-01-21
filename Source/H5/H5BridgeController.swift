@@ -137,7 +137,7 @@ public class H5BridgeController {
             return
         }
         let data = data ?? [:]
-        callback(ZZJSON.stringify(data))
+        callback(ZZJson.stringify(data))
     }
 
     func createAction(type: String) -> H5Command? {

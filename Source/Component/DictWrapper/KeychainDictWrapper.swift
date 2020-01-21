@@ -20,7 +20,7 @@ open class KeychainDictWrapper: DictPersistable {
     }
 
     public func persist() {
-        keychain[key] = ZZJSON.stringify(dict)
+        keychain[key] = ZZJson.stringify(dict)
     }
 
     public func recover() {
