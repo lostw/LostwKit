@@ -13,6 +13,8 @@ public protocol Mapable: Codable {
 
     static func from(dict: [String: Any]) -> Self?
     static func from(string: String) -> Self?
+
+    static func form(list: [[String: Any]]) -> [Self]
 }
 
 public extension Mapable {
@@ -42,6 +44,10 @@ public extension Mapable {
             print(err)
             return nil
         }
+    }
+
+    static func from(list: [[String: Any]]) -> [Self] {
+        return list.compactMap { self.from(dict: $0) }
     }
 
     func toDict() -> [String: Any]? {

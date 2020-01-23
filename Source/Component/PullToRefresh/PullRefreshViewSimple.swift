@@ -40,6 +40,14 @@ public class PullRefreshViewSimple: UIView, PullRefreshView {
     var arrow: PullToRefreshArrow!
     var indicator: UIActivityIndicatorView!
 
+    override public var tintColor: UIColor! {
+        didSet {
+            self.arrow.color = self.tintColor
+            self.arrow.setNeedsDisplay()
+            self.indicator.color = self.tintColor
+        }
+    }
+
     public init(frame: CGRect, options: PullToRefreshOption) {
         self.options = options
         super.init(frame: frame)
