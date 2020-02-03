@@ -7,21 +7,23 @@
 //
 
 import Foundation
-public enum WKZAttributeSearchType {
+import UIKit
+
+public enum ZZAttributeSearchType {
     case number, finance, text(_ :String), regex(_ :String)
 }
-public typealias WKZAttributedStringMakerBlock = (_ make: WKZAttributedStringMaker) -> Void
+public typealias ZZAttributeMakerBlock = (_ make: ZZAttributeMaker) -> Void
 
-open class WKZAttributedStringMaker {
+open class ZZAttributeMaker {
     var text: String
-    var attributes = [WKZAttribute]()
+    var attributes = [ZZAttribute]()
     var attachment: NSTextAttachment?
     var attachmentPosition: Int = 0
     init(text: String) {
         self.text = text
     }
 
-    open func make(_ block: WKZAttributedStringMakerBlock) -> NSAttributedString {
+    open func make(_ block: ZZAttributeMakerBlock) -> NSAttributedString {
         block(self)
         return self.generate()
     }
@@ -49,15 +51,15 @@ open class WKZAttributedStringMaker {
         return result.copy() as! NSAttributedString
     }
 
-    open func range(_ range: Range<Int>? = nil) -> WKZAttribute {
+    open func range(_ range: Range<Int>? = nil) -> ZZAttribute {
         let final = range ?? 0..<self.text.count
 
-        let attribute = WKZAttribute(range: final)
+        let attribute = ZZAttribute(range: final)
         self.attributes.append(attribute)
         return attribute
     }
 
-     open func find(_ type: WKZAttributeSearchType, options: String.CompareOptions = []) -> WKZAttribute? {
+     open func find(_ type: ZZAttributeSearchType, options: String.CompareOptions = []) -> ZZAttribute? {
         var range: Range<String.Index>?
         switch type {
         case .number:
@@ -81,7 +83,7 @@ open class WKZAttributedStringMaker {
 
     }
 
-    open func findAll(_ type: WKZAttributeSearchType, options: String.CompareOptions = []) -> WKZAttribute? {
+    open func findAll(_ type: ZZAttributeSearchType, options: String.CompareOptions = []) -> ZZAttribute? {
         var ranges: [Range<String.Index>]?
         switch type {
         case .number:
@@ -106,7 +108,7 @@ open class WKZAttributedStringMaker {
             attributeRanges.append(start..<end)
         }
 
-        let attribute = WKZAttribute(ranges: attributeRanges)
+        let attribute = ZZAttribute(ranges: attributeRanges)
         self.attributes.append(attribute)
 
         return attribute
@@ -134,7 +136,7 @@ open class WKZAttributedStringMaker {
 }
 
 public extension String {
-    var styled: WKZAttributedStringMaker {
-        return WKZAttributedStringMaker(text: self)
+    var styled: ZZAttributeMaker {
+        return ZZAttributeMaker(text: self)
     }
 }

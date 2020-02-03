@@ -29,11 +29,11 @@ extension H5BridgeConfiguration {
     public func didLoadPage(vc: UIViewController?) {}
 }
 
-struct PageInfo {
-    subscript(type: String) -> H5Command? {
-        return commands[type]
-    }
-    var commands = [String: H5Command]()
+public struct PageInfo {
+    public var pageName: String?
+    public var backAction: (() -> Void)? = nil
+
+    public init() {}
 }
 
 public class H5BridgeController {
@@ -41,7 +41,7 @@ public class H5BridgeController {
     var configuration: H5BridgeConfiguration
     public weak var vc: H5PageController?
 
-    var currentPage: PageInfo!
+    var currentPage = PageInfo()
     var didTriggerAction: ((String) -> Void)?
 
     public init(webview: WKWebView, configuration: H5BridgeConfiguration, vc: (H5PageController & WKNavigationDelegate)) {
@@ -53,9 +53,9 @@ public class H5BridgeController {
         self.bridge.registerHandler("postMessage") { [weak self] (data, callback) in
             guard let self = self else { return }
             if let str = data as? String, let dict = str.toDict() {
-                self.dispatch(dict, callback: callback)
+                self.dispatch(dict, callback: callback!)
             } else if let dict = data as? [String: Any] {
-                self.dispatch(dict, callback: callback)
+                self.dispatch(dict, callback: callback!)
             }
         }
         self.bridge.registerHandler("logMessage") { data, _ in
@@ -67,7 +67,7 @@ public class H5BridgeController {
                 self.bridge.registerHandler(key) { [weak self] (data, callback) in
                     guard let self = self else { return }
                     let dict = self.parseRawData(data)
-                    self.executeCommand(named: key, with: dict, callback: callback)
+                    self.executeCommand(named: key, with: dict, callback: callback!)
                 }
             }
         }
@@ -88,36 +88,21 @@ public class H5BridgeController {
         }
     }
 
-    func dispatch(_ data: [String: Any], callback: WVJBResponseCallback?) {
+    func dispatch(_ data: [String: Any], callback: @escaping WVJBResponseCallback) {
         guard let type = data[configuration.commandKey] as? String else {
             return
         }
 
-        guard self.currentPage != nil else {
+        ZLog.info("[H5Command]\(type): \(data.toJsonString()!)")
+        guard let command = self.createAction(type: type) else {
             return
         }
 
-        var command = currentPage[type]
-        if command == nil {
-            command = self.createAction(type: type)
-            guard command != nil else {
-                ZLog.error("[H5Command]\(type): \(data.toJsonString()!)")
-                return
-            }
-
-            self.currentPage.commands[type] = command
-        }
-
-        if type != "log" {
-            ZLog.info("[H5Command]\(type): \(data.toJsonString()!)")
-        }
-
-        command!.execute(data, callback: callback, context: self)
-
+        command.execute(data, callback: callback, context: self)
         configuration.didTriggerCommand(type: type, vc: self.vc)
     }
 
-    func executeCommand(named type: String, with data: [String: Any], callback: WVJBResponseCallback?) {
+    func executeCommand(named type: String, with data: [String: Any], callback: @escaping WVJBResponseCallback) {
         guard let command = configuration.allCommands[type] else {
             return
         }

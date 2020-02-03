@@ -74,6 +74,12 @@ open class H5PageController: UIViewController, UINavigationBack {
     }
 
     public func shouldGoBack() -> Bool {
+        // 检查是否设置了返回按钮的事件
+        if let callback = self.bridgeController?.currentPage.backAction {
+            callback()
+            return false
+        }
+
         if webView.canGoBack {
             webView.goBack()
             return false

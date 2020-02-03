@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class WKZAttribute {
+public class ZZAttribute {
     var ranges = [Range<Int>]()
     var attrs = [NSAttributedString.Key: Any]()
     var paragraphStyle: NSMutableParagraphStyle {
@@ -40,97 +40,97 @@ public class WKZAttribute {
     }
 
     @discardableResult
-    public func font(_ font: UIFont) -> WKZAttribute {
+    public func font(_ font: UIFont) -> Self {
         self.attrs[NSAttributedString.Key.font] = font
         return self
     }
 
     @discardableResult
-    public func fontSize(_ fontSize: CGFloat) -> WKZAttribute {
+    public func fontSize(_ fontSize: CGFloat) -> Self {
         self.attrs[NSAttributedString.Key.font] = UIFont.systemFont(ofSize: fontSize)
         return self
     }
 
     @discardableResult
-    public func color(_ color: UIColor) -> WKZAttribute {
+    public func color(_ color: UIColor) -> Self {
         self.attrs[NSAttributedString.Key.foregroundColor] = color
         return self
     }
 
     @discardableResult
-    public func backgroundColor(_ color: UIColor) -> WKZAttribute {
+    public func backgroundColor(_ color: UIColor) -> Self {
         self.attrs[NSAttributedString.Key.backgroundColor] = color
         return self
     }
 
     @discardableResult
-    public func kern(_ length: Float) -> WKZAttribute {
+    public func kern(_ length: Float) -> Self {
         self.attrs[NSAttributedString.Key.kern] = length as AnyObject?
         return self
     }
 
     @discardableResult
-    public func strikethrough(_ style: NSUnderlineStyle) -> WKZAttribute {
+    public func strikethrough(_ style: NSUnderlineStyle) -> Self {
         self.attrs[NSAttributedString.Key.strikethroughColor] = style.rawValue
         return self
     }
 
     @discardableResult
-    public func underline(_ style: NSUnderlineStyle) -> WKZAttribute {
+    public func underline(_ style: NSUnderlineStyle) -> Self {
         self.attrs[NSAttributedString.Key.underlineStyle] = style.rawValue
         return self
     }
 
     @discardableResult
-    public func lineSpacing(_ value: Float) -> WKZAttribute {
+    public func lineSpacing(_ value: Float) -> Self {
         self.paragraphStyle.lineSpacing = CGFloat(value)
         return self
     }
 
     @discardableResult
-    public func paragraphSpacing(_ value: Float) -> WKZAttribute {
+    public func paragraphSpacing(_ value: Float) -> Self {
         self.paragraphStyle.paragraphSpacing = CGFloat(value)
         return self
     }
 
     @discardableResult
-    public func maximumLineHeight(_ value: Float) -> WKZAttribute {
+    public func maximumLineHeight(_ value: Float) -> Self {
         self.paragraphStyle.maximumLineHeight = CGFloat(value)
         return self
     }
 
     @discardableResult
-    public func minimumLineHeight(_ value: Float) -> WKZAttribute {
+    public func minimumLineHeight(_ value: Float) -> Self {
         self.paragraphStyle.minimumLineHeight = CGFloat(value)
         return self
     }
 
     @discardableResult
-    public func firstLineHeadIndent(_ value: Float) -> WKZAttribute {
+    public func firstLineHeadIndent(_ value: Float) -> Self {
         self.paragraphStyle.firstLineHeadIndent = CGFloat(value)
         return self
     }
 
     @discardableResult
-    public func headIndent(_ value: Float) -> WKZAttribute {
+    public func headIndent(_ value: Float) -> Self {
         self.paragraphStyle.headIndent = CGFloat(value)
         return self
     }
 
     @discardableResult
-    public func alignment(_ value: NSTextAlignment) -> WKZAttribute {
+    public func alignment(_ value: NSTextAlignment) -> Self {
         self.paragraphStyle.alignment = value
         return self
     }
 
     @discardableResult
-    public func lineBreakMode(_ value: NSLineBreakMode) -> WKZAttribute {
+    public func lineBreakMode(_ value: NSLineBreakMode) -> Self {
         self.paragraphStyle.lineBreakMode = value
         return self
     }
 
     @discardableResult
-    public func link(_ value: String) -> WKZAttribute {
+    public func link(_ value: String) -> Self {
         self.attrs[.link] = value
         return self
     }
