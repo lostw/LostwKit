@@ -64,6 +64,7 @@ public extension UIScrollView {
     }
 
     func removePullRefresh() {
+        self.pullManager?.slaveView.removeFromSuperview()
         self.pullManager = nil
     }
 
@@ -94,6 +95,7 @@ public extension UIScrollView {
     }
 
     func removePushRefresh() {
+        self.pushManager?.slaveView.removeFromSuperview()
         self.pushManager = nil
     }
 }
