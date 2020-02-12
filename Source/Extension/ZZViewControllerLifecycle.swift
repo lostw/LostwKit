@@ -142,7 +142,7 @@ public extension UIViewController {
     }
 
     @objc func setupNaivationBar() {
-        guard let nav = navigationController else {
+        guard let nav = parent as? UINavigationController else {
             return
         }
 
