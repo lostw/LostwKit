@@ -31,7 +31,7 @@ extension H5BridgeConfiguration {
 
 public struct PageInfo {
     public var pageName: String?
-    public var backAction: (() -> Void)? = nil
+    public var backAction: (() -> Void)?
 
     public init() {}
 }

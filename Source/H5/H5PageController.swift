@@ -134,6 +134,10 @@ open class H5PageController: UIViewController, UINavigationBack {
         self.webView.reload()
     }
 
+    public func hookBackAction(_ action: @escaping () -> Void) {
+        self.bridgeController?.currentPage.backAction = action
+    }
+
     /// 页面结束加载时可以设置额外的localStorage
     func loadExtraLocalStorage() {
         // 用于恢复上个页面的localstorage
