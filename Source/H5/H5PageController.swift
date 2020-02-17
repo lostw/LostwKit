@@ -187,6 +187,12 @@ open class H5PageController: UIViewController, UINavigationBack {
         self.view.backgroundColor = Theme.shared.background
 
         self.addWebView()
+        if #available(iOS 11.0, *) {
+            self.webView.scrollView.contentInsetAdjustmentBehavior = .never
+        } else {
+            self.automaticallyAdjustsScrollViewInsets = false
+        }
+
         if let config = self.configuration {
             self.bridgeController = H5BridgeController(webview: self.webView, configuration: config, vc: self)
         }
