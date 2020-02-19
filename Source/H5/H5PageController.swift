@@ -272,6 +272,7 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
 
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         self.startTime = CFAbsoluteTimeGetCurrent()
+        self.bridgeController?.reload()
         self.progressBar?.isHidden = false
         self.progressBar?.progress = 0
     }

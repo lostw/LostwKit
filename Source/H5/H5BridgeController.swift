@@ -30,10 +30,23 @@ extension H5BridgeConfiguration {
 }
 
 public struct PageInfo {
+    public struct OberverInfo {
+        var name: String
+        var observer: NSObjectProtocol
+        var callbackName: String
+    }
+
     public var pageName: String?
     public var backAction: (() -> Void)?
+    public var observerInfo: [String: OberverInfo] = [:]
 
     public init() {}
+
+    public func clearObserver() {
+        self.observerInfo.values.forEach {
+            NotificationCenter.default.removeObserver($0.observer)
+        }
+    }
 }
 
 public class H5BridgeController {
@@ -74,6 +87,7 @@ public class H5BridgeController {
     }
 
     public func reload() {
+        self.currentPage.clearObserver()
         self.currentPage = PageInfo()
         configuration.didLoadPage(vc: self.vc)
     }
@@ -127,5 +141,31 @@ public class H5BridgeController {
 
     func createAction(type: String) -> H5Command? {
         return configuration.command(for: type)
+    }
+}
+
+extension H5BridgeController {
+    public func bindEvent(named name: String, callbackName: String) {
+        let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: name), object: nil, queue: nil) { [unowned self] n in
+            self.callH5Func(named: callbackName, data: n.userInfo)
+        }
+
+        // 防止重复绑定
+        if let exist = self.currentPage.observerInfo[name] {
+            self.unbindEvent(named: name)
+        }
+
+        let info = PageInfo.OberverInfo(name: name, observer: observer, callbackName: callbackName)
+        self.currentPage.observerInfo[name] = info
+    }
+
+    public func triggerEvent(named name: String, data: [String: Any]?) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: name), object: nil, userInfo: data)
+    }
+
+    public func unbindEvent(named name: String) {
+        guard let info = self.currentPage.observerInfo[name] else { return }
+        NotificationCenter.default.removeObserver(info.observer)
+        self.currentPage.observerInfo[name] = nil
     }
 }
