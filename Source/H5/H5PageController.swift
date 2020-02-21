@@ -291,7 +291,7 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
         }
 
         self.loadExtraLocalStorage()
-
+        self.plugin?.didLoadPage()
         self.endTime = CFAbsoluteTimeGetCurrent()
         ZLog.debug("load time: \(self.endTime - self.startTime)")
     }

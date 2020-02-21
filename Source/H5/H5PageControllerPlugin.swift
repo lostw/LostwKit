@@ -11,6 +11,7 @@ public protocol H5PageControllerPlugin {
     var owner: H5PageController? {get set}
     func willLoadPage(link: String?) -> Bool
     func shouldProcessRequest(_ request: URLRequest) -> Bool
+    func didLoadPage()
 }
 
 extension H5PageControllerPlugin {
@@ -21,4 +22,6 @@ extension H5PageControllerPlugin {
     public func shouldProcessRequest(_ request: URLRequest) -> Bool {
         return true
     }
+
+    public func didLoadPage() {}
 }
