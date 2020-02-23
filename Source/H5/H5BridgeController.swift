@@ -86,6 +86,10 @@ public class H5BridgeController {
         }
     }
 
+    deinit {
+        self.currentPage.clearObserver()
+    }
+
     public func reload() {
         self.currentPage.clearObserver()
         self.currentPage = PageInfo()
@@ -146,7 +150,8 @@ public class H5BridgeController {
 
 extension H5BridgeController {
     public func bindEvent(named name: String, callbackName: String) {
-        let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: name), object: nil, queue: nil) { [unowned self] n in
+        let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: name), object: nil, queue: nil) { [weak self] n in
+            guard let self = self else { return }
             self.callH5Func(named: callbackName, data: n.userInfo)
         }
 
