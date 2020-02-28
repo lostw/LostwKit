@@ -228,6 +228,7 @@ open class H5PageController: UIViewController, UINavigationBack {
         self.navigationItem.titleView = nil
         self.navigationItem.title = self.pageTitle ?? self.webView.title ?? "加载中"
         self.navigationItem.rightBarButtonItem = nil
+        self.navigationItem.leftBarButtonItem = nil
     }
 
     func addWebView() {
