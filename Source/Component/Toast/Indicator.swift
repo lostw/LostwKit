@@ -99,11 +99,8 @@ public class Indicator: NSObject {
     public func hide() {
         count -= 1
         if count <= 0 {
-            guard slaveView.superview != nil else {
-                if isFadeIn {
-                    cancelFadeIn()
-                }
-                return
+            if isFadeIn {
+                cancelFadeIn()
             }
 
             fadeOut()
@@ -141,7 +138,7 @@ extension Indicator: CAAnimationDelegate {
     public func animationDidStart(_ anim: CAAnimation) {
         if anim === self.fadeInAnimation {
 
-        } else if anim == self.fadeOutAnimation {
+        } else if anim === self.fadeOutAnimation {
 
         }
     }
@@ -149,7 +146,7 @@ extension Indicator: CAAnimationDelegate {
     public func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         if anim === self.fadeInAnimation {
              isFadeIn = false
-        } else if anim == self.fadeOutAnimation {
+        } else if anim === self.fadeOutAnimation {
             isFadeOut = false
             if flag {
                 slaveView.removeFromSuperview()
