@@ -9,7 +9,7 @@
 import Foundation
 
 public enum SwiftyRSAError: Error {
-    
+
     case pemDoesNotContainKey
     case keyRepresentationFailed(error: CFError?)
     case keyGenerationFailed(error: CFError?)
@@ -32,7 +32,7 @@ public enum SwiftyRSAError: Error {
     case derFileNotFound(name: String)
     case notAPublicKey
     case notAPrivateKey
-    
+
     var localizedDescription: String {
         switch self {
         case .pemDoesNotContainKey:

@@ -9,8 +9,8 @@
 import UIKit
 
 public protocol ZZPagable: AnyObject {
-    associatedtype M
-    var list: [M] {get set}
+//    associatedtype M
+//    var list: [M] {get set}
     var page: Int {get set}
 
     var isDataFetched: Bool {get set}
@@ -21,7 +21,7 @@ public protocol ZZPagable: AnyObject {
     func fetch()
     func cancel()
 
-    func parseItem(_ item: Any) -> M?
+//    func parseItem(_ item: Any) -> M?
     func didLoadData(at page: Int)
     func toggleLoadMore(_ more: Bool)
 
@@ -61,7 +61,6 @@ extension ZZPagable {
 }
 
 open class ZZSimpleListController<Cell: UITableViewCell, Model: Mapable>: UIViewController, UITableViewDelegate, UITableViewDataSource, ZZPagable {
-
     public typealias CellConfigCallback = (Cell, Model, IndexPath) -> Void
     public typealias CellActionCallback = (Model, IndexPath) -> Void
     public typealias WillLoadTableCallback = () -> Void
