@@ -17,6 +17,7 @@ open class H5PageController: UIViewController, UINavigationBack {
 
     var progressOb: NSKeyValueObservation?
     var pageOb: NSKeyValueObservation?
+    var titleOb: NSKeyValueObservation?
 
     /// 封装了javascriptBridage
     public var bridgeController: H5BridgeController?
@@ -67,6 +68,7 @@ open class H5PageController: UIViewController, UINavigationBack {
     deinit {
         self.progressOb = nil
         self.pageOb = nil
+        self.titleOb = nil
 
         if let webView = self.webView {
             webView.scrollView.removePullRefresh()
@@ -222,6 +224,12 @@ open class H5PageController: UIViewController, UINavigationBack {
                 ZLog.info("[h5]\(url)")
             }
         }
+
+        if self.pageTitle == nil {
+            titleOb = self.webView.observe(\WKWebView.title, options: [.new]) { [unowned self] _, info in
+                self.title = info.newValue!
+            }
+        }
     }
 
     func resetNavigationBar() {
@@ -279,10 +287,6 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if self.pageTitle == nil && (self.title == nil || self.title == "加载中") {
-            self.title = webView.title
-        }
-
         if self.progressEnabled {
             UIView.animate(withDuration: 0.5, animations: {
                 self.progressBar!.progress = 1

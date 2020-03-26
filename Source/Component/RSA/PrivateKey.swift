@@ -26,7 +26,7 @@ extension RSA {
         /// - Throws: SwiftyRSAError
         public func pemString() throws -> String {
             let data = try self.data()
-            let pem = SwiftyRSA.format(keyData: data, withPemType: "RSA PRIVATE KEY")
+            let pem = RSA.format(keyData: data, withPemType: "RSA PRIVATE KEY")
             return pem
         }
 
@@ -37,7 +37,7 @@ extension RSA {
         /// - Throws: SwiftyRSAError
         public required init(reference: SecKey) throws {
 
-            guard SwiftyRSA.isValidKeyReference(reference, forClass: kSecAttrKeyClassPrivate) else {
+            guard RSA.isValidKeyReference(reference, forClass: kSecAttrKeyClassPrivate) else {
                 throw SwiftyRSAError.notAPrivateKey
             }
 
@@ -54,14 +54,14 @@ extension RSA {
             self.originalData = data
             let tag = UUID().uuidString
             self.tag = tag
-            let dataWithoutHeader = try SwiftyRSA.stripKeyHeader(keyData: data)
+            let dataWithoutHeader = try RSA.stripKeyHeader(keyData: data)
 //            let finalData = try SwiftyRSA.stripPrivateKeyHeader(dataWithoutHeader)
-            reference = try SwiftyRSA.addKey(dataWithoutHeader, isPublic: false, tag: tag)
+            reference = try RSA.addKey(dataWithoutHeader, isPublic: false, tag: tag)
         }
 
         deinit {
             if let tag = tag {
-                SwiftyRSA.removeKey(tag: tag)
+                RSA.removeKey(tag: tag)
             }
         }
     }
@@ -130,7 +130,7 @@ extension RSA.PrivateKey {
     ///   - digestType: Digest
     /// - Returns: Signature of the clear message after signing it with the specified digest type.
     /// - Throws: SwiftyRSAError
-    public func sign(data: Data, digestType: Signature.DigestType = .sha1) throws -> Data {
+    public func sign(data: Data, digestType: RSA.DigestType = .sha1) throws -> Data {
         let digest = digestType.digest(data: data)
         let blockSize = SecKeyGetBlockSize(reference)
         let maxChunkSize = blockSize - 11

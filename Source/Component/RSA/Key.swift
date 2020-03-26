@@ -37,7 +37,7 @@ public extension RSAKey {
     }
 
     func data() throws -> Data {
-        return try SwiftyRSA.data(forKeyReference: reference)
+        return try RSA.data(forKeyReference: reference)
     }
 
     /// Creates a public key with a base64-encoded string.
@@ -56,7 +56,7 @@ public extension RSAKey {
     /// - Parameter pemString: PEM-encoded public key string
     /// - Throws: SwiftyRSAError
     init(pemEncoded pemString: String) throws {
-        let base64String = try SwiftyRSA.base64String(pemEncoded: pemString)
+        let base64String = try RSA.base64String(pemEncoded: pemString)
         try self.init(base64Encoded: base64String)
     }
 

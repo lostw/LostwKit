@@ -28,7 +28,7 @@ public class PublicKey: RSAKey {
     /// - Throws: SwiftyRSAError
     public func pemString() throws -> String {
         let data = try self.data()
-        let pem = SwiftyRSA.format(keyData: data, withPemType: "RSA PUBLIC KEY")
+        let pem = RSA.format(keyData: data, withPemType: "RSA PUBLIC KEY")
         return pem
     }
 
@@ -39,7 +39,7 @@ public class PublicKey: RSAKey {
     /// - Throws: SwiftyRSAError
     public required init(reference: SecKey) throws {
 
-        guard SwiftyRSA.isValidKeyReference(reference, forClass: kSecAttrKeyClassPublic) else {
+        guard RSA.isValidKeyReference(reference, forClass: kSecAttrKeyClassPublic) else {
             throw SwiftyRSAError.notAPublicKey
         }
 
@@ -59,9 +59,9 @@ public class PublicKey: RSAKey {
         self.tag = tag
 
         self.originalData = data
-        let dataWithoutHeader = try SwiftyRSA.stripKeyHeader(keyData: data)
+        let dataWithoutHeader = try RSA.stripKeyHeader(keyData: data)
 
-        reference = try SwiftyRSA.addKey(dataWithoutHeader, isPublic: true, tag: tag)
+        reference = try RSA.addKey(dataWithoutHeader, isPublic: true, tag: tag)
     }
 
     static let publicKeyRegex: NSRegularExpression? = {
@@ -111,7 +111,7 @@ public class PublicKey: RSAKey {
 
     deinit {
         if let tag = tag {
-            SwiftyRSA.removeKey(tag: tag)
+            RSA.removeKey(tag: tag)
         }
     }
 
@@ -144,8 +144,7 @@ extension RSA.PublicKey {
             maxChunkSize = blockSize - 11
         }
 
-        var decryptedDataAsArray = [UInt8](repeating: 0, count: data.count)
-        (data as NSData).getBytes(&decryptedDataAsArray, length: data.count)
+        let decryptedDataAsArray = [UInt8](data)
 
         var encryptedDataBytes = [UInt8](repeating: 0, count: 0)
         var idx = 0
@@ -189,7 +188,7 @@ extension RSA.PublicKey {
     ///   - digestType: Digest type used for the signature
     /// - Returns: Result of the verification
     /// - Throws: SwiftyRSAError
-    public func verify(data: Data, signatureData: Data, digestType: Signature.DigestType = .sha1) throws -> Bool {
+    public func verify(data: Data, signatureData: Data, digestType: RSA.DigestType = .sha1) throws -> Bool {
         let digest = digestType.digest(data: data)
         let digestBytes = [UInt8](digest)
         let signatureBytes = [UInt8](signatureData)
