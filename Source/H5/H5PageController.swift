@@ -104,6 +104,14 @@ open class H5PageController: UIViewController, UINavigationBack {
         self.phaseLoadPage()
     }
 
+    // 白屏
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if webView.title == nil {
+            webView.reload()
+        }
+    }
+
     /// 插件机制
     func phaseLoadPage() {
         let shouldLoad = self.plugin?.willLoadPage(link: self.link) ?? true
@@ -303,6 +311,12 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
 
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         ZLog.info(error.localizedDescription)
+    }
+
+    // 白屏
+    public func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        ZLog.info("[h5]didTerminate")
+        webView.reload()
     }
 
     // js alert 支持
