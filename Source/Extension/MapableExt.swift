@@ -11,14 +11,21 @@ import Foundation
 public protocol Mapable: Codable {
     func toDict() -> [String: Any]?
 
+    static func from(item: Any) -> Self?
     static func from(dict: [String: Any]) -> Self?
     static func from(string: String) -> Self?
 
-//    static func from(list: [[String: Any]]) -> [Self]
+    //    static func from(list: [[String: Any]]) -> [Self]
 }
 
 public extension Mapable {
-     static func from(dict: [String: Any]) -> Self? {
+    static func from(item: Any) -> Self? {
+        guard let dict = item as? [String: Any] else {
+            return nil
+        }
+        return from(dict: dict)
+    }
+    static func from(dict: [String: Any]) -> Self? {
         guard let data = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
             return nil
         }
@@ -46,9 +53,9 @@ public extension Mapable {
         }
     }
 
-//    static func from(list: [[String: Any]]) -> [Self] {
-//        return list.compactMap { self.from(dict: $0) }
-//    }
+    //    static func from(list: [[String: Any]]) -> [Self] {
+    //        return list.compactMap { self.from(dict: $0) }
+    //    }
 
     func toDict() -> [String: Any]? {
         if let data = try? JSONEncoder().encode(self) {

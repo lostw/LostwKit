@@ -11,6 +11,7 @@ import Alamofire
 //import AlamofireImage
 import PromiseKit
 
+//@available(*, deprecated, message: "use ZZApiErrorCode")
 public struct NetworkErrorDesc {
     public static let unknown = "网络错误"
     public static let messageNotFound = "服务错误，请稍后再试"
@@ -29,9 +30,18 @@ public protocol ZZApiResponse {
 }
 
 public enum ZZApiErrorCode: Int {
+    case unknown = 900
     case parseFailure = 1000
-    case parseFailureCode = 1001
-    case parseFailureMessage = 1002
+    case messageNotFound = 1002
+
+    public var description: String {
+        switch self {
+        case .unknown:
+            return "网络错误"
+        default:
+            return "服务错误(\(self.rawValue))，请稍后再试"
+        }
+    }
 }
 
 public struct ZZApiError: Error, LocalizedError {
@@ -52,7 +62,7 @@ public struct ZZApiError: Error, LocalizedError {
 
     public init(buildin errorCode: ZZApiErrorCode) {
         self.code = "x\(errorCode.rawValue)"
-        self.message = "服务错误(\(errorCode.rawValue))，请稍后再试"
+        self.message = errorCode.description
     }
 
     public init(networkError: Error, statusCode: Int?) {
@@ -89,7 +99,7 @@ public extension ZZJsonApi {
                 switch $0.result {
                 case .success(let value):
                     guard let dict = value as? [String: Any] else {
-                        seal.reject(ZZApiError(message: NetworkErrorDesc.parseFailure))
+                        seal.reject(ZZApiError(buildin: .parseFailure))
                         return
                     }
 

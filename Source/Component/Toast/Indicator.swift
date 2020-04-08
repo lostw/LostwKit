@@ -37,29 +37,16 @@ public class Indicator: NSObject {
     }()
     public var customView: IndicatorView?
 
-    lazy var fadeInAnimation: CABasicAnimation = {
-        let animation = CABasicAnimation(keyPath: "opacity")
-        animation.duration = 0.3
-        animation.fromValue = 0
-        animation.toValue = 1
-        animation.isRemovedOnCompletion = false
-        animation.fillMode = .forwards
-        animation.delegate = self
+    lazy var fadeInAnimation: Animator = Animator(type: .fadeIn) { _ in
+        self.isFadeIn = false
+    }
 
-        return animation
-    }()
-
-    lazy var fadeOutAnimation: CABasicAnimation = {
-        let animation = CABasicAnimation(keyPath: "opacity")
-        animation.duration = 0.3
-        animation.fromValue = 1
-        animation.toValue = 0
-        animation.isRemovedOnCompletion = false
-        animation.fillMode = .forwards
-        animation.delegate = self
-
-        return animation
-    }()
+    lazy var fadeOutAnimation = Animator(type: .fadeOut) { finished in
+        self.isFadeOut = false
+        if finished {
+            self.slaveView.removeFromSuperview()
+        }
+    }
 
     var isFadeIn = false
     var isFadeOut = false
@@ -73,6 +60,7 @@ public class Indicator: NSObject {
     public func show(_ text: String? = nil) {
         count += 1
         if count > 0 {
+            masterView.isUserInteractionEnabled = false
             slaveView.text = text
         }
 
@@ -99,6 +87,7 @@ public class Indicator: NSObject {
     public func hide() {
         count -= 1
         if count <= 0 {
+            masterView.isUserInteractionEnabled = true
             if isFadeIn {
                 cancelFadeIn()
             }
@@ -116,12 +105,12 @@ public class Indicator: NSObject {
 
     private func fadeIn() {
         isFadeIn = true
-        slaveView.layer.add(fadeInAnimation, forKey: "fadeIn")
+        slaveView.layer.add(fadeInAnimation.animation, forKey: "fadeIn")
     }
 
     private func fadeOut() {
         isFadeOut = true
-        slaveView.layer.add(fadeOutAnimation, forKey: "fadeOut")
+        slaveView.layer.add(fadeOutAnimation.animation, forKey: "fadeOut")
     }
 
     private func cancelFadeIn() {
@@ -134,23 +123,43 @@ public class Indicator: NSObject {
     }
 }
 
-extension Indicator: CAAnimationDelegate {
-    public func animationDidStart(_ anim: CAAnimation) {
-        if anim === self.fadeInAnimation {
+enum AnimationType {
+    case fadeIn, fadeOut
 
-        } else if anim === self.fadeOutAnimation {
-
+    var animation: CABasicAnimation {
+        switch self {
+        case .fadeIn:
+            let animation = CABasicAnimation(keyPath: "opacity")
+            animation.duration = 0.3
+            animation.fromValue = 0
+            animation.toValue = 1
+            animation.isRemovedOnCompletion = false
+            animation.fillMode = .forwards
+            return animation
+        case .fadeOut:
+            let animation = CABasicAnimation(keyPath: "opacity")
+            animation.duration = 0.3
+            animation.fromValue = 1
+            animation.toValue = 0
+            animation.isRemovedOnCompletion = false
+            animation.fillMode = .forwards
+            return animation
         }
+    }
+}
+
+final class Animator: NSObject, CAAnimationDelegate {
+    let animation: CABasicAnimation
+    var onCompletion: ((Bool) -> Void)?
+
+    init(type: AnimationType, completion: ((Bool) -> Void)? = nil) {
+        self.animation = type.animation
+        self.onCompletion = completion
+        super.init()
+        self.animation.delegate = self
     }
 
     public func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
-        if anim === self.fadeInAnimation {
-             isFadeIn = false
-        } else if anim === self.fadeOutAnimation {
-            isFadeOut = false
-            if flag {
-                slaveView.removeFromSuperview()
-            }
-        }
+        self.onCompletion?(flag)
     }
 }

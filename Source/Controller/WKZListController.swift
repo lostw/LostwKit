@@ -185,15 +185,7 @@ extension WKZListController: Pagable {
                 self.fetch()
             }
         } else {
-            if self.list.count > 0 {
-                self.tableView.addPushRefresh { [weak self] in
-                    guard let self = self else { return }
-                    self.fetch()
-                }
-                self.tableView.stopPushRefreshEver(true)
-            } else {
-                self.tableView.removePushRefresh()
-            }
+            self.tableView.removePushRefresh()
         }
     }
 
