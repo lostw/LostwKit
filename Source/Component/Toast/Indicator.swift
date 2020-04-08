@@ -45,6 +45,7 @@ public class Indicator: NSObject {
         self.isFadeOut = false
         if finished {
             self.slaveView.removeFromSuperview()
+            self.masterView.isUserInteractionEnabled = true
         }
     }
 
@@ -87,7 +88,6 @@ public class Indicator: NSObject {
     public func hide() {
         count -= 1
         if count <= 0 {
-            masterView.isUserInteractionEnabled = true
             if isFadeIn {
                 cancelFadeIn()
             }
