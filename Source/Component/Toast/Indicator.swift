@@ -13,8 +13,14 @@ public protocol IndicatorView: UIView {
     func stopAnimating()
 }
 
-public class Indicator: NSObject {
+public class Indicator {
+    enum State {
+        case hidden, fadeIn, showing, fadeOut
+    }
+
+    var prevCount: Int = 0
     var count: Int = 0
+
     unowned var masterView: UIView
     lazy var slaveView: IndicatorView = {
         if let view = customView {
@@ -37,23 +43,76 @@ public class Indicator: NSObject {
     }()
     public var customView: IndicatorView?
 
-    lazy var fadeInAnimation: Animator = Animator(type: .fadeIn) { _ in
-        self.isFadeIn = false
-    }
-
-    lazy var fadeOutAnimation = Animator(type: .fadeOut) { finished in
-        self.isFadeOut = false
-        if finished {
-            self.slaveView.removeFromSuperview()
-            self.masterView.isUserInteractionEnabled = true
+    lazy var fadeInAnimation: Animator = Animator(type: .fadeIn) { [weak self] _ in
+        guard let self = self else { return }
+        if self.state == .fadeIn {
+            self.state = .showing
         }
     }
 
-    var isFadeIn = false
-    var isFadeOut = false
+    lazy var fadeOutAnimation = Animator(type: .fadeOut) { [weak self] _ in
+        guard let self = self else { return }
+        if self.state == .fadeOut {
+            self.state = .hidden
+        }
+    }
+
+
+
+    var state: State = .hidden {
+        didSet {
+            switch state {
+            case .hidden:
+                self.slaveView.removeFromSuperview()
+                self.masterView.isUserInteractionEnabled = true
+            case .fadeIn:
+                masterView.isUserInteractionEnabled = false
+                slaveView.center = CGPoint(x: masterView.bounds.width / 2, y: masterView.bounds.height / 2)
+                masterView.addSubview(slaveView)
+                slaveView.startAnimating()
+                fadeIn()
+            case .showing:
+                break
+            case .fadeOut:
+                self.fadeOut()
+            }
+        }
+    }
+
+    var observer: CFRunLoopObserver!
+    var isNeedChange: Bool {
+        return (prevCount <= 0 && count > 0) || (prevCount > 0 && count <= 0)
+    }
 
     public init(withIn view: UIView) {
         self.masterView = view
+        self.observer = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, CFRunLoopActivity.beforeWaiting.rawValue, true, 0, { [weak self] (_, activity) in
+            self?.makeChange()
+        })
+        CFRunLoopAddObserver(CFRunLoopGetCurrent(), self.observer, CFRunLoopMode.commonModes)
+    }
+
+    deinit {
+        CFRunLoopRemoveObserver(CFRunLoopGetCurrent(), self.observer, CFRunLoopMode.commonModes)
+    }
+
+    func makeChange() {
+        defer {
+            self.prevCount = count
+        }
+        guard isNeedChange else { return }
+
+        if count > 0 && self.state != .fadeIn {
+            if self.state == .fadeOut {
+                cancelFadeOut()
+            }
+            self.state = .fadeIn
+        } else if count <= 0 && self.state != .fadeOut {
+            if self.state == .fadeIn {
+                cancelFadeIn()
+            }
+            self.state = .fadeOut
+        }
     }
 
     /// show indictorView by increasing count
@@ -61,21 +120,16 @@ public class Indicator: NSObject {
     public func show(_ text: String? = nil) {
         count += 1
         if count > 0 {
-            masterView.isUserInteractionEnabled = false
             slaveView.text = text
         }
 
-        guard slaveView.superview == nil else {
-            if isFadeOut {
-                cancelFadeOut()
-            }
-            return
-        }
-
-        slaveView.center = CGPoint(x: masterView.bounds.width / 2, y: masterView.bounds.height / 2)
-        masterView.addSubview(slaveView)
-        slaveView.startAnimating()
-        fadeIn()
+//        if self.state == .fadeOut {
+//            cancelFadeOut()
+//        }
+//
+//        if self.state != .fadeIn {
+//            self.state = .fadeIn
+//        }
     }
 
     /// update text while not changing count
@@ -87,13 +141,15 @@ public class Indicator: NSObject {
     /// hide indciatorView by decreasing count
     public func hide() {
         count -= 1
-        if count <= 0 {
-            if isFadeIn {
-                cancelFadeIn()
-            }
-
-            fadeOut()
-        }
+//        if count <= 0 {
+//            if self.state == .fadeIn {
+//                cancelFadeIn()
+//            }
+//
+//            if self.state != .fadeOut {
+//                self.state = .fadeOut
+//            }
+//        }
     }
 
     ///  reset count, hide indicatorView
@@ -104,18 +160,16 @@ public class Indicator: NSObject {
     }
 
     private func fadeIn() {
-        isFadeIn = true
         slaveView.layer.add(fadeInAnimation.animation, forKey: "fadeIn")
     }
 
     private func fadeOut() {
-        isFadeOut = true
         slaveView.layer.add(fadeOutAnimation.animation, forKey: "fadeOut")
     }
 
     private func cancelFadeIn() {
         slaveView.layer.removeAnimation(forKey: "fadeIn")
-        slaveView.removeFromSuperview()
+//        slaveView.removeFromSuperview()
     }
 
     private func cancelFadeOut() {
