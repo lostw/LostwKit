@@ -254,23 +254,23 @@ public protocol UINavigationBack: UIViewController {
     func shouldGoBack() -> Bool
 }
 
-extension UINavigationController: UINavigationBarDelegate {
-    public func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
-        if self.viewControllers.count < (navigationBar.items?.count ?? 0) {
-            return true
-        }
-
-        var shouldPop = true
-        if let vc = self.topViewController as? UINavigationBack {
-            shouldPop = vc.shouldGoBack()
-        }
-
-        if shouldPop {
-            DispatchQueue.main.async {
-                self.popViewController(animated: true)
-            }
-        }
-
-        return false
-    }
-}
+//extension UINavigationController: UINavigationBarDelegate {
+//    public func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
+//        if self.viewControllers.count < (navigationBar.items?.count ?? 0) {
+//            return true
+//        }
+//
+//        var shouldPop = true
+//        if let vc = self.topViewController as? UINavigationBack {
+//            shouldPop = vc.shouldGoBack()
+//        }
+//
+//        if shouldPop {
+//            DispatchQueue.main.async {
+//                self.popViewController(animated: true)
+//            }
+//        }
+//
+//        return false
+//    }
+//}
