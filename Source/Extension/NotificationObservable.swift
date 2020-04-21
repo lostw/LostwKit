@@ -8,6 +8,15 @@
 
 import Foundation
 
+public protocol NotificationObservable {
+    /// 注册监听
+    func onNotification(named name: Notification.Name, object: Any?, queue: OperationQueue?, using callback: @escaping (Notification) -> Void) -> NSObjectProtocol
+    /// 关闭监听
+    func offNotification(_ observer: NSObjectProtocol)
+    /// 关闭所有监听
+    func offAllNotification()
+}
+
 class ObserverManager: NSObject {
     var observers = [NSObjectProtocol]()
 
@@ -39,7 +48,7 @@ class ObserverManager: NSObject {
 }
 
 private var observerManagerKey: Int = 0
-extension NSObject {
+extension NotificationObservable {
     private var observeManager: ObserverManager {
         var manager = objc_getAssociatedObject(self, &observerManagerKey) as? ObserverManager
         if manager == nil {
@@ -62,7 +71,9 @@ extension NSObject {
         self.observeManager.remove(observer)
     }
 
-    func offAllNotification() {
+    public func offAllNotification() {
         self.observeManager.removeAll()
     }
 }
+
+extension NSObject: NotificationObservable {}
