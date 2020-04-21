@@ -49,6 +49,11 @@ public struct PageInfo {
     }
 }
 
+public extension Notification.Name {
+    static let LogRequest = Notification.Name("LogRequest")
+    static let LogResponse = Notification.Name("LogResponse")
+}
+
 public class H5BridgeController {
     public var bridge: WebViewJavascriptBridge
     var configuration: H5BridgeConfiguration
@@ -73,6 +78,10 @@ public class H5BridgeController {
         }
         self.bridge.registerHandler("logMessage") { data, _ in
             ZLog.info("[H5log]\(data!)")
+        }
+        self.bridge.registerHandler("logResponse") { data, _ in
+            NotificationCenter.default.post(name: .LogResponse, object: nil, userInfo: data as? [String: Any])
+            ZLog.info("[H5Request]\(data!)")
         }
 
         if configuration.useMultipleEntry {
