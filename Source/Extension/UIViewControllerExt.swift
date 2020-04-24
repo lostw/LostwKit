@@ -219,6 +219,47 @@ public extension UIViewController {
         }
     }
 
+
+    func showRootController(at tab: Int?, callback: ((UIViewController) -> Void)? = nil) {
+        var tabBarController: UITabBarController!
+        if self.tabBarController == nil {
+            tabBarController = (UIApplication.shared.keyWindow?.rootViewController as! UITabBarController)
+            if let tab = tab {
+                tabBarController.selectedIndex = tab
+            }
+            guard let nav = tabBarController.selectedViewController as? UINavigationController else {
+                return
+            }
+            nav.popViewController(animated: false)
+            callback?(nav.topViewController!)
+        } else {
+            tabBarController = self.tabBarController
+            guard let nav = tabBarController.selectedViewController as? UINavigationController else {
+                return
+            }
+            if let tab = tab, tab != tabBarController.selectedIndex {
+                if let controller = tabBarController.viewControllers![tab] as? UINavigationController {
+                    controller.popToRootViewController(animated: false)
+                }
+
+                nav.popToRootViewController(animated: false)
+                tabBarController.selectedIndex = tab
+                guard let finalNav = tabBarController.selectedViewController as? UINavigationController else {
+                    return
+                }
+                callback?(finalNav.topViewController!)
+            } else {
+                CATransaction.begin()
+                CATransaction.setCompletionBlock {
+                    callback?(nav.topViewController!)
+                }
+                nav.popToRootViewController(animated: false)
+                CATransaction.commit()
+            }
+        }
+    }
+
+    @available(*, deprecated, message: "Use showRootController(at tab: Int?, callback:((UIViewController) -> Void)? = nil instead.")
     func showRootViewController(at tab: Int) {
         var tabBarController: UITabBarController!
         if self.tabBarController == nil {
