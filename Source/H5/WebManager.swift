@@ -57,17 +57,14 @@ public class WebManager {
         if let vc = h5Controller {
             h5 = vc
         } else {
-            h5 = controllerBuilder?()
-        }
-
-        if h5 == nil {
-            h5 = H5PageController()
+            h5 = controllerBuilder?() ?? H5PageController()
         }
 
         h5.setLink(link, params: params)
         h5.pageTitle = name
         h5.session = self
         h5.configuration = self.bridageConfig
+        h5.resetOnURLChange = resetOnURLChange
 
         if let customScheme = self.urlScheme {
             h5.customScheme = customScheme
