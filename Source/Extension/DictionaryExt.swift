@@ -27,6 +27,28 @@ public extension Dictionary {
     }
 }
 
+public extension Dictionary where Key == String {
+    func integer(for key: String, defaultValue: Int = 0) -> Int {
+        if let value = self[key] as? Int {
+            return value
+        } else if let str = self[key] as? String {
+            return Int(str) ?? defaultValue
+        } else {
+            return defaultValue
+        }
+    }
+
+    func double(for key: String, defaultValue: Double = 0) -> Double {
+        if let value = self[key] as? Double {
+            return value
+        } else if let str = self[key] as? String {
+            return Double(str) ?? defaultValue
+        } else {
+            return defaultValue
+        }
+    }
+}
+
 public class ZZJson {
     public static func stringify(_ object: Any, pretty: Bool = false) -> String? {
         var options: JSONSerialization.WritingOptions = []

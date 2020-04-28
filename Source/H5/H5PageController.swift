@@ -43,6 +43,8 @@ open class H5PageController: UIViewController, UINavigationBack {
 
     public var shouldProcessURL: ((URL) -> Bool)?
 
+    public var resetOnURLChange: Bool = true
+
     var startTime: CFAbsoluteTime = 0
     var endTime: CFAbsoluteTime = 0
 
@@ -226,8 +228,10 @@ open class H5PageController: UIViewController, UINavigationBack {
 
         pageOb = self.webView.observe(\.url, options: [.new]) { [unowned self] (_, info) in
             if let url = info.newValue??.absoluteString {
-                self.bridgeController?.reload()
-                self.resetNavigationBar()
+                if self.resetOnURLChange {
+                    self.bridgeController?.reload()
+                    self.resetNavigationBar()
+                }
 
                 ZLog.info("[h5]\(url)")
             }
@@ -240,7 +244,7 @@ open class H5PageController: UIViewController, UINavigationBack {
         }
     }
 
-    func resetNavigationBar() {
+    public func resetNavigationBar() {
         self.navigationItem.titleView = nil
         self.navigationItem.title = self.pageTitle ?? self.webView.title ?? "加载中"
         self.navigationItem.rightBarButtonItem = nil

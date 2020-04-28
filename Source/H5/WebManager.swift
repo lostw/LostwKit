@@ -20,6 +20,7 @@ public class WebManager {
     public var configuration: WKWebViewConfiguration
     public var bridageConfig: H5BridgeConfiguration?
     var urlScheme: String?
+    public var resetOnURLChange = true
 
     public var controllerBuilder: (() -> H5PageController)?
     public var debug = false {
