@@ -50,6 +50,18 @@ public class ModelHelper {
     }
 }
 
+public extension Dictionary {
+    func asModel<ModelType: Decodable>() -> ModelType? {
+        return ModelHelper.parse(from: self)
+    }
+}
+
+public extension Array {
+    func asModels<ModelType: Decodable>() -> [ModelType] {
+        return ModelHelper.parse(from: self)
+    }
+}
+
 public extension Encodable {
     func toDict() -> [String: Any]? {
         if let data = try? JSONEncoder().encode(self) {
