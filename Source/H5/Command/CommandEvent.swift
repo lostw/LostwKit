@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class CommandBindEvent: H5Command {
+public final class CommandBindEvent: H5Command {
     public init() {}
 
     public func execute(_ data: [String: Any], callback: H5CmdCallback?, context: H5BridgeController) {
@@ -20,7 +20,7 @@ public class CommandBindEvent: H5Command {
     }
 }
 
-public class CommandTriggerEvent: H5Command {
+public final class CommandTriggerEvent: H5Command {
     public init() {}
 
     public func execute(_ data: [String: Any], callback: H5CmdCallback?, context: H5BridgeController) {
@@ -33,7 +33,7 @@ public class CommandTriggerEvent: H5Command {
     }
 }
 
-public class CommandUnbindEvent: H5Command {
+public final class CommandUnbindEvent: H5Command {
     public init() {}
 
     public func execute(_ data: [String: Any], callback: H5CmdCallback?, context: H5BridgeController) {

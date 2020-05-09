@@ -141,7 +141,6 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
         }
     }
 
-
     // MARK: - 初始化控件
     open func commonInitView() {
         self.edgesForExtendedLayout = []
@@ -167,7 +166,6 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
             $0.edges.equalTo(0)
         }
     }
-
 
     public func addFixedBottomView(_ bottomView: UIView, animateIn: Bool = false) {
         self.view.addSubview(bottomView)

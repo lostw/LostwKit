@@ -12,7 +12,7 @@ import UIKit
 /// name: String, 可选, 页面名称，用于程序追溯页面
 /// eraseCount: Int, 可选、默认为0, 在当前的页面层级上先删除相应数量的页面，再打开新页面
 /// isReplacePage: String[Deprected], 对应 eraseCount = 1
-public class CommandOpenPage: H5Command {
+public final class CommandOpenPage: H5Command {
     public init() {}
     public func execute(_ config: [String: Any], callback: H5CmdCallback?, context: H5BridgeController) {
         guard let h5Page = context.vc,

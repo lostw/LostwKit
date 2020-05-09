@@ -9,7 +9,7 @@
 import UIKit
 
 /// callback: String, H5页面注册的方法名
-public class CommandNavBackAction: H5Command {
+public final class CommandNavBackAction: H5Command {
     weak var context: H5BridgeController?
     var callbackName: String?
     public init() {}

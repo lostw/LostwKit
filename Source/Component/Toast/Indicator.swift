@@ -57,8 +57,6 @@ public class Indicator {
         }
     }
 
-
-
     var state: State = .hidden {
         didSet {
             switch state {
@@ -86,7 +84,7 @@ public class Indicator {
 
     public init(withIn view: UIView) {
         self.masterView = view
-        self.observer = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, CFRunLoopActivity.beforeWaiting.rawValue, true, 0, { [weak self] (_, activity) in
+        self.observer = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, CFRunLoopActivity.beforeWaiting.rawValue, true, 0, { [weak self] (_, _) in
             self?.makeChange()
         })
         CFRunLoopAddObserver(CFRunLoopGetCurrent(), self.observer, CFRunLoopMode.commonModes)

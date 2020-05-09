@@ -99,7 +99,6 @@ public class SimpleListDataSource<Cell: UITableViewCell, Model>: NSObject, UITab
         return .delete
     }
 
-
     public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             self.onCellDelete?(self.list[indexPath.row], indexPath)

@@ -219,7 +219,6 @@ public extension UIViewController {
         }
     }
 
-
     func showRootController(at tab: Int?, callback: ((UIViewController) -> Void)? = nil) {
         var tabBarController: UITabBarController!
         if self.tabBarController == nil {

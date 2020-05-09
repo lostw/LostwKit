@@ -11,6 +11,7 @@ import WebViewJavascriptBridge
 
 public typealias H5CmdCallback = WVJBResponseCallback
 public protocol H5Command: AnyObject {
+    init()
     func execute(_ data: [String: Any], callback: H5CmdCallback?, context: H5BridgeController)
 }
 
