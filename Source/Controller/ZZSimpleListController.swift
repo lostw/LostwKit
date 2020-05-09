@@ -60,14 +60,14 @@ extension ZZPagable {
     public func cancel() {}
 }
 
-open class ZZSimpleListController<Cell: UITableViewCell, Model: Mapable>: UIViewController, UITableViewDelegate, UITableViewDataSource, ZZPagable {
+open class ZZSimpleListController<Cell: UITableViewCell, Model: Decodable>: UIViewController, UITableViewDelegate, UITableViewDataSource, ZZPagable {
     public typealias CellConfigCallback = (Cell, Model, IndexPath) -> Void
     public typealias CellActionCallback = (Model, IndexPath) -> Void
     public typealias WillLoadTableCallback = () -> Void
     public typealias DidFetchData = ([String: Any]) -> Void
-    public class ModelParser<T: Mapable> {
+    public class ModelParser<T: Decodable> {
         func parse(_ item: [String: Any]) -> T? {
-            return T.from(dict: item)
+            return ModelHelper.parse(from: item)
         }
     }
 
