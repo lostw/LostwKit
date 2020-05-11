@@ -10,6 +10,7 @@ import UIKit
 
 public class ZZPlaceholderView: UIView {
     public struct Style {
+        public var offset: CGPoint = .zero
         public var padding: UIEdgeInsets = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
         public var imageSize: CGSize?
         public var titleMarginTop: CGFloat = 20
@@ -58,6 +59,10 @@ public class ZZPlaceholderView: UIView {
     public func load(dataSource: DataSource) {
         container.removeAllLinearViews()
         container.padding = dataSource.style.padding
+        container.snp.updateConstraints {
+            $0.centerX.equalToSuperview().offset(dataSource.style.offset.x)
+            $0.centerY.equalToSuperview().offset(dataSource.style.offset.y)
+        }
 
         self.addImageView(dataSource)
         self.addTitleLabel(dataSource)

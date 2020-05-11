@@ -125,9 +125,6 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
                 guard let self = self else { return }
                 self.fetch()
             }
-            if self.config.isIndicatorNoData {
-                self.tableView.stopPushRefreshEver(false)
-            }
         } else {
             if self.config.isIndicatorNoData && !self.dataSource.isEmpty {
                 self.tableView.addPushRefresh { [weak self] in
