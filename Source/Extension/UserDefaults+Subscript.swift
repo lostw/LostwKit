@@ -37,7 +37,7 @@ public extension UserDefaults {
     }
 
     static subscript<Type>(key: Key<Type>, default: @autoclosure () -> Type) -> Type {
-        (UserDefaults.standard.value(forKey: key.name) as? Type) ?? `default`()
+        return self[key] ?? `default`()
     }
 
     // Codable 支持
@@ -67,7 +67,7 @@ public extension UserDefaults {
     }
 
     static subscript<Type>(key: Key<Type>, default: @autoclosure () -> Type) -> Type where Type: Codable {
-        (UserDefaults.standard.value(forKey: key.name) as? Type) ?? `default`()
+        return self[key] ?? `default`()
     }
 }
 
