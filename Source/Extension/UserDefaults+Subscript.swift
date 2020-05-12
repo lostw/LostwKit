@@ -63,9 +63,11 @@ public extension UserDefaults {
             } else {
                 UserDefaults.standard.removeObject(forKey: key.name)
             }
-
-
         }
+    }
+
+    static subscript<Type>(key: Key<Type>, default: @autoclosure () -> Type) -> Type where Type: Codable {
+        (UserDefaults.standard.value(forKey: key.name) as? Type) ?? `default`()
     }
 }
 
