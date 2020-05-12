@@ -40,15 +40,31 @@ public extension UserDefaults {
         (UserDefaults.standard.value(forKey: key.name) as? Type) ?? `default`()
     }
 
-    static subscript<Type>(key: Key<Type>) -> Type? where Type: Mapable {
+    // Codable 支持
+    static subscript<Type>(key: Key<Type>) -> Type? where Type: Codable {
         get {
-            if let value = UserDefaults.standard.value(forKey: key.name) as? String {
-                return Type.from(string: value)
+            guard let data = UserDefaults.standard.data(forKey: key.name) else {
+                return nil
             }
-            return nil
+            do {
+                return try JSONDecoder().decode(Type.self, from: data)
+            } catch {
+                return nil
+            }
         }
         set {
-            UserDefaults.standard.set(newValue?.toJsonString(), forKey: key.name)
+            if let model = newValue {
+                do {
+                    let data = try JSONEncoder().encode(model)
+                    UserDefaults.standard.set(data, forKey: key.name)
+                } catch {
+                    // do nothing
+                }
+            } else {
+                UserDefaults.standard.removeObject(forKey: key.name)
+            }
+
+
         }
     }
 }
