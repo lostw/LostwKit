@@ -69,7 +69,7 @@ public class WKZEmptySetManager {
         }
     }
 
-    private var stateView = [String: ZZPlaceholderView.DataSource]()
+    public var stateView = [String: ZZPlaceholderView.DataSource]()
     public func addState(key: String, dataSource: ZZPlaceholderView.DataSource) {
         stateView[key] = dataSource
     }
@@ -93,6 +93,18 @@ public class WKZEmptySetManager {
         }
         error.style.padding = [-20, 0, 4, 0]
         self.addState(key: "error", dataSource: error)
+    }
+
+    public func setStyleoffset(_ offset: CGPoint) {
+        var emptySource = self.stateView["empty"]!
+        emptySource.style.offset = offset
+        self.addState(key: "empty", dataSource: emptySource)
+        var errorSource = self.stateView["error"]!
+        errorSource.style.offset = offset
+        self.addState(key: "error", dataSource: errorSource)
+        var loadingSource = self.stateView["loading"]!
+        loadingSource.style.offset = offset
+        self.addState(key: "loading", dataSource: loadingSource)
     }
 
     public func setEmptyText(_ text: String) {
