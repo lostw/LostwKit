@@ -73,7 +73,7 @@ public extension UIScrollView {
             return
         }
 
-        let refreshViewFrame = CGRect(x: 0, y: -PullToRefreshConst.height, width: self.frame.size.width, height: PullToRefreshConst.height)
+        let refreshViewFrame = CGRect(x: 0, y: contentSize.height, width: self.frame.size.width, height: PullToRefreshConst.pushHeight)
         let refreshView = PullToLoadMoreView(frame: refreshViewFrame, options: options)
         refreshView.tag = PullToRefreshConst.pullTag
         addSubview(refreshView)

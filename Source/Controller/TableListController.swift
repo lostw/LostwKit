@@ -19,15 +19,11 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
     public var dataSource: SimpleListDataSource<Cell, Model>!
     public var dataProvider: ((_ page: Int, _ completion: @escaping ([Model], Bool, Error?) -> Void) -> Void)?
 
-    public typealias DidFetchData = ([String: Any]) -> Void
-
-//    public var list = [Model]()
     public let tableView = UITableView()
     public var page: Int = 0
     public var latestError: Error?
 
     public var didLoadTable: ((_ page: Int, _ more: Bool) -> Void)?
-    public var didFetchData: DidFetchData?
 
     public var noDataManager = WKZEmptySetManager()
 
@@ -96,9 +92,8 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
         }
 
         self.page += 1
-        if !comingList.isEmpty {
-            self.dataSource.bindData(comingList, append: self.page > 1)
-        }
+        self.dataSource.bindData(comingList, append: self.page > 1)
+
         self.didRecieveData(at: self.page, hasMore: hasMore)
         self.didLoadTable?(self.page, hasMore)
     }
@@ -116,10 +111,15 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
             self.tableView.stopPullRefreshEver()
         }
 
-        self.toggleLoadMore(hasMore)
+        DispatchQueue.main.async {
+            self.toggleLoadMore(hasMore)
+        }
     }
 
     public func toggleLoadMore(_ more: Bool) {
+        // 恢复加载更多的状态
+        self.tableView.stopPushRefreshEver(false)
+
         if more {
             self.tableView.addPushRefresh { [weak self] in
                 guard let self = self else { return }

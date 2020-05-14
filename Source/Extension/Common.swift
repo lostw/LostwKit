@@ -24,11 +24,9 @@ public let ONE_PX_ADJUST = ONE_PX / 2.0
 public let defaultCellIdentifier = "DefaultCell"
 
 public func isPhoneX() -> Bool {
-    guard #available(iOS 11, *) else {
-        return false
-    }
-
-    return UIApplication.shared.keyWindow!.safeAreaInsets.bottom > 0.0
+     let width = UIScreen.main.bounds.width
+     let height = UIScreen.main.bounds.height
+     return width >= 375.0 && height >= 812.0
 }
 
 postfix operator ~
