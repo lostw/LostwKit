@@ -15,9 +15,12 @@ public struct TableListConfig {
 }
 
 open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
+    public typealias DataProvider = (_ page: Int, _ completion: @escaping ([Model], Bool, Error?) -> Void) -> Void
+    public typealias DataProviderResult = (_ page: Int, _ completion: @escaping (Swift.Result<[Model], Error>, _ pageSize: Int) -> Void) -> Void
+
     public var config: TableListConfig = TableListConfig()
     public var dataSource: SimpleListDataSource<Cell, Model>!
-    public var dataProvider: ((_ page: Int, _ completion: @escaping ([Model], Bool, Error?) -> Void) -> Void)?
+    public var dataProvider: DataProvider?
 
     public let tableView = UITableView()
     public var page: Int = 0
@@ -52,6 +55,7 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
         self.refreshPage()
     }
 
+    /// 重置列表状态
     public func reset() {
         self.page = 0
         self.dataSource.bindData([], append: false)
@@ -62,6 +66,21 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
     }
 
     public func cancel() {}
+
+    /// 返回Swift.Result的接口请求专供
+    public func configDataProviderResult(_ provider: @escaping DataProviderResult) {
+        self.dataProvider = { page, completion in
+            let resultProvider: ((Swift.Result<[Model], Error>, Int) -> Void) = { result, pageSize in
+                switch result {
+                case .success(let list):
+                    completion(list, pageSize <= list.count, nil)
+                case .failure(let error):
+                    completion([], false, error)
+                }
+            }
+            provider(page, resultProvider)
+        }
+    }
 
     private func fetch() {
         dataProvider?(self.page + 1, self.onDataFetched)
@@ -88,6 +107,8 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
                 self.noDataManager.pageKey = .error
             }
 
+            self.tableView.stopPullRefreshEver()
+            self.toggleLoadMore(false)
             return
         }
 
@@ -105,10 +126,6 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
             self.noDataManager.pageKey = .empty
         } else {
             self.noDataManager.visible = false
-        }
-
-        if page == 1 {
-            self.tableView.stopPullRefreshEver()
         }
 
         DispatchQueue.main.async {

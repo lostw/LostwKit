@@ -77,34 +77,28 @@ public class WKZEmptySetManager {
     public init() {
         var loading = ZZPlaceholderView.DataSource()
 //        loading.images = ["load1", "load2", "load3"]
-        loading.indicator = true
+        loading.image = .indicator
         loading.title = "加载中..."
         self.addState(key: "loading", dataSource: loading)
 
         var empty = ZZPlaceholderView.DataSource()
-        empty.images = ["icon_record_none"]
+        empty.image = .single(UIImage.bundleImage(named: "icon_record_none")!)
         empty.title = "暂无数据"
         self.addState(key: "empty", dataSource: empty)
 
         var error = ZZPlaceholderView.DataSource()
-        error.images = ["icon_record_fail"]
+        error.image = .single(UIImage.bundleImage(named: "icon_record_fail")!)
         error.attributedTitle = "加载失败 点击重试".styled.make {
             $0.find(.text("点击重试"))?.color(Theme.shared[.majorText])
         }
-        error.style.padding = [-20, 0, 4, 0]
+        var style = ZZPlaceholderView.Style()
+        style.padding = [-20, 0, 4, 0]
+        error.style = style
         self.addState(key: "error", dataSource: error)
     }
 
     public func setStyleoffset(_ offset: CGPoint) {
-        var emptySource = self.stateView["empty"]!
-        emptySource.style.offset = offset
-        self.addState(key: "empty", dataSource: emptySource)
-        var errorSource = self.stateView["error"]!
-        errorSource.style.offset = offset
-        self.addState(key: "error", dataSource: errorSource)
-        var loadingSource = self.stateView["loading"]!
-        loadingSource.style.offset = offset
-        self.addState(key: "loading", dataSource: loadingSource)
+        self.placeholderView.commonStyle.offset = offset
     }
 
     public func setEmptyText(_ text: String) {

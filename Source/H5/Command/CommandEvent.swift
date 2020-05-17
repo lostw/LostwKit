@@ -16,7 +16,8 @@ public final class CommandBindEvent: H5Command {
                 return
         }
 
-        context.bindEvent(named: name, callbackName: callbackName)
+        let isWholeSession = (data["sessionLifecycle"] as? Bool) ?? false
+        context.bindEvent(named: name, callbackName: callbackName, isWholeSession: isWholeSession)
     }
 }
 

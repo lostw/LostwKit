@@ -9,6 +9,8 @@
 import UIKit
 
 public class ZZPlaceholderView: UIView {
+    public static var globalStyle = Style()
+
     public struct Style {
         public var offset: CGPoint = .zero
         public var padding: UIEdgeInsets = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
@@ -26,19 +28,28 @@ public class ZZPlaceholderView: UIView {
         public init() {}
     }
 
+    public enum Image {
+        /// UIActivityIndicator
+        case indicator
+        /// image
+        case single(UIImage)
+        /// animation images
+        case multiple([UIImage], TimeInterval)
+    }
+
     public struct DataSource {
-        public var indicator = false
-        public var images: [String]?
+        public var image: Image = .indicator
         public var title: String?
         public var attributedTitle: NSAttributedString?
         public var actionTitle: String?
         public var action: ((UIButton) -> Void)?
         public var pageAction: VoidClosure?
-        public var style = Style()
+        public var style: Style?
 
         public init() {}
     }
 
+    public var commonStyle: Style
     var imageView: UIImageView?
     var titleLabel: UILabel?
     var actionButton: UIButton?
@@ -48,25 +59,28 @@ public class ZZPlaceholderView: UIView {
     var action: ((UIButton) -> Void)?
 
     override init(frame: CGRect) {
+        self.commonStyle = ZZPlaceholderView.globalStyle
         super.init(frame: frame)
         self.commonInitView()
     }
 
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        fatalError("not implement")
     }
 
     public func load(dataSource: DataSource) {
+        let style = dataSource.style ?? self.commonStyle
+
         container.removeAllLinearViews()
-        container.padding = dataSource.style.padding
+        container.padding = style.padding
         container.snp.updateConstraints {
-            $0.centerX.equalToSuperview().offset(dataSource.style.offset.x)
-            $0.centerY.equalToSuperview().offset(dataSource.style.offset.y)
+            $0.centerX.equalToSuperview().offset(style.offset.x)
+            $0.centerY.equalToSuperview().offset(style.offset.y)
         }
 
-        self.addImageView(dataSource)
-        self.addTitleLabel(dataSource)
-        self.addActionButton(dataSource)
+        self.addImageView(dataSource, style: style)
+        self.addTitleLabel(dataSource, style: style)
+        self.addActionButton(dataSource, style: style)
 
         if let action = dataSource.pageAction {
             self.onTouch { _ in
@@ -90,41 +104,41 @@ public class ZZPlaceholderView: UIView {
         self.action?(sender)
     }
 
-    func addImageView(_ dataSource: DataSource) {
-        if let imageNames = dataSource.images, !imageNames.isEmpty {
-            let imageView = UIImageView()
-            if imageNames.count == 1 {
-                imageView.image = UIImage(named: imageNames.first!)
-            } else {
-                let images = imageNames.map { (str) -> UIImage in
-                    return UIImage(named: str)!
-                }
-                imageView.animationImages = images
-                imageView.animationDuration = 0.4
-                imageView.animationRepeatCount = Int.max
-                imageView.startAnimating()
-            }
-            imageView.zLinearLayout.justifyContent = .center
-            container.addLinearView(imageView)
-            if let size = dataSource.style.imageSize {
-                imageView.snp.makeConstraints { (make) in
-                    make.width.equalTo(size.width)
-                    make.height.equalTo(size.height)
-                }
-            }
-
-            self.imageView = imageView
-        } else if dataSource.indicator {
+    func addImageView(_ dataSource: DataSource, style: Style) {
+        switch dataSource.image {
+        case .indicator:
             let activity = UIActivityIndicatorView(style: .whiteLarge)
             activity.color = UIColor(hex: 0x7b888e)
             activity.startAnimating()
             activity.zLinearLayout.justifyContent = .center
             container.addLinearView(activity)
+        case .single(let image):
+            let imageView = UIImageView()
+            imageView.image = image
+            imageView.zLinearLayout.justifyContent = .center
+            container.addLinearView(imageView)
+            self.imageView = imageView
+        case .multiple(let images, let duration):
+            let imageView = UIImageView()
+            imageView.animationImages = images
+            imageView.animationDuration = duration
+            imageView.animationRepeatCount = 0
+            imageView.startAnimating()
+            imageView.zLinearLayout.justifyContent = .center
+            container.addLinearView(imageView)
+            self.imageView = imageView
+        }
+
+        // 设置图片尺寸
+        if let imageView = self.imageView, let size = style.imageSize {
+            imageView.snp.makeConstraints { (make) in
+                make.width.equalTo(size.width)
+                make.height.equalTo(size.height)
+            }
         }
     }
 
-    func addTitleLabel(_ dataSource: DataSource) {
-        let style = dataSource.style
+    func addTitleLabel(_ dataSource: DataSource, style: Style) {
         if dataSource.title != nil || dataSource.attributedTitle != nil {
             let titleLabel = UILabel()
             titleLabel.font = style.titleFont
@@ -145,8 +159,7 @@ public class ZZPlaceholderView: UIView {
         }
     }
 
-    func addActionButton(_ dataSource: DataSource) {
-        let style = dataSource.style
+    func addActionButton(_ dataSource: DataSource, style: Style) {
         if let actionTitle = dataSource.actionTitle {
             let button = UIButton()
             button.setTitle(actionTitle, for: .normal)

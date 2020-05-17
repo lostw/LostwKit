@@ -35,6 +35,7 @@ public struct PageInfo {
         var name: String
         var observer: NSObjectProtocol
         var callbackName: String
+        var isWholeSession: Bool
     }
 
     public var pageName: String?
@@ -46,6 +47,19 @@ public struct PageInfo {
     public func clearObserver() {
         self.observerInfo.values.forEach {
             NotificationCenter.default.removeObserver($0.observer)
+        }
+    }
+
+    /// 删除当前页的信息，只保留整个webview生命周期的监听事件
+    mutating func clear() {
+        self.pageName = nil
+        self.backAction = nil
+        self.observerInfo = self.observerInfo.filter {
+            if !$0.value.isWholeSession {
+                NotificationCenter.default.removeObserver($0.value.observer)
+                return false
+            }
+            return true
         }
     }
 }
@@ -101,8 +115,7 @@ public class H5BridgeController {
     }
 
     public func reload() {
-        self.currentPage.clearObserver()
-        self.currentPage = PageInfo()
+        self.currentPage.clear()
         configuration.didLoadPage(vc: self.vc)
     }
 
@@ -159,7 +172,7 @@ public class H5BridgeController {
 }
 
 extension H5BridgeController {
-    public func bindEvent(named name: String, callbackName: String) {
+    public func bindEvent(named name: String, callbackName: String, isWholeSession: Bool = false) {
         let observer = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: name), object: nil, queue: nil) { [weak self] n in
             guard let self = self else { return }
             self.callH5Func(named: callbackName, data: n.userInfo)
@@ -170,7 +183,7 @@ extension H5BridgeController {
             self.unbindEvent(named: name)
         }
 
-        let info = PageInfo.OberverInfo(name: name, observer: observer, callbackName: callbackName)
+        let info = PageInfo.OberverInfo(name: name, observer: observer, callbackName: callbackName, isWholeSession: isWholeSession)
         self.currentPage.observerInfo[name] = info
     }
 
