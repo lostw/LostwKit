@@ -43,22 +43,32 @@ public extension UserDefaults {
     // Codable 支持
     static subscript<Type>(key: Key<Type>) -> Type? where Type: Codable {
         get {
+            if Type.self is PropertyListValue.Type {
+                return UserDefaults.standard.value(forKey: key.name) as? Type
+            }
+
             guard let data = UserDefaults.standard.data(forKey: key.name) else {
                 return nil
             }
             do {
                 return try JSONDecoder().decode(Type.self, from: data)
             } catch {
+                ZLog.error("[UserDefault]get(\(key.name)): \(error.localizedDescription)")
                 return nil
             }
         }
         set {
             if let model = newValue {
+                if Type.self is PropertyListValue.Type {
+                    UserDefaults.standard.set(model, forKey: key.name)
+                    return
+                }
+
                 do {
                     let data = try JSONEncoder().encode(model)
                     UserDefaults.standard.set(data, forKey: key.name)
                 } catch {
-                    // do nothing
+                    ZLog.error("[UserDefault]set(\(key.name)): \(error.localizedDescription)")
                 }
             } else {
                 UserDefaults.standard.removeObject(forKey: key.name)
