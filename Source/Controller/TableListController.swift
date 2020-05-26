@@ -9,8 +9,11 @@
 import UIKit
 
 public struct TableListConfig {
+    /// 是否支持刷新
     public var isEnableRefresh: Bool = true
+    /// 是否支持加载更多
     public var isEnableLoadMore: Bool = true
+    /// 是否提示加载完所有数据：用于分页的情况
     public var isIndicatorNoData: Bool = false
 }
 
@@ -20,6 +23,7 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
 
     public var config: TableListConfig = TableListConfig()
     public var dataSource: SimpleListDataSource<Cell, Model>!
+    /// 数据源获取
     public var dataProvider: DataProvider?
 
     public let tableView = UITableView()
@@ -65,7 +69,8 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
         self.tableView.removePushRefresh()
     }
 
-    public func cancel() {}
+    /// 需要子类自己实现请求的取消
+    open func cancel() {}
 
     /// 返回Swift.Result的接口请求专供
     public func configDataProviderResult(_ provider: @escaping DataProviderResult) {
@@ -83,18 +88,26 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
     }
 
     private func fetch() {
+        cancel()
         dataProvider?(self.page + 1, self.onDataFetched)
     }
 
+    /// 下一页
     private func nextPage() {
         fetch()
     }
 
+    /// 刷新
     private func refreshPage() {
         page = 0
         fetch()
     }
 
+    /// 数据源获取后的回调
+    /// - Parameters:
+    ///   - comingList: 列表
+    ///   - hasMore: 是否还有下一页数据
+    ///   - err: 错误
     func onDataFetched(_ comingList: [Model], _ hasMore: Bool, _ err: Error?) {
         self.latestError = err
         if let err = err {

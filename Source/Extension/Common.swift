@@ -23,6 +23,19 @@ public let ONE_PX_ADJUST = ONE_PX / 2.0
 
 public let defaultCellIdentifier = "DefaultCell"
 
+public struct LostwKitPath {
+    public static let main: URL = {
+        let fileManager = FileManager.default
+
+        // swiftlint:disable force_try
+        var cacheDir = try! fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        // swiftlint:enable force_try
+        cacheDir.appendPathComponent("LostwKit")
+
+        return cacheDir
+    }()
+}
+
 public func isPhoneX() -> Bool {
      let width = UIScreen.main.bounds.width
      let height = UIScreen.main.bounds.height

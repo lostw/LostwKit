@@ -132,15 +132,13 @@ public class SimpleListDataSource<Cell: UITableViewCell, Model>: NSObject, UITab
     @available(iOS 13.0, *)
     public func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil, actionProvider: { suggestedActions in
-            print(suggestedActions)
+            ZLog.verbose(suggestedActions)
             // Create a UIAction for sharing
             let list = self.allowedOperations.map { operation in
                 return UIAction(title: operation.title) { _ in
                     operation.action(self.list[indexPath.row], indexPath)
                 }
-
             }
-
             // Create and return a UIMenu with the share action
             return UIMenu(title: "操作", children: list)
         })

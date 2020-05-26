@@ -99,17 +99,10 @@ public class WKZCache: NSObject {
     }
 
     public func fileCacheURL() -> URL {
-        let fileManager = FileManager.default
-
-        var cacheDir = try? fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-        cacheDir!.appendPathComponent("WKZ")
-
-        return cacheDir!
+        return LostwKitPath.main
     }
 
     private func fileURLByName(_ name: String) -> URL {
-        var url = self.fileCacheURL()
-        url.appendPathComponent(name)
-        return url
+        return LostwKitPath.main.appendingPathComponent(name)
     }
 }
