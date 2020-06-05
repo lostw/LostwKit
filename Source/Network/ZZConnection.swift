@@ -117,7 +117,7 @@
 //                }
 //            case .failure(let err):
 //                if let afError = err as? AFError, afError.isResponseSerializationError {
-//                    callback?(nil, ZZApiError(buildin: .parseFailure))
+//                    callback?(nil, ZZError.neFailToParse)
 //                } else {
 //                    let code = $0.response?.statusCode ?? -1000
 //                    callback?(nil, ZZApiError(code: "http\(code)", message: err.localizedDescription))

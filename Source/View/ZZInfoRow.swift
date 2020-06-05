@@ -66,7 +66,7 @@ open class ZZInfoRow: UIView {
         }
     }
 
-    func showIcon(_ icon: UIImage) {
+    public func showIcon(_ icon: UIImage) {
         if self.iconView == nil {
             let iconView = UIImageView()
             self.addSubview(iconView)
@@ -85,6 +85,27 @@ open class ZZInfoRow: UIView {
         }
 
         self.iconView!.image = icon
+    }
+
+    public func showRemoteIcon(_ link: String?, placeholderImage: UIImage? = nil) {
+        if self.iconView == nil {
+            let iconView = UIImageView()
+            self.addSubview(iconView)
+            iconView.snp.makeConstraints({ (make) in
+                make.height.equalTo(30)
+                make.width.equalTo(30)
+                make.centerY.equalToSuperview()
+                make.left.equalToSuperview().offset(15)
+            })
+
+            self.titleLabel.snp.updateConstraints { (make) in
+                make.left.equalToSuperview().offset(53)
+            }
+
+            self.iconView = iconView
+        }
+
+        self.iconView!.loadImage(link, placeholderImage: placeholderImage)
     }
 
     func commonInitView() {

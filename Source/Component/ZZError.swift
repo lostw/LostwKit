@@ -7,7 +7,7 @@
 
 import UIKit
 
-public struct ZZError: Error, LocalizedError {
+public struct EaseError: Error, LocalizedError {
     public enum Domain {
         case unknown, network, custom(String)
 

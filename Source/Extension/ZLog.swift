@@ -11,6 +11,7 @@ import Foundation
 public class ZLog {
     public static func enable() {
         let console = ConsoleDestination()  // log to Xcode Console
+        console.format = "$DHH:mm:ss.SSS$d $C$N:$l - $M"
         let file = FileRotateDestination()
         file.fileDestination.minLevel = .debug
         SwiftyBeaver.addDestination(console)
