@@ -109,6 +109,7 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
     ///   - hasMore: 是否还有下一页数据
     ///   - err: 错误
     func onDataFetched(_ comingList: [Model], _ hasMore: Bool, _ err: Error?) {
+        self.tableView.stopPullRefreshEver()
         self.latestError = err
         if let err = err {
             self.view.toast.error(err)
@@ -120,7 +121,6 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
                 self.noDataManager.pageKey = .error
             }
 
-            self.tableView.stopPullRefreshEver()
             self.toggleLoadMore(false)
             return
         }
