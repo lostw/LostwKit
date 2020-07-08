@@ -311,6 +311,10 @@ extension MemoryCache {
             pthread_mutex_unlock(&lock)
         }
 
+        if linedMap.totalCount == 0 {
+            return
+        }
+
         if costLimit == 0 || countLimit == 0 || ageLimit <= 0 {
             linedMap.removeAll()
             return
@@ -337,7 +341,6 @@ extension MemoryCache {
         } else if linedMap.totalCost <= cost {
             finish = true
         }
-
 
         if finish { return }
 
