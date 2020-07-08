@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name = "LostwKit"
-  s.version = "1.5.2"
+  s.version = "1.5.4"
   s.summary = "my personal kit for convience"
 
   s.description = <<-DESC

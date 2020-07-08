@@ -9,7 +9,7 @@
 import Foundation
 
 /// h5 页面资源缓存
-public class H5ResourceCache: NSObject {
+public class Cache: NSObject {
     /// 内存缓存大小：10M
     private let kMemoryCacheCostLimit: UInt = 10 * 1024 * 1024
     /// 磁盘文件缓存大小： 10M
@@ -24,7 +24,7 @@ public class H5ResourceCache: NSObject {
         memoryCache = MemoryCache.shared
         memoryCache.costLimit = kMemoryCacheCostLimit
 
-        diskCache = DiskFileCache(cacheDirectoryName: "H5ResourceCache")
+        diskCache = DiskFileCache(cacheDirectoryName: "Cache")
         diskCache.costLimit = kDiskCacheCostLimit
         diskCache.ageLimit = kDiskCacheAgeLimit
 

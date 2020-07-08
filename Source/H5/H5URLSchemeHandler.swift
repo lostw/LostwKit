@@ -25,7 +25,7 @@ public class H5URLSchemeHandler: NSObject, WKURLSchemeHandler {
     /// 防止 urlSchemeTask 实例释放了，又给他发消息导致崩溃
     var holdUrlSchemeTasks = [AnyHashable: Bool]()
     /// 资源缓存
-    var resourceCache = H5ResourceCache()
+    var resourceCache = Cache()
 
     deinit {
         print("\(String(describing: self)) 销毁了")
