@@ -8,6 +8,27 @@
 
 import UIKit
 
+open class WKZTableCell: UITableViewCell {
+    weak public var owner: UIViewController?
+
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.commonInitView()
+    }
+
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    open func commonInitView() {
+
+    }
+
+    open func bindData(_ data: Any, indexPath: IndexPath) {
+
+    }
+}
+
 public enum OperationType: String {
     case copy, paste, custom
 }

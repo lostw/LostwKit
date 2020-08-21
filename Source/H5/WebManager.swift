@@ -60,7 +60,7 @@ public class WebManager {
             h5 = controllerBuilder?() ?? H5PageController()
         }
 
-        h5.setLink(link, params: params)
+        h5.setupLink(link, params: params)
         h5.pageTitle = name
         h5.session = self
         h5.configuration = self.bridageConfig
@@ -77,7 +77,7 @@ public class WebManager {
         let userContentController = configuration.userContentController
 //        configuration.userContentController = userContentController
 
-        let frameworkBundle = Bundle(for: ZZCrypto.self)
+        let frameworkBundle = Bundle(for: Theme.self)
         // h5日志
         let filePath = frameworkBundle.path(forResource: "debug", ofType: "js")
         // swiftlint:disable force_try

@@ -22,7 +22,6 @@ open class WKZScrollController: UIViewController {
     var requestHandler: WKZRequestHandler?
     var lastFetchDate: Date?
     var requestInterval: TimeInterval = 0
-    var willFetchAction: (() -> Void)?
 
     var bottomInputView: UIView?
     var fixedBottomView: UIView?
@@ -287,8 +286,6 @@ extension WKZScrollController: UIGestureRecognizerDelegate {
 // MARK: - handle request
 extension WKZScrollController {
     func fetch(lazyMode: Bool = false) {
-        self.willFetchAction?()
-
         if lazyMode {
             if let date = lastFetchDate, date.timeIntervalSinceNow + requestInterval > 0 {
                 return

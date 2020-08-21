@@ -258,35 +258,6 @@ public extension UIViewController {
         }
     }
 
-    @available(*, deprecated, message: "Use showRootController(at tab: Int?, callback:((UIViewController) -> Void)? = nil instead.")
-    func showRootViewController(at tab: Int) {
-        var tabBarController: UITabBarController!
-        if self.tabBarController == nil {
-            tabBarController = (UIApplication.shared.keyWindow?.rootViewController as! UITabBarController)
-            tabBarController.selectedIndex = tab
-            (tabBarController.selectedViewController as! UINavigationController).popToRootViewController(animated: false)
-        } else {
-            tabBarController = self.tabBarController
-            if let selected = tabBarController.selectedViewController as? UINavigationController {
-                if tabBarController.selectedIndex == tab {
-                    selected.popToRootViewController(animated: true)
-                } else {
-                    CATransaction.begin()
-                    CATransaction.setCompletionBlock({
-                        if let controller = tabBarController.viewControllers![tab] as? UINavigationController {
-                            controller.popToRootViewController(animated: false)
-                        }
-
-                        DispatchQueue.main.async {
-                            tabBarController.selectedIndex = tab
-                        }
-                    })
-                    selected.popToRootViewController(animated: true)
-                    CATransaction.commit()
-                }
-            }
-        }
-    }
 }
 
 // MARK: - 返回按钮

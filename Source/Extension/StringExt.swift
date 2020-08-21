@@ -112,21 +112,19 @@ public extension String {
         return base64.base64Decoded()
     }
 
-    mutating func appendQuery(_ params: [String: String]? = nil) {
-        var link = self
-
-        if let parameters = params, !parameters.isEmpty {
-            var query = [String]()
-            for (key, value) in parameters {
-                query.append("\(key)=\(value.URLEncoded)")
-            }
-            if link.contains("?") {
-                link = "\(self)&\(query.joined(separator: "&"))"
-            } else {
-                link = "\(self)?\(query.joined(separator: "&"))"
-            }
+     func appendingQuries(_ quries: [String: String]? = nil) -> String {
+        guard let params = quries, !params.isEmpty else {
+            return self
         }
-        self = link
+
+        let str = params.reduce(into: "") {
+            $0.append("&\($1.key)=\($1.value)")
+        }
+        if self.contains("?") {
+            return "\(self)\(str)"
+        } else {
+            return "\(self)\(str.replacingOccurrences(of: "&", with: "?"))"
+        }
     }
 
     // MARK: - Validator

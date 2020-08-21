@@ -6,14 +6,13 @@
 //
 
 import Foundation
-import SDWebImage
+import Kingfisher
 
 extension UIImageView {
     public func loadImage(_ link: String?, placeholderImage: UIImage?) {
         self.image = nil
         if let link = link, let url = try? link.asURL() {
-//            self.af_setImage(withURL: url, placeholderImage: placeholderImage)
-            self.sd_setImage(with: url, placeholderImage: placeholderImage)
+            self.kf.setImage(with: url, placeholder: placeholderImage)
         } else {
             self.image = placeholderImage
         }

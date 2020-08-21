@@ -70,7 +70,7 @@ public extension Notification.Name {
 }
 
 public class H5BridgeController {
-    public var bridge: WebViewJavascriptBridge
+    var bridge: WebViewJavascriptBridge
     var configuration: H5BridgeConfiguration
     public weak var vc: H5PageController?
 

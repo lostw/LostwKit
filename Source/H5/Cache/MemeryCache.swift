@@ -35,14 +35,16 @@ class LinkedNode: NSObject {
 }
 
 /// 链表对象
-class LinkedNodeMap: NSObject {
+class LinkedNodeMap {
     /// 实现链表的存储结构
     var dict = [AnyHashable: LinkedNode]()
 
     /// 链表节点总占得空间大小
     var totalCost: UInt = 0
     /// 链表节点的数量
-    var totalCount: UInt = 0
+    var totalCount: UInt {
+        return UInt(dict.count)
+    }
 
     /// 头结点
     var head: LinkedNode?
@@ -50,16 +52,37 @@ class LinkedNodeMap: NSObject {
     /// 为节点
     var tail: LinkedNode?
 
+    func object(for key: AnyHashable) -> Any? {
+        guard let node = dict[key] else {
+            return nil
+        }
+
+        update(node)
+
+        return node.value
+    }
+
+    func saveObject(_ object: Any, for key: AnyHashable) {
+        if let node = dict[key] {
+            update(node, with: object)
+        } else {
+            let node = LinkedNode()
+            node.cost = UInt(MemoryLayout.size(ofValue: object))
+            node.time = CACurrentMediaTime()
+            node.key = key
+            node.value = object
+            insert(node)
+        }
+    }
+
     /// 在头节点位置插入节点
     ///
     /// - Parameter node:
-    func insertNodeAtHead(_ node: LinkedNode) {
-        dict[node.key] = node
-        totalCost += node.cost
-        totalCount += 1
+    func insert(_ node: LinkedNode) {
+        add(node)
         if head != nil {
             node.next = head
-            head?.prev = node
+            head!.prev = node
             head = node
         } else {
             head = node
@@ -90,25 +113,21 @@ class LinkedNodeMap: NSObject {
     /// 删除指定节点
     ///
     /// - Parameter node:
-    func removeNode(_ node: LinkedNode) {
-        dict.removeValue(forKey: node.key)
+    func remove(_ node: LinkedNode) {
+        delete(node)
 
-        totalCost -= node.cost
-        totalCount -= 1
-        if node.next != nil { node.next?.prev = node.prev }
-        if node.prev != nil { node.prev?.next = node.next }
+        if node.next != nil { node.next!.prev = node.prev }
+        if node.prev != nil { node.prev!.next = node.next }
         if head == node { head = node.next }
         if tail == node { tail = node.prev }
     }
 
     /// 删除尾节点
-    func removeTailNode() {
+    func trimTail() {
         guard let tempTail = tail else { return }
 
-        dict.removeValue(forKey: tempTail.key)
-        totalCost -= tempTail.cost
-        totalCount -= 1
-        if head == tail {
+        delete(tempTail)
+        if head == tempTail {
             head = nil
             tail = nil
         } else {
@@ -117,21 +136,71 @@ class LinkedNodeMap: NSObject {
         }
     }
 
+    func trimToLimit(countLimit: UInt, costLimit: UInt, ageLimit: TimeInterval) {
+        if totalCount == 0 {
+            return
+        }
+
+        if costLimit == 0 || costLimit == 0 || ageLimit <= 0 {
+            removeAll()
+            return
+        }
+
+        // 从尾部开始检查node是否满足要求
+        let now = CACurrentMediaTime()
+        var node = tail
+        while node != nil && (totalCount > countLimit || totalCost > costLimit || (now - node!.time) > ageLimit) {
+            delete(node!)
+            node = node!.prev
+        }
+
+        if node == nil {
+            head = nil
+            tail = nil
+        } else {
+            node!.next = nil
+            tail = node
+        }
+    }
+
     /// 清空链表
     func removeAll() {
         totalCost = 0
-        totalCount = 0
         head = nil
         tail = nil
 
-        if dict.count > 0 {
+        if !dict.isEmpty {
             dict.removeAll()
         }
+    }
+
+    private func add(_ node: LinkedNode) {
+        dict[node.key] = node
+        totalCost += node.cost
+    }
+
+    private func update(_ node: LinkedNode, with object: Any? = nil) {
+        if let object = object {
+            let cost = UInt(MemoryLayout.size(ofValue: object))
+            totalCost += cost - node.cost
+
+            node.cost = cost
+            node.value = object
+        }
+
+
+        node.time = CACurrentMediaTime()
+        bringNodeToHead(node)
+    }
+
+    private func delete(_ node: LinkedNode) {
+        dict[node.key] = nil
+        totalCost -= node.cost
     }
 }
 
 /// 内存缓存
-public class MemoryCache: NSObject, Cacheable {
+public class MemoryCache: Cacheable {
     ///////////////////////////////////  public  //////////////////////////////////////////
     public static let shared = MemoryCache()
 
@@ -170,16 +239,14 @@ public class MemoryCache: NSObject, Cacheable {
     private var lock: pthread_mutex_t
 
     // MARK: - lifeCycle
-    override init() {
-        lock = pthread_mutex_t.init()
-        linedMap = LinkedNodeMap.init()
+    init() {
+        lock = pthread_mutex_t()
+        linedMap = LinkedNodeMap()
         queue = DispatchQueue(label: String(describing: type(of: MemoryCache.self)))
         costLimit = UInt.max
         countLimit = UInt.max
         ageLimit = Double.greatestFiniteMagnitude
         autoTrimInterval = 5
-
-        super.init()
 
         NotificationCenter.default.addObserver(self, selector: #selector(didReceiveMemoryWarningNotification), name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackgroundNotification), name: UIApplication.didEnterBackgroundNotification, object: nil)
@@ -202,7 +269,7 @@ public class MemoryCache: NSObject, Cacheable {
     }
     // 进入后台
     @objc private func didEnterBackgroundNotification() {
-        removeAllObject()
+        trim()
     }
 
     // MARK: - privateMethod
@@ -238,67 +305,34 @@ extension MemoryCache {
             pthread_mutex_unlock(&lock)
         }
 
-        guard let node = linedMap.dict[key] else {
-            return nil
-        }
-
-        node.time = CACurrentMediaTime()
-        linedMap.bringNodeToHead(node)
-
-        return node.value
+        return linedMap.object(for: key)
     }
 
     public func setObject(_ object: Any, forKey key: AnyHashable, withCost cost: UInt) {
-        pthread_mutex_lock(&lock)
-        defer {
-            pthread_mutex_unlock(&lock)
-        }
-        let now = CACurrentMediaTime()
-        guard let node = linedMap.dict[key] else {
-            // 节点不存在，新建一个。插入到链表的头部
-            let node = LinkedNode.init()
-            node.cost = cost
-            node.time = now
-            node.key = key
-            node.value = object
-            linedMap.insertNodeAtHead(node)
-            return
-        }
-
-        // 节点存在，1.更新节点。2. 将节点移动到链表头部
-        linedMap.totalCost -= node.cost
-        linedMap.totalCost += cost
-        node.cost = cost
-        node.time = now
-        node.value = object
-        linedMap.bringNodeToHead(node)
-
-        // 判断缓存是否满了，缓存数量、缓存大小
-        if linedMap.totalCost > costLimit {
-            queue.async {
-                self.trim()
-            }
-        }
-        if linedMap.totalCount > countLimit {
-            linedMap.removeTailNode()
+        locked {
+            linedMap.saveObject(object, for: key)
         }
     }
 
     public func removeObject(forKey key: AnyHashable) {
-        pthread_mutex_lock(&lock)
-        defer {
-            pthread_mutex_unlock(&lock)
-        }
-        guard let node = linedMap.dict[key] else {
-            return
-        }
+        locked {
+            guard let node = linedMap.dict[key] else {
+                return
+            }
 
-        linedMap.removeNode(node)
+            linedMap.remove(node)
+        }
     }
 
     public func removeAllObject() {
+        locked {
+            linedMap.removeAll()
+        }
+    }
+
+    func locked(_ action: () -> Void) {
         pthread_mutex_lock(&lock)
-        linedMap.removeAll()
+        action()
         pthread_mutex_unlock(&lock)
     }
 }
@@ -306,107 +340,20 @@ extension MemoryCache {
 // MARK: - trim 将缓存大小移除到规定大小
 extension MemoryCache {
     public func trim() {
-        pthread_mutex_lock(&lock)
-        defer {
-            pthread_mutex_unlock(&lock)
-        }
-
-        if linedMap.totalCount == 0 {
-            return
-        }
-
-        if costLimit == 0 || countLimit == 0 || ageLimit <= 0 {
-            linedMap.removeAll()
-            return
-        }
-
-        let now = CACurrentMediaTime()
-        var finished = false
-        while linedMap.totalCount > countLimit || linedMap.totalCost > costLimit || (now - linedMap.tail!.time) > ageLimit {
-            linedMap.removeTailNode()
+        locked {
+            linedMap.trimToLimit(countLimit: countLimit, costLimit: totalCost, ageLimit: ageLimit)
         }
     }
 
     public func trim(withCost cost: UInt) {
-        pthread_mutex_lock(&lock)
-        defer {
-            pthread_mutex_unlock(&lock)
-        }
-        var finish = false
 
-        if costLimit == 0 {
-            linedMap.removeAll()
-
-            finish = true
-        } else if linedMap.totalCost <= cost {
-            finish = true
-        }
-
-        if finish { return }
-
-        pthread_mutex_lock(&lock)
-        while linedMap.totalCost > cost {
-            linedMap.removeTailNode()
-        }
-        pthread_mutex_unlock(&lock)
     }
 
     public func trim(withCount count: UInt) {
-        if count == 0 {
-            removeAllObject()
-            return
-        }
 
-        var finish = false
-        pthread_mutex_lock(&lock)
-        if countLimit == 0 {
-            linedMap.removeAll()
-            finish = true
-        } else if linedMap.totalCount <= count {
-            finish = true
-        }
-        pthread_mutex_unlock(&lock)
-        if finish { return }
-
-        // 从尾节点开始向前删除节点，直到满足缓存策略
-        while !finish {
-            if pthread_mutex_trylock(&lock) == 0 {
-                if linedMap.totalCount > count {
-                    linedMap.removeTailNode()
-                } else {
-                    finish = true
-                }
-                pthread_mutex_unlock(&lock)
-            } else {
-                usleep(10 * 1000)
-            }
-        }
     }
 
     public func trim(withAge age: TimeInterval) {
-        var finish = false
-        let now = CACurrentMediaTime()
-        pthread_mutex_lock(&lock)
-        if ageLimit <= 0 {
-            linedMap.removeAll()
-            finish = true
-        } else if linedMap.tail == nil || (now - linedMap.tail!.time) <= age {
-            finish = true
-        }
-        pthread_mutex_unlock(&lock)
-        if finish { return }
-
-        while !finish {
-            if pthread_mutex_trylock(&lock) == 0 {
-                if (linedMap.tail != nil) && (now - linedMap.tail!.time) > age {
-                    linedMap.removeTailNode()
-                } else {
-                    finish = true
-                }
-                pthread_mutex_unlock(&lock)
-            } else {
-                usleep(10 * 1000)
-            }
-        }
+        
     }
 }

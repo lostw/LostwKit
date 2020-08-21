@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name = "LostwKit"
-  s.version = "1.5.5"
+  s.version = "2.0.0"
   s.summary = "my personal kit for convience"
 
   s.description = <<-DESC
@@ -23,15 +23,14 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   
   s.swift_version = "5.0"
-  s.ios.deployment_target = "9.0"
-  s.tvos.deployment_target = "9.2"
-  s.watchos.deployment_target = "2.2"
+  s.ios.deployment_target = "10.0"
 
-  s.dependency 'SnapKit', '~> 4.2.0'
-  s.dependency 'Alamofire', '~> 4.9.1'
-  s.dependency 'SDWebImage', '~> 5.3.0'
+  s.dependency 'SnapKit', '~> 5.0'
+  s.dependency 'Alamofire', '~> 5.0'
+  s.dependency 'Kingfisher'
   s.dependency 'WebViewJavascriptBridge'
   s.dependency 'KeychainAccess', '~> 4.1.0'
+  s.dependency 'SwiftDate'
 #  s.subspec "ObjC" do |sp|
 #    sp.source_files = "Classes/*/*.{swift}"
 #  end

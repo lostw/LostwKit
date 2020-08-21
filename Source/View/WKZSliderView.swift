@@ -268,10 +268,10 @@ public class WKZSliderView: UIView {
     private func setupTimer() {
         self.timer?.invalidate()
 
-        self.timer = Timer.scheduledTimer(timeInterval: self.autoInterval, repeats: true, handler: { [weak self] in
+        self.timer = Timer.scheduledTimer(withTimeInterval: self.autoInterval, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             self.nextPage()
-        })
+        }
     }
 
     private func cancelTimer() {

@@ -19,16 +19,4 @@ public extension UIButton {
 
         return btn
     }
-
-    static func major(isRound: Bool = true) -> UIButton {
-        let btn = WKZStateButton(color: Theme.shared[.major])
-
-        btn.setTitleColor(UIColor.white, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        if isRound {
-            btn.percentCornerRadius = 0.5
-        }
-
-        return btn
-    }
 }

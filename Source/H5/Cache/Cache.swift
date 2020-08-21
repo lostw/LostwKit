@@ -9,7 +9,7 @@
 import Foundation
 
 /// h5 页面资源缓存
-public class Cache: NSObject {
+public final class Cache {
     /// 内存缓存大小：10M
     private let kMemoryCacheCostLimit: UInt = 10 * 1024 * 1024
     /// 磁盘文件缓存大小： 10M
@@ -20,15 +20,13 @@ public class Cache: NSObject {
     public var memoryCache: MemoryCache
     public var diskCache: DiskFileCache
 
-    public override init() {
+    public init() {
         memoryCache = MemoryCache.shared
         memoryCache.costLimit = kMemoryCacheCostLimit
 
         diskCache = DiskFileCache(cacheDirectoryName: "Cache")
         diskCache.costLimit = kDiskCacheCostLimit
         diskCache.ageLimit = kDiskCacheAgeLimit
-
-        super.init()
     }
 
     public func contain(forKey key: String) -> Bool {

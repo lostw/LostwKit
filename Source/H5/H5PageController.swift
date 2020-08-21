@@ -13,14 +13,14 @@ open class H5PageController: UIViewController, UINavigationBack {
     public var webView: WKWebView!
 
     // 初始化当前页面的manager, 可以传递相同的配置
-    unowned public var session: WebManager = WebManager.default
+    public var session = WebManager.default
 
     var progressOb: NSKeyValueObservation?
     var pageOb: NSKeyValueObservation?
     var titleOb: NSKeyValueObservation?
 
     /// 封装了javascriptBridage
-    public var bridgeController: H5BridgeController?
+    public var jsBridge: H5BridgeController?
 
     /// 配置交互，由在js环境调用postMessage(_ dict: [String: Any])
     public var configuration: H5BridgeConfiguration?
@@ -32,7 +32,7 @@ open class H5PageController: UIViewController, UINavigationBack {
     public var progressEnabled = true
     public var plugin: H5PageControllerPlugin? {
         didSet {
-            plugin?.owner = self
+            plugin?.page = self
         }
     }
 
@@ -59,11 +59,8 @@ open class H5PageController: UIViewController, UINavigationBack {
     public convenience init(link: String, pageTitle: String? = nil, params: [String: String]? = nil) {
         self.init()
 
-        var link = link
-        link.appendQuery(params)
-
         self.pageTitle = pageTitle
-        self.link = link
+        self.link = link.appendingQuries(params)
         self.webView = webView
     }
 
@@ -79,7 +76,7 @@ open class H5PageController: UIViewController, UINavigationBack {
 
     public func shouldGoBack() -> Bool {
         // 检查是否设置了返回按钮的事件
-        if let callback = self.bridgeController?.currentPage.backAction {
+        if let callback = self.jsBridge?.currentPage.backAction {
             callback()
             return false
         }
@@ -92,10 +89,8 @@ open class H5PageController: UIViewController, UINavigationBack {
         return true
     }
 
-    public func setLink(_ link: String, params: [String: String]? = nil) {
-        var link = link
-        link.appendQuery(params)
-        self.link = link
+    public func setupLink(_ link: String, params: [String: String]? = nil) {
+        self.link = link.appendingQuries(params)
     }
 
     override open func viewDidLoad() {
@@ -103,19 +98,18 @@ open class H5PageController: UIViewController, UINavigationBack {
         self.title = self.pageTitle ?? "加载中"
 
         self.commonInitView()
-        self.phaseLoadPage()
+        self.startLoadPage()
     }
 
-    // 白屏
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // 白屏
         if webView.title == nil {
             webView.reload()
         }
     }
 
-    /// 插件机制
-    func phaseLoadPage() {
+    func startLoadPage() {
         let shouldLoad = self.plugin?.willLoadPage(link: self.link) ?? true
         if shouldLoad {
             loadPage(link: self.link ?? "")
@@ -147,7 +141,7 @@ open class H5PageController: UIViewController, UINavigationBack {
     }
 
     public func hookBackAction(_ action: @escaping () -> Void) {
-        self.bridgeController?.currentPage.backAction = action
+        self.jsBridge?.currentPage.backAction = action
     }
 
     /// 页面结束加载时可以设置额外的localStorage
@@ -206,7 +200,7 @@ open class H5PageController: UIViewController, UINavigationBack {
         }
 
         if let config = self.configuration {
-            self.bridgeController = H5BridgeController(webview: self.webView, configuration: config, vc: self)
+            self.jsBridge = H5BridgeController(webview: self.webView, configuration: config, vc: self)
         }
 
         if self.progressEnabled {
@@ -229,7 +223,7 @@ open class H5PageController: UIViewController, UINavigationBack {
         pageOb = self.webView.observe(\.url, options: [.new]) { [unowned self] (_, info) in
             if let url = info.newValue??.absoluteString {
                 if self.resetOnURLChange {
-                    self.bridgeController?.reload()
+                    self.jsBridge?.reload()
                     self.resetNavigationBar()
                 }
 
@@ -293,7 +287,7 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
 
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         self.startTime = CFAbsoluteTimeGetCurrent()
-        self.bridgeController?.reload()
+        self.jsBridge?.reload()
         self.progressBar?.isHidden = false
         self.progressBar?.progress = 0
     }

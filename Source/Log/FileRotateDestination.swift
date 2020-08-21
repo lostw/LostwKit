@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftDate
 
 public class FileRotateDestination: BaseDestination {
     var fileDestination: FileDestination
@@ -24,7 +25,8 @@ public class FileRotateDestination: BaseDestination {
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true, attributes: nil)
         }
 
-        let fileURL = dir.appendingPathComponent(Date().format(.custom("yyyy-MM-dd.HHmmss'.log'")))
+        Date().toFormat("yyyyMMddHHmmss'.log'")
+        let fileURL = dir.appendingPathComponent(Date().toFormat("yyyyMMddHHmmss'.log'"))
         self.fileDestination = FileDestination(logFileURL: fileURL)
         self.fileDestination.format = "$Dyyyy-MM-dd HH:mm:ss.SSS |$d $C$L$c | $T |$N.$F.$l - $M"
         self.maxFileNum = maxFileNum

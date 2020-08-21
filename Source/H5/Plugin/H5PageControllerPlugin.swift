@@ -7,8 +7,8 @@
 
 import Foundation
 
-public protocol H5PageControllerPlugin {
-    var owner: H5PageController? {get set}
+public protocol H5PageControllerPlugin: AnyObject {
+    var page: H5PageController? {get set}
     func willLoadPage(link: String?) -> Bool
     func shouldProcessRequest(_ request: URLRequest) -> Bool
     func didLoadPage()

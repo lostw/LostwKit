@@ -10,7 +10,7 @@ import Foundation
 
 public extension UIImage {
     static func bundleImage(named name: String) -> UIImage? {
-        let frameworkBundle = Bundle(for: ZZCrypto.self)
+        let frameworkBundle = Bundle(for: Theme.self)
         let bundleURL = frameworkBundle.resourceURL?.appendingPathComponent("Resource.bundle")
         let resourceBundle = Bundle(url: bundleURL!)
         return UIImage(named: name, in: resourceBundle, compatibleWith: nil)
