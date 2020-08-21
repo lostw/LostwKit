@@ -20,6 +20,7 @@ public class WebManager {
     public var configuration: WKWebViewConfiguration
     public var bridageConfig: H5BridgeConfiguration?
     var urlScheme: String?
+    var urlMatch: ((String) -> Bool)?
     public var resetOnURLChange = true
 
     public var controllerBuilder: (() -> H5PageController)?
@@ -43,9 +44,10 @@ public class WebManager {
     }
 
     @available(iOS 11, *)
-    public func enableNativeCache(with handler: WKURLSchemeHandler) {
+    public func enableNativeCache(with handler: WKURLSchemeHandler, match: ((String) -> Bool)? = nil) {
         let customScheme = "zzscheme"
         self.urlScheme = customScheme
+        self.urlMatch = match
         // 同时处理http跟https的资源
         self.configuration.setURLSchemeHandler(handler, forURLScheme: customScheme)
         self.configuration.setURLSchemeHandler(handler, forURLScheme: customScheme + "s")
@@ -67,7 +69,13 @@ public class WebManager {
         h5.resetOnURLChange = resetOnURLChange
 
         if let customScheme = self.urlScheme {
-            h5.customScheme = customScheme
+            if let match = self.urlMatch {
+                if match(link) {
+                    h5.customScheme = customScheme
+                }
+            } else {
+                h5.customScheme = customScheme
+            }
         }
 
         return h5

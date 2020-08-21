@@ -17,6 +17,7 @@ public protocol H5Command: AnyObject {
 
 public protocol H5BridgeConfiguration {
     var useMultipleEntry: Bool {get}
+    var entryName: String { get }
     var allCommands: [String: H5Command] { get }
 
     var commandKey: String {get}
@@ -83,7 +84,7 @@ public class H5BridgeController {
         self.bridge = WebViewJavascriptBridge(webview)
         // bridge会变成webview的WKNavigationDelegate, 通过setWebViewDelegate将代理再转出来
         self.bridge.setWebViewDelegate(vc)
-        self.bridge.registerHandler("postMessage") { [weak self] (data, callback) in
+        self.bridge.registerHandler(configuration.entryName) { [weak self] (data, callback) in
             guard let self = self else { return }
             if let str = data as? String, let dict = str.toDict() {
                 self.dispatch(dict, callback: callback!)

@@ -198,7 +198,7 @@ public extension String {
     }
 
     func asMaskedIdcard() -> String {
-        return mask(range: 8..<16)
+        return mask(range: 2..<16)
     }
 }
 
