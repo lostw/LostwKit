@@ -32,7 +32,7 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
 
     public var didLoadTable: ((_ page: Int, _ more: Bool) -> Void)?
 
-    public var noDataManager = WKZEmptySetManager()
+    public var stateManager = WKZEmptySetManager()
 
     deinit {
         // iOS 10及以下需要主动释放，否则会闪退
@@ -45,10 +45,10 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
         commonInitView()
         self.dataSource = SimpleListDataSource<Cell, Model>(tableView: self.tableView)
 
-        self.noDataManager.masterView = self.tableView
-        self.noDataManager.pageKey = .loading
-        self.noDataManager.setErrorRefreshAction { [weak self] in
-            self?.noDataManager.pageKey = .loading
+        self.stateManager.masterView = self.tableView
+        self.stateManager.state = .loading
+        self.stateManager.setDefaultErrorRefreshAction { [weak self] in
+            self?.stateManager.state = .loading
             self?.refresh()
         }
         // Do any additional setup after loading the view.
@@ -63,9 +63,8 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
     public func reset() {
         self.page = 0
         self.dataSource.bindData([], append: false)
-        self.noDataManager.visible = true
-        self.noDataManager.setErrorText("")
-        self.noDataManager.pageKey = .loading
+        self.stateManager.state = .loading
+        self.stateManager.setDefaultErrorText()
         self.tableView.removePushRefresh()
     }
 
@@ -116,9 +115,8 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
 
             // 如果此时没有数据，显示error页面
             if self.dataSource.isEmpty {
-                self.noDataManager.setErrorText(err.localizedDescription)
-                self.noDataManager.visible = true
-                self.noDataManager.pageKey = .error
+                self.stateManager.setDefaultErrorText(err.localizedDescription)
+                self.stateManager.state = .error
             }
 
             self.toggleLoadMore(false)
@@ -135,10 +133,9 @@ open class TableListController<Cell: UITableViewCell, Model>: UIViewController {
     // MARK: - 状态更新
     open func didRecieveData(at page: Int, hasMore: Bool) {
         if self.dataSource.isEmpty {
-            self.noDataManager.visible = true
-            self.noDataManager.pageKey = .empty
+            self.stateManager.state = .empty
         } else {
-            self.noDataManager.visible = false
+            self.stateManager.state = .hidden
         }
 
         DispatchQueue.main.async {

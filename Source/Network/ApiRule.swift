@@ -10,7 +10,7 @@ import Foundation
 import Alamofire
 
 final public class ApiRule {
-    
+
     let baseURL: String
     let session: Session
 

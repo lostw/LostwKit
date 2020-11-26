@@ -12,7 +12,7 @@ import Foundation
 public class ConsoleDestination: BaseDestination {
 
     /// use NSLog instead of print, default is false
-    public var useNSLog = false
+    public var useOSLog = true
     /// uses colors compatible to Terminal instead of Xcode, default is false
     public var useTerminalColors: Bool = false {
         didSet {
@@ -51,17 +51,12 @@ public class ConsoleDestination: BaseDestination {
     }
 
     // print to Xcode Console. uses full base class functionality
-    override public func send(_ level: SwiftyBeaver.Level, msg: String, thread: String,
-                                file: String, function: String, line: Int, context: Any? = nil) -> String? {
+    override public func send(_ level: SwiftyBeaver.Level, msg: String, thread: String, file: String, function: String, line: Int, context: Any? = nil) -> String? {
         let formattedString = super.send(level, msg: msg, thread: thread, file: file, function: function, line: line, context: context)
 
         if let str = formattedString {
-            if useNSLog {
-                #if os(Linux)
-                    print(str)
-                #else
-                    NSLog("%@", str)
-                #endif
+            if useOSLog {
+                os_log("%@", log: OSLog.LostwKit, type: level.osType, str)
             } else {
                 print(str)
             }
@@ -69,4 +64,24 @@ public class ConsoleDestination: BaseDestination {
         return formattedString
     }
 
+}
+
+import os.log
+extension OSLog {
+    private static var subsystem = Bundle.main.bundleIdentifier!
+
+    /// Logs the view cycles like viewDidLoad.
+    static let LostwKit = OSLog(subsystem: subsystem, category: "LostwKit")
+}
+
+extension SwiftyBeaver.Level {
+    var osType: OSLogType {
+        switch self {
+        case .debug: return .debug
+        case .info: return .info
+        case .error: return .error
+        case .verbose: return .default
+        case .warning: return .default
+        }
+    }
 }

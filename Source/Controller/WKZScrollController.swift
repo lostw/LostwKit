@@ -39,10 +39,9 @@ open class WKZScrollController: UIViewController {
         didSet {
             self.contentView.isHidden = isLoadingViewShown
             if isLoadingViewShown {
-                self.noDataMananger.visible = true
-                self.noDataMananger.pageKey = .loading
+                self.noDataMananger.state = .loading
             } else {
-                self.noDataMananger.visible = false
+                self.noDataMananger.state = .hidden
             }
         }
     }
@@ -69,8 +68,8 @@ open class WKZScrollController: UIViewController {
         super.viewDidLoad()
         self.commonInitView()
         self.noDataMananger.masterView = self.scrollView
-        self.noDataMananger.setErrorRefreshAction { [weak self] in
-            self?.noDataMananger.pageKey = .loading
+        self.noDataMananger.setDefaultErrorRefreshAction { [weak self] in
+            self?.noDataMananger.state = .loading
             self?.fetch()
         }
         // Do any additional setup after loading the view.

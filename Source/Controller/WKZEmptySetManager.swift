@@ -9,21 +9,12 @@
 import UIKit
 
 public class WKZEmptySetManager {
-    public enum PageKey {
-        case loading, empty, error, custom(String)
-
-        var name: String {
-            switch self {
-            case .loading: return "loading"
-            case .empty: return "empty"
-            case .error: return "error"
-            case .custom(let str): return str
-            }
-        }
-
-        static func == (lhs: PageKey, rhs: PageKey) -> Bool {
-            return lhs.name == rhs.name
-        }
+    public enum State {
+        case hidden
+        case loading
+        case empty
+        case error
+        case custom(ZZPlaceholderView.DataSource)
     }
 
     private let placeholderView: ZZPlaceholderView = {
@@ -48,80 +39,67 @@ public class WKZEmptySetManager {
         }
     }
 
-    public var pageKey: PageKey = .loading {
+    public var state: State = .loading {
         didSet {
-            guard let dataSource = self.stateView[pageKey.name] else {
-               self.placeholderView.isHidden = true
-                return
+            switch state {
+            case .hidden:
+                self.placeholderView.isHidden = true
+            case .loading:
+                self.placeholderView.isHidden = false
+                self.placeholderView.load(dataSource: loading)
+            case .empty:
+                self.placeholderView.isHidden = false
+                self.placeholderView.load(dataSource: empty)
+            case .error:
+                self.placeholderView.isHidden = false
+                self.placeholderView.load(dataSource: error)
+            case .custom(let source):
+                self.placeholderView.isHidden = false
+                self.placeholderView.load(dataSource: source)
             }
-
-            guard self.visible else {
-                return
-            }
-
-            self.placeholderView.isHidden = false
-            self.placeholderView.load(dataSource: dataSource)
         }
     }
-    public var visible = true {
-        didSet {
-            self.placeholderView.isHidden = !visible
-        }
-    }
 
-    public var stateView = [String: ZZPlaceholderView.DataSource]()
-    public func addState(key: String, dataSource: ZZPlaceholderView.DataSource) {
-        stateView[key] = dataSource
-    }
+    public var loading: ZZPlaceholderView.DataSource
+    public var empty: ZZPlaceholderView.DataSource
+    public var error: ZZPlaceholderView.DataSource
 
     public init() {
-        var loading = ZZPlaceholderView.DataSource()
-//        loading.images = ["load1", "load2", "load3"]
-        loading.image = .indicator
-        loading.title = "加载中..."
-        self.addState(key: "loading", dataSource: loading)
+        self.loading = ZZPlaceholderView.DataSource(items: [
+            PlaceholderComponent.indicator(nil),
+            PlaceholderComponent.text("加载中...", nil)
+        ], pageAction: nil)
 
-        var empty = ZZPlaceholderView.DataSource()
-        empty.image = .single(UIImage.bundleImage(named: "icon_record_none")!)
-        empty.title = "暂无数据"
-        self.addState(key: "empty", dataSource: empty)
+        self.empty = ZZPlaceholderView.DataSource(items: [
+            PlaceholderComponent.image(.single(UIImage.bundleImage(named: "icon_record_none")!), nil),
+            PlaceholderComponent.text("暂无数据", nil)
+        ], pageAction: nil)
 
-        var error = ZZPlaceholderView.DataSource()
-        error.image = .single(UIImage.bundleImage(named: "icon_record_fail")!)
-        error.attributedTitle = "加载失败 点击重试".styled.make {
-            $0.find(.text("点击重试"))?.color(Theme.shared[.majorText])
-        }
-        var style = ZZPlaceholderView.Style()
-        style.padding = [-20, 0, 4, 0]
-        error.style = style
-        self.addState(key: "error", dataSource: error)
+        self.error = ZZPlaceholderView.DataSource(items: [
+            PlaceholderComponent.image(.single(UIImage.bundleImage(named: "icon_record_fail")!), nil),
+            PlaceholderComponent.attributedText("加载失败 点击重试".styled.make({
+                $0.find(.text("点击重试"))?.color(Theme.shared[.majorText])}), nil)
+        ], pageAction: nil)
     }
 
     public func setStyleoffset(_ offset: CGPoint) {
         self.placeholderView.commonStyle.offset = offset
     }
 
-    public func setEmptyText(_ text: String) {
-        var dataSource = self.stateView["empty"]!
-        dataSource.title = text
-        self.addState(key: "empty", dataSource: dataSource)
+    /// 只作为默认页面的快捷方法
+    public func setDefaultEmptyText(_ text: String) {
+        self.empty.replaceItem(PlaceholderComponent.text(text, nil), at: 1)
     }
 
-    public func setErrorText(_ text: String) {
-        var dataSource = self.stateView["error"]!
-        dataSource.title = text
-        self.addState(key: "error", dataSource: dataSource)
+    public func setDefaultErrorText(_ text: String = "加载失败") {
+        self.error.replaceItem(PlaceholderComponent.text(text, nil), at: 1)
     }
 
-    public func setLoadingText(_ text: String) {
-        var dataSource = self.stateView["loading"]!
-        dataSource.title = text
-        self.addState(key: "loading", dataSource: dataSource)
+    public func setDefaultLoadingText(_ text: String) {
+        self.loading.replaceItem(PlaceholderComponent.text(text, nil), at: 1)
     }
 
-    public func setErrorRefreshAction(_ action: @escaping VoidClosure) {
-        var dataSource = self.stateView["error"]!
-        dataSource.pageAction = action
-        self.addState(key: "error", dataSource: dataSource)
+    public func setDefaultErrorRefreshAction(_ action: @escaping VoidClosure) {
+        self.error.pageAction = action
     }
 }

@@ -8,43 +8,26 @@
 
 import UIKit
 
-open class WKZTextView: UITextView {
+open class ZZTextView: UITextView {
     public var placeholder: String? {
-
-        didSet {
-            if let placeholder = self.placeholder {
-                self.placeholderLayer.string = NSAttributedString(string: placeholder, attributes: self.attributes)
-            } else {
-                self.placeholderLayer.string = nil
-            }
-        }
+        get { placeholderLabel.text }
+        set { placeholderLabel.text = newValue}
     }
-    public var placeholderAttribute: [NSAttributedString.Key: Any]?
-    private var attributes: [NSAttributedString.Key: Any] {
-        var attribute = self.placeholderAttribute ?? [:]
-        if attribute[.foregroundColor] == nil {
-            attribute[.foregroundColor] = UIColor(red: 187.0/255.0, green: 187.0/255.0, blue: 187.0/255.0, alpha: 1)
-        }
 
-        if attribute[.font] == nil {
-            if self.font == nil {
-                attribute[.font] = UIFont.systemFont(ofSize: 14)
-            } else {
-                attribute[.font] = self.font!
-            }
-
-        }
-
-        return attribute
+    public var attributedPlaceholder: NSAttributedString? {
+        get { placeholderLabel.attributedText }
+        set { placeholderLabel.attributedText = newValue }
     }
+
     override open var text: String! {
         didSet {
-            self.placeholderLayer.isHidden = self.text.count > 0
+            togglePlaceholder(text.isEmpty)
         }
     }
-    let placeholderLayer = CATextLayer()
 
-    override init(frame: CGRect, textContainer: NSTextContainer?) {
+    private let placeholderLabel = UILabel()
+
+    override public init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         self.commonInitView()
     }
@@ -56,10 +39,10 @@ open class WKZTextView: UITextView {
     func commonInitView() {
         NotificationCenter.default.addObserver(self, selector: #selector(onTextChange(_:)), name: UITextView.textDidChangeNotification, object: nil)
 
-        self.placeholderLayer.truncationMode = CATextLayerTruncationMode(rawValue: "end")
-        self.placeholderLayer.isWrapped = true
-        self.placeholderLayer.contentsScale = UIScreen.main.scale
-        self.layer.addSublayer(self.placeholderLayer)
+        placeholderLabel.numberOfLines = 0
+        self.placeholderLabel.textColor = UIColor(red: 187.0/255.0, green: 187.0/255.0, blue: 187.0/255.0, alpha: 1)
+        self.placeholderLabel.font = UIFont.systemFont(ofSize: 14)
+        self.addSubview(self.placeholderLabel)
 
         self.textColor = Theme.shared[.text]
     }
@@ -71,17 +54,21 @@ open class WKZTextView: UITextView {
         let width = self.bounds.width - x - self.textContainerInset.right - self.textContainer.lineFragmentPadding
         let height = self.bounds.height - self.textContainerInset.top - self.textContainerInset.bottom
 
-        self.placeholderLayer.frame = CGRect(x: x, y: y, width: width, height: height)
+        let size = self.placeholderLabel.sizeThatFits(CGSize(width: width, height: height))
+        self.placeholderLabel.frame = CGRect(x: x, y: y, width: size.width, height: size.height)
 
         super.layoutSubviews()
     }
 
     @objc func onTextChange(_ notification: Notification) {
-        self.placeholderLayer.isHidden = self.text.count > 0
+        togglePlaceholder(text.isEmpty)
+    }
+
+    func togglePlaceholder(_ flag: Bool) {
+        self.placeholderLabel.isHidden = !flag
     }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-
 }
