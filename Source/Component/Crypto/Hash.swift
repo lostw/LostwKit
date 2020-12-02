@@ -7,6 +7,7 @@
 
 import Foundation
 import CommonCrypto
+import CryptoKit
 
 public protocol Algorithm {
     func digest(message: String) -> Data
@@ -18,6 +19,8 @@ public enum HashAlgorithm: Algorithm {
     case md5
     case sha1
     case sha256
+    case sha384
+    case sha512
 
     var length: Int32 {
         switch self {
@@ -27,6 +30,10 @@ public enum HashAlgorithm: Algorithm {
             return CC_SHA1_DIGEST_LENGTH
         case .sha256:
             return CC_SHA256_DIGEST_LENGTH
+        case .sha384:
+            return CC_SHA384_DIGEST_LENGTH
+        case .sha512:
+            return CC_SHA512_DIGEST_LENGTH
         }
     }
 
@@ -55,45 +62,18 @@ public enum HashAlgorithm: Algorithm {
                 CC_SHA256(message, CC_LONG(message.count), &digest)
                 return Data(bytes: digest, count: digest.count)
 //            }
+        case .sha384:
+            let message = [UInt8](data)
+            var digest = [UInt8](repeating: 0, count: Int(CC_SHA384_DIGEST_LENGTH))
+            CC_SHA384(message, CC_LONG(message.count), &digest)
+            return Data(bytes: digest, count: digest.count)
+        case .sha512:
+            let message = [UInt8](data)
+            var digest = [UInt8](repeating: 0, count: Int(CC_SHA512_DIGEST_LENGTH))
+            CC_SHA512(message, CC_LONG(message.count), &digest)
+            return Data(bytes: digest, count: digest.count)
 
         }
-    }
-
-    public func callAsFunction(_ message: String) -> String {
-        return digest(message: message).toHexString()
-    }
-}
-
-extension HashAlgorithm {
-    var hmacAlgorithm: CCHmacAlgorithm {
-        switch self {
-        case .md5: return CCHmacAlgorithm(kCCHmacAlgMD5)
-        case .sha1: return CCHmacAlgorithm(kCCHmacAlgSHA1)
-        case .sha256: return CCHmacAlgorithm(kCCHmacAlgSHA256)
-        }
-    }
-}
-
-/// Hmac
-public class HmacHash: Algorithm {
-    let algorithm: HashAlgorithm
-    let key: Data
-    public init(algorithm: HashAlgorithm, key: String) {
-        self.algorithm = algorithm
-        self.key = key.data(using: .utf8)!
-    }
-
-    public func digest(message: String) -> Data {
-        return self.doFinal(data: message.utf8Data)
-    }
-
-    public func doFinal(data: Data) -> Data {
-        let keyBytes = [UInt8](key)
-        let message = [UInt8](data)
-
-        var digest = [UInt8](repeating: 0, count: Int(algorithm.length))
-        CCHmac(algorithm.hmacAlgorithm, keyBytes, keyBytes.count, message, message.count, &digest)
-        return Data(bytes: digest, count: digest.count)
     }
 
     public func callAsFunction(_ message: String) -> String {
@@ -113,27 +93,28 @@ public class Hash {
     }
 }
 
-public extension Data {
-    func toHexString() -> String {
-        return self.map {String(format: "%02hhx", $0)}.joined()
+public extension Hash {
+    static func md5(_ message: String) -> String {
+        return Hash(algorithm: HashAlgorithm.md5)(message: message).toHexString()
     }
 
-    func toBase64() -> String {
-        self.base64EncodedString()
+    static func sha256(_ message: String) -> String {
+        if #available(iOS 13.0, *) {
+            return SHA256.hash(data: message.utf8Data).map {
+                String(format: "%02hhx", $0)
+            }.joined()
+//            return SHA256.hash(data: message.utf8Data).withUnsafeBytes( Data($0))
+        } else {
+            // Fallback on earlier versions
+        }
+        return Hash(algorithm: HashAlgorithm.sha256)(message: message).toHexString()
     }
 
-    func toBase64Url() -> String {
-        var base = self.base64EncodedString()
-        base.replacingOccurrences(of: "+", with: "-")
-            .replacingOccurrences(of: "/", with: "_")
-            .replacingOccurrences(of: "=", with: "")
-        return base
+    static func sha364(message: String) -> String {
+        return Hash(algorithm: HashAlgorithm.sha384)(message: message).toHexString()
     }
-}
 
-private let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-extension String {
-    public static func random(length: Int) -> String {
-        return String((0..<length).map({ _ in characters.randomElement()! }))
+    static func sha512(message: String) -> String {
+        return Hash(algorithm: HashAlgorithm.sha512)(message: message).toHexString()
     }
 }
