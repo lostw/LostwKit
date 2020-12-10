@@ -112,19 +112,26 @@ public extension String {
         return base64.base64Decoded()
     }
 
-     func appendingQuries(_ quries: [String: String]? = nil) -> String {
-        guard let params = quries, !params.isEmpty else {
-            return self
-        }
+    func appendingQuries(_ quries: [String: String]? = nil) -> String {
+       guard let params = quries, !params.isEmpty else {
+           return self
+       }
 
-        let str = params.reduce(into: "") {
-            $0.append("&\($1.key)=\($1.value)")
-        }
-        if self.contains("?") {
-            return "\(self)\(str)"
-        } else {
-            return "\(self)\(str.replacingOccurrences(of: "&", with: "?"))"
-        }
+       let str = params.reduce(into: "") {
+           $0.append("&\($1.key)=\($1.value)")
+       }
+
+       if let index = self.firstIndex(of: "?") {
+           if index == self.index(before: self.endIndex)  {
+               let range = str.startIndex..<str.index(after: str.startIndex)
+               return "\(self)\(str.replacingCharacters(in: range, with: ""))"
+           } else {
+               return "\(self)\(str)"
+           }
+       } else {
+           let range = str.startIndex..<str.index(after: str.startIndex)
+           return "\(self)\(str.replacingCharacters(in: range, with: "?"))"
+       }
     }
 
     // MARK: - Validator

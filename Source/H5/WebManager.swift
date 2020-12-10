@@ -18,7 +18,7 @@ public class WebManager {
 
     var reusable: Set<WKWebView> = Set()
     public var configuration: WKWebViewConfiguration
-    public var bridageConfig: H5BridgeConfiguration?
+    public var bridgeConfig: H5BridgeConfiguration?
     var urlScheme: String?
     var urlMatch: ((String) -> Bool)?
     public var resetOnURLChange = true
@@ -65,7 +65,7 @@ public class WebManager {
         h5.setupLink(link, params: params)
         h5.pageTitle = name
         h5.session = self
-        h5.configuration = self.bridageConfig
+        h5.configuration = self.bridgeConfig
         h5.resetOnURLChange = resetOnURLChange
 
         if let customScheme = self.urlScheme {

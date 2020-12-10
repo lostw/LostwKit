@@ -27,8 +27,13 @@ public extension Date {
     }
 
     func toFormat(_ format: FormatStyle, locale: LocaleConvertible? = nil) -> String {
-        self.second
         return toFormat(format.rawValue, locale: locale)
+    }
+
+    func toString(style: String) -> String {
+        let format = DateFormatter()
+        format.dateFormat = style
+        return format.string(from: self)
     }
 }
 
