@@ -47,3 +47,8 @@ public extension ZZError {
         self.init(code: networkCode, message: networkMessage)
     }
 }
+
+public extension ZZError {
+    /// 用户token过期
+    static let appTokenExpired = ZZError(code: "4000", message: "[4000]token已失效")
+}

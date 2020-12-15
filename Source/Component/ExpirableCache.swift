@@ -32,7 +32,7 @@ public final class ExpirableCache {
 
     public func save<T>(_ obj: T, for key: String, strategy: ExpireStrategy) {
         let item = CacheItem<T>(content: obj, expireAt: strategy.expireAt)
-        MemoryCache.shared.setObject(obj, forKey: key, withCost: UInt(MemoryLayout.stride(ofValue: obj)))
+        MemoryCache.shared.setObject(item, forKey: key, withCost: UInt(MemoryLayout.stride(ofValue: obj)))
     }
 
     public func retrieve<T>(for key: String) -> T? {

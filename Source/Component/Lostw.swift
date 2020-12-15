@@ -33,6 +33,8 @@ public struct Lostw {
 
         self.mainPath = cacheDir
 
+        self.mainPath.appendPathComponent(<#T##pathComponent: String##String#>, isDirectory: <#T##Bool#>)
+
         if !fileManager.fileExists(atPath: cacheDir.path) {
             try? fileManager.createDirectory(at: cacheDir, withIntermediateDirectories: true, attributes: nil)
         }
