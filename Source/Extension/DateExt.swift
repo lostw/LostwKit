@@ -7,7 +7,14 @@
 //
 
 import Foundation
-import SwiftDate
+
+public extension DateFormatter {
+    static let `default`: DateFormatter = {
+        let format = DateFormatter()
+        format.locale = .autoupdatingCurrent
+        return format
+    }()
+}
 
 public extension Date {
     public enum FormatStyle: String {
@@ -26,14 +33,18 @@ public extension Date {
         return timeIntervalSince1970 * 1000
     }
 
-    func toFormat(_ format: FormatStyle, locale: LocaleConvertible? = nil) -> String {
-        return toFormat(format.rawValue, locale: locale)
+    func toFormat(_ format: FormatStyle) -> String {
+        return toString(style: format.rawValue)
     }
 
     func toString(style: String) -> String {
-        let format = DateFormatter()
+        let format = DateFormatter.default
         format.dateFormat = style
         return format.string(from: self)
+    }
+
+    func isToday() -> Bool {
+        return Calendar.current.isDateInToday(self)
     }
 }
 

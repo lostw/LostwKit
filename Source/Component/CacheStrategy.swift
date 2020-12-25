@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftDate
 
 public enum CacheStrategy {
     case today
@@ -16,9 +15,9 @@ public enum CacheStrategy {
     public func isValid(date: Date) -> Bool {
         switch self {
         case .today:
-            return date.compare(.isToday)
+            return date.isToday()
         case .expire(let expireDate):
-            return date.isBeforeDate(expireDate, granularity: .second)
+            return expireDate.timeIntervalSince(date) > 0
         case .duration(let interval):
             return date.timeIntervalSinceNow + interval > 0
         }

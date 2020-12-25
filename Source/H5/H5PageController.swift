@@ -123,6 +123,7 @@ open class H5PageController: UIViewController, UINavigationBack {
         }
 
         guard let url = URL(string: parsed) else {
+            self.toast.show("URL is not valid")
             return
         }
 
