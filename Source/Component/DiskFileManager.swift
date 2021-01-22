@@ -7,8 +7,9 @@
 
 import Foundation
 
+/// 存储数据到文件，对key会先做sha256处理
 public final class DiskFileManager {
-    public static let shared = DiskFileManager(root: LostwKitPath.main.appendingPathComponent("files", isDirectory: true))
+    public static let shared = DiskFileManager(root: lostw.mainPath.appendingPathComponent("files", isDirectory: true))
 
     var root: URL
     public init(root: URL) {
@@ -23,7 +24,11 @@ public final class DiskFileManager {
     }
 
     public func save(data: Data, for key: String) {
-        try? data.write(to: root.appendingPathComponent(key, isDirectory: false))
+        do {
+            try data.write(to: path(for: key))
+        } catch {
+            ZLog.error(error)
+        }
     }
 
     public func retrieve(for key: String) -> Data? {
@@ -31,6 +36,6 @@ public final class DiskFileManager {
     }
 
     private func path(for key: String) -> URL {
-        return root.appendingPathComponent(key, isDirectory: false)
+        return root.appendingPathComponent(Hash.sha256(key), isDirectory: false)
     }
 }

@@ -106,13 +106,13 @@ struct FilterValidator {
             let passes: Bool
 
             switch filter.getTarget() {
-            case .Path(_):
+            case .Path:
                 passes = filter.apply(path)
 
-            case .Function(_):
+            case .Function:
                 passes = filter.apply(function)
 
-            case .Message(_):
+            case .Message:
                 guard let message = message else {
                     return false
                 }

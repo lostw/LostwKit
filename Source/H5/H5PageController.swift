@@ -18,6 +18,7 @@ open class H5PageController: UIViewController, UINavigationBack {
     var progressOb: NSKeyValueObservation?
     var pageOb: NSKeyValueObservation?
     var titleOb: NSKeyValueObservation?
+    var canGobackOb: NSKeyValueObservation?
 
     /// 封装了javascriptBridage
     public var jsBridge: H5BridgeController?
@@ -68,6 +69,7 @@ open class H5PageController: UIViewController, UINavigationBack {
         self.progressOb = nil
         self.pageOb = nil
         self.titleOb = nil
+        self.canGobackOb = nil
 
         if let webView = self.webView {
             webView.scrollView.removePullRefresh()
@@ -98,6 +100,9 @@ open class H5PageController: UIViewController, UINavigationBack {
         self.title = self.pageTitle ?? "加载中"
 
         self.commonInitView()
+        if session.allowBackGesture {
+            enableBackGesture()
+        }
         self.startLoadPage()
     }
 
@@ -235,6 +240,28 @@ open class H5PageController: UIViewController, UINavigationBack {
         if self.pageTitle == nil {
             titleOb = self.webView.observe(\WKWebView.title, options: [.new]) { [unowned self] _, info in
                 self.title = info.newValue!
+            }
+        }
+    }
+
+    func enableBackGesture() {
+        webView.allowsBackForwardNavigationGestures = true
+        canGobackOb = self.webView.observe(\WKWebView.canGoBack, options: [.new], changeHandler: { [unowned self] (_, info) in
+            if info.newValue ?? false {
+                self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+            } else {
+                self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+            }
+        })
+        DispatchQueue.main.async {
+            // 移除侧滑前进手势
+            if let gestures = self.webView.gestureRecognizers {
+                for g in gestures {
+                    if let gesture = g as? UIScreenEdgePanGestureRecognizer,
+                       gesture.edges == .right {
+                        self.webView.removeGestureRecognizer(gesture)
+                    }
+                }
             }
         }
     }

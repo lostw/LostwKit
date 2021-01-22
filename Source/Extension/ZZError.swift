@@ -26,14 +26,18 @@ public struct ZZError: Error, LocalizedError {
 public extension ZZError {
     /// 数据结构不符合预期
     static let neFailToParse = ZZError(apiErrorCode: "1000")
-    /// 未找到错误消息描述
-    static let neNoErrorMessage = ZZError(apiErrorCode: "1001")
+    /// 未找到错误代码
+    static let neNoErrorCode = ZZError(apiErrorCode: "1001")
     /// 列表数据结构不符合预期
     static let neFailToParseList = ZZError(apiErrorCode: "1002")
     /// 转换模型数据失败
     static let neFailToParseModel = ZZError(apiErrorCode: "1003")
     /// 协议方法未实现
     static let protocolMethodNotFound = ZZError(code: "2000", message: "[2000]应用错误")
+    /// ApiRule被过早释放
+    static let neNoResponseHandler = ZZError(apiErrorCode: "1100")
+    /// 不是json数据
+    static let neInvalidJson = ZZError(apiErrorCode: "1004")
 
     public init(apiErrorCode: String, message: String? = nil) {
         let networkCode = "NE\(apiErrorCode)"

@@ -18,29 +18,33 @@ public class WebManager {
 
     var reusable: Set<WKWebView> = Set()
     public var configuration: WKWebViewConfiguration
+    public var allowBackGesture = false
     public var bridgeConfig: H5BridgeConfiguration?
     var urlScheme: String?
     var urlMatch: ((String) -> Bool)?
     public var resetOnURLChange = true
 
     public var controllerBuilder: (() -> H5PageController)?
-    public var debug = false {
-        didSet {
-            if debug {
-                enableDebugJS()
-
-                if !reusable.isEmpty {
-                    reusable.removeAll()
-                    prepare()
-                }
-            }
-        }
-    }
+//    public var debug = false {
+//        didSet {
+//            if debug {
+//                enableDebugJS()
+//
+//                if !reusable.isEmpty {
+//                    reusable.removeAll()
+//                    prepare()
+//                }
+//            }
+//        }
+//    }
 
     public var customUserAgent: String?
 
-    public init(configuration: WKWebViewConfiguration) {
+    public init(configuration: WKWebViewConfiguration, isDebug: Bool = false) {
         self.configuration = configuration
+        if isDebug {
+            enableDebugJS()
+        }
     }
 
     @available(iOS 11, *)

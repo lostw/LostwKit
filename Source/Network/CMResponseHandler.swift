@@ -27,18 +27,18 @@ public final class CMResponseHandler: ResponseHandler {
         self.listKeys = listKeys
     }
 
-    public func convertToBool(_ value: Any) throws -> Bool {
-        guard let result = value as? [String: Any] else {
-            throw ZZError.neFailToParse
+    public func convertToBool(_ value: Data) throws -> Bool {
+        guard let result = try? JSONSerialization.jsonObject(with: value, options: [.fragmentsAllowed]) as? [String: Any] else {
+            throw ZZError.neInvalidJson
         }
 
         try parseCodeInfo(result)
         return true
     }
 
-    public func convertToAnyDict(_ value: Any) throws -> [String: Any] {
-        guard let result = value as? [String: Any] else {
-            throw ZZError.neFailToParse
+    public func convertToAnyDict(_ value: Data) throws -> [String: Any] {
+        guard let result = try? JSONSerialization.jsonObject(with: value, options: [.fragmentsAllowed]) as? [String: Any] else {
+            throw ZZError.neInvalidJson
         }
 
         try parseCodeInfo(result)
@@ -49,9 +49,9 @@ public final class CMResponseHandler: ResponseHandler {
         }
     }
 
-    public func convertToModel<Model: Decodable>(_ value: Any) throws -> Model {
-        guard let result = value as? [String: Any] else {
-            throw ZZError.neFailToParse
+    public func convertToModel<Model: Decodable>(_ value: Data) throws -> Model {
+        guard let result = try? JSONSerialization.jsonObject(with: value, options: [.fragmentsAllowed]) as? [String: Any] else {
+            throw ZZError.neInvalidJson
         }
 
         try parseCodeInfo(result)

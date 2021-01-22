@@ -82,7 +82,7 @@ final public class ApiRule {
         let (method, encoder) = zz.method.oldUnwrap()
 
         let request = session.request(zz.url, method: method, parameters: zz.parameters, encoding: encoder, headers: httpHeaders)
-        zz.responseHandler = responseHandler
+        zz.rule = self
         zz.request = request
         return request
     }

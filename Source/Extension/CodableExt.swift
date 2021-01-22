@@ -80,20 +80,7 @@ public extension Encodable {
     }
 }
 
-// MARK: - Deprecated
-@available(*, deprecated, message: "use codable/encodable instead")
-public protocol Mapable: Codable {
-    func toDict() -> [String: Any]?
-
-    static func from(item: Any) -> Self?
-    static func from(dict: [String: Any]) -> Self?
-    static func from(string: String) -> Self?
-
-    //    static func from(list: [[String: Any]]) -> [Self]
-}
-
-public extension Mapable {
-    @available(*, deprecated, message: "use ModelHelper.parse(from:) instead")
+public extension Decodable {
     static func from(item: Any) -> Self? {
         guard let dict = item as? [String: Any] else {
             return nil
@@ -101,17 +88,15 @@ public extension Mapable {
         return from(dict: dict)
     }
 
-    @available(*, deprecated, message: "use ModelHelper.parse(from:) instead")
     static func from(dict: [String: Any]) -> Self? {
         guard let data = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
             return nil
         }
 
         do {
-            let obj = try JSONDecoder().decode(self, from: data)
-            return obj
+            return try JSONDecoder().decode(self, from: data)
         } catch let err {
-            print(err)
+            ZLog.debug(err)
             return nil
         }
     }
@@ -123,10 +108,9 @@ public extension Mapable {
         }
 
         do {
-            let obj = try JSONDecoder().decode(self, from: data)
-            return obj
+            return try JSONDecoder().decode(self, from: data)
         } catch let err {
-            print(err)
+            ZLog.debug(err)
             return nil
         }
     }

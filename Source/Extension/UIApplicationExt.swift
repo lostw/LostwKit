@@ -10,14 +10,11 @@ import Foundation
 public extension UIApplication {
     func compatibleOpen(_ str: String) {
         guard let url = URL(string: str) else {
+            ZLog.error("Invalid URL")
             return
         }
 
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url)
-        } else {
-            UIApplication.shared.openURL(url)
-        }
+        open(url)
     }
 
     func dial(_ dialNumber: String) {

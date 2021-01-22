@@ -46,7 +46,7 @@ public class ApiRequest {
     public var headers: [String: String]?
 
     var request: DataRequest?
-    var responseHandler: ResponseHandler!
+    weak var rule: ApiRule?
 
     public init(url: String, method: Method = .get, parameters: [String: Any] = [:], headers: [String: String]? = nil) {
         self.url = url
@@ -67,63 +67,54 @@ public class ApiRequest {
         request?.suspend()
     }
 
-    public func responseModel<Model: Decodable>(callback: @escaping Callback<Model>) {
-        guard let r = request else { return }
+    func send(_ r: DataRequest, callback: @escaping (Swift.Result<Data, Error>) -> Void) {
         r.validate().cURLDescription {
             ZLog.debug($0)
-        }.responseJSON {
+        }.responseData {
             switch $0.result {
-            case .success(let json):
-                ZLog.info((json as? [String: Any])?.toJsonString() ?? "")
+            case .success(let data):
+                ZLog.info(String(data: data, encoding: .utf8))
                 do {
-                    let model: Model = try self.responseHandler.convertToModel(json)
-                    callback(.success(model))
+                    callback(.success(data))
                 } catch {
                     callback(.failure(error))
                 }
             case .failure(let error):
                 callback(.failure(error))
             }
+        }
+    }
+
+    public func responseModel<Model: Decodable>(callback: @escaping Callback<Model>) {
+        guard let r = request else { return }
+        send(r) { result in
+            callback(result.flatMap { data in
+                Result<Model, Error>(catching: {
+                    try self.rule!.responseHandler.convertToModel(data)
+                })
+            })
         }
     }
 
     public func responseBool(callback: @escaping CallbackBool) {
         guard let r = request else { return }
-        r.validate().cURLDescription {
-            ZLog.debug($0)
-        }.responseJSON {
-            switch $0.result {
-            case .success(let json):
-                ZLog.info((json as? [String: Any])?.toJsonString() ?? "")
-                do {
-                    let flag = try self.responseHandler.convertToBool(json)
-                    callback(.success(flag))
-                } catch {
-                    callback(.failure(error))
-                }
-            case .failure(let error):
-                callback(.failure(error))
-            }
+        send(r) { result in
+            callback(result.flatMap { data in
+                Result<Bool, Error>(catching: {
+                    try self.rule!.responseHandler.convertToBool(data)
+                })
+            })
         }
     }
 
     public func responseDict(callback: @escaping CallbackDict) {
         guard let r = request else { return }
-        r.validate().cURLDescription {
-            ZLog.debug($0)
-        }.responseJSON {
-            switch $0.result {
-            case .success(let json):
-                ZLog.info((json as? [String: Any])?.toJsonString() ?? "")
-                do {
-                    let dict = try self.responseHandler.convertToAnyDict(json)
-                    callback(.success(dict))
-                } catch {
-                    callback(.failure(error))
-                }
-            case .failure(let error):
-                callback(.failure(error))
-            }
+        send(r) { result in
+            callback(result.flatMap { data in
+                Result<[String: Any], Error>(catching: {
+                    try self.rule!.responseHandler.convertToAnyDict(data)
+                })
+            })
         }
     }
 }

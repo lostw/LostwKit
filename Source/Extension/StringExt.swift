@@ -8,9 +8,6 @@
 
 import Foundation
 
-private let idcardWi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
-private let idcardMod = ["1", "0", "x", "9", "8", "7", "6", "5", "4", "3", "2"]
-
 public extension String {
     var intValue: Int {
         return Int(self) ?? 0
@@ -122,7 +119,7 @@ public extension String {
        }
 
        if let index = self.firstIndex(of: "?") {
-           if index == self.index(before: self.endIndex)  {
+           if index == self.index(before: self.endIndex) {
                let range = str.startIndex..<str.index(after: str.startIndex)
                return "\(self)\(str.replacingCharacters(in: range, with: ""))"
            } else {
@@ -139,30 +136,14 @@ public extension String {
         return range(of: regex, options: .regularExpression, range: nil, locale: nil) != nil
     }
 
+    @available(*, deprecated, message: "use checker.isPhone")
     func isPhone() -> Bool {
         return isMatch(regex: "^0{0,1}1[0-9]{10}$")
     }
 
+    @available(*, deprecated, message: "use checker.isIdcard")
     func isIdcard() -> Bool {
-        guard count == 18 else {
-            return false
-        }
-
-        let text = lowercased()
-
-        //初步校验
-        let result = text.isMatch(regex: "^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|x)$")
-        if !result {
-            return false
-        }
-
-        //计算并比对校验位
-        var sum: Int = 0
-        for i in 0..<17 {
-            sum += idcardWi[i] * String(text[i]).intValue
-        }
-        let mod = sum % 11
-        return idcardMod[mod] == String(text[17])
+        return checker.isIdcard
     }
 
     // MARK: - 脱敏

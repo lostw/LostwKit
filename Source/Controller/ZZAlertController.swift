@@ -188,11 +188,8 @@ public class ZZAlertController: UIViewController {
 
     func buildTitleLabel() -> UILabel {
         let label = UILabel()
-        if #available(iOS 10, *) {
-            label.font = UIFont(name: ".SFUIText-Semibold", size: 17)
-        } else {
-            label.font = UIFont.boldSystemFont(ofSize: 17)
-        }
+        label.font = UIFont(name: ".SFUIText-Semibold", size: 17)
+        label.font = UIFont.boldSystemFont(ofSize: 17)
         label.textColor = .black
         label.textAlignment = .center
         label.numberOfLines = 1
@@ -203,11 +200,7 @@ public class ZZAlertController: UIViewController {
 
     func buildMessageLabel() -> UILabel {
         let label = UILabel()
-        if #available(iOS 10, *) {
-            label.font = UIFont(name: ".SFUIText", size: 13)
-        } else {
-            label.font = UIFont.systemFont(ofSize: 13)
-        }
+        label.font = UIFont(name: ".SFUIText", size: 13)
         label.textColor = .black
         label.textAlignment = .center
         label.numberOfLines = 0

@@ -13,17 +13,17 @@ public protocol RequestBuilder {
 }
 
 public protocol ResponseHandler {
-    func convertToModel<Model: Decodable>(_ value: Any) throws -> Model
-    func convertToBool(_ value: Any) throws -> Bool
-    func convertToAnyDict(_ value: Any) throws -> [String: Any]
+    func convertToModel<Model: Decodable>(_ value: Data) throws -> Model
+    func convertToBool(_ value: Data) throws -> Bool
+    func convertToAnyDict(_ value: Data) throws -> [String: Any]
 }
 
 extension ResponseHandler {
-    public func convertToBool(_ value: Any) throws -> Bool {
+    public func convertToBool(_ value: Data) throws -> Bool {
         throw ZZError.protocolMethodNotFound
     }
 
-    func convertToAnyDict(_ value: Any) throws -> Bool {
+    func convertToAnyDict(_ value: Data) throws -> [String: Any] {
         throw ZZError.protocolMethodNotFound
     }
 }

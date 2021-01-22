@@ -60,14 +60,13 @@ public class DiskFileCache: NSObject, Cacheable {
 
     // MARK: - lifeCycle
     init(cacheDirectoryName directoryName: String) {
-        let folder = LostwKitPath.main.appendingPathComponent(directoryName)
+        let folder = lostw.mainPath.appendingPathComponent(directoryName)
         let exist = FileManager.default.fileExists(atPath: folder.path)
         if !exist {
             try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true, attributes: nil)
         }
 
         self.fileCacheDir = folder
-        print("文件磁盘路径path = \(String(describing: self.fileCacheDir))")
 
         costLimit = UInt.max
         countLimit = UInt.max

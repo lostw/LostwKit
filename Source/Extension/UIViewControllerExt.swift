@@ -154,14 +154,17 @@ public extension UIViewController {
         }
     }
 
+    @available(*, deprecated, message: "use Alert().asConfirm() instead")
     func alertConfirm(title: String? = "提示", message: String) {
         self.alert(title: title, message: message, buttonTitles: nil, style: .alert, callback: nil)
     }
 
+    @available(*, deprecated, message: "use Alert().asPrompt() instead")
     func alertPrompt(title: String = "提示", message: String, buttonTitles: [String]? = nil, callback: AlertCallback? = nil) {
         self.alert(title: title, message: message, buttonTitles: buttonTitles, style: .prompt, callback: callback)
     }
 
+    @available(*, deprecated, message: "use Alert instead")
     func alert(title: String? = "提示", message: String, buttonTitles: [String]? = nil, style: AlertStyle = .alert, callback: AlertCallback? = nil) {
         var confirmTitle = "确认"
         var cancelTitle = "取消"

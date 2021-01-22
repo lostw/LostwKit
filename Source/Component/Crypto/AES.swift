@@ -31,7 +31,7 @@ public class AES {
             var result = [UInt8](repeating: 0, count: plainBytes.count + kCCBlockSizeAES128)
             var length = 0
 
-            let status = CCCrypt(CCOperation(kCCEncrypt), CCAlgorithm(kCCAlgorithmAES), CCOptions(kCCOptionPKCS7Padding), keyBytes, self.key.count, ivBytes, plainBytes, plainBytes.count, &result, plainBytes.count + kCCBlockSizeAES128 , &length)
+            let status = CCCrypt(CCOperation(kCCEncrypt), CCAlgorithm(kCCAlgorithmAES), CCOptions(kCCOptionPKCS7Padding), keyBytes, self.key.count, ivBytes, plainBytes, plainBytes.count, &result, plainBytes.count + kCCBlockSizeAES128, &length)
             if status == 0 {
                 return Data(Array(result[0..<length]))
             } else {
@@ -46,7 +46,7 @@ public class AES {
             var result = [UInt8](repeating: 0, count: cipherBytes.count + kCCBlockSizeAES128)
             var length = 0
 
-            let status = CCCrypt(CCOperation(kCCDecrypt), CCAlgorithm(kCCAlgorithmAES), CCOptions(kCCOptionPKCS7Padding), keyBytes, self.key.count, ivBytes, cipherBytes, cipherBytes.count, &result, cipherBytes.count + kCCBlockSizeAES128 , &length)
+            let status = CCCrypt(CCOperation(kCCDecrypt), CCAlgorithm(kCCAlgorithmAES), CCOptions(kCCOptionPKCS7Padding), keyBytes, self.key.count, ivBytes, cipherBytes, cipherBytes.count, &result, cipherBytes.count + kCCBlockSizeAES128, &length)
             if status == 0 {
                 return Data(Array(result[0..<length]))
             } else {

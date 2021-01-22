@@ -188,7 +188,6 @@ class LinkedNodeMap {
             node.value = object
         }
 
-
         node.time = CACurrentMediaTime()
         bringNodeToHead(node)
     }
@@ -354,6 +353,6 @@ extension MemoryCache {
     }
 
     public func trim(withAge age: TimeInterval) {
-        
+
     }
 }
