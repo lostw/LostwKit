@@ -26,7 +26,7 @@ public final class CommandOpenPage: H5Command {
         } else {
             eraseCount = (config["isReplacePage"] as? String).intValue
         }
-        let vc = h5Page.session.getH5Page(link: url)
+        let vc = h5Page.createPageController(link: url)
         vc.pageName = config["name"] as? String
         context.vc?.asyncGetLocalStorage { info in
             vc.storageData = info

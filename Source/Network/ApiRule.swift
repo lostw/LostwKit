@@ -11,11 +11,11 @@ import Alamofire
 
 final public class ApiRule {
 
-    let baseURL: String
+    public let baseURL: String
     let session: Session
 
-    let responseHandler: ResponseHandler
-    let requestBuilder: RequestBuilder
+    public var responseHandler: ResponseHandler
+    public var requestBuilder: RequestBuilder
 
     public init(baseURL: String, requestBuilder: RequestBuilder = DefaultRequestBuilder(), responseHandler: ResponseHandler) {
         self.baseURL = baseURL
@@ -74,16 +74,23 @@ final public class ApiRule {
 //    }
 
     private func transformToDataRequest(by zz: ApiRequest) -> DataRequest {
-        var httpHeaders: HTTPHeaders?
-        if let headers = zz.headers {
-            httpHeaders = HTTPHeaders(headers)
+        let request: DataRequest
+        if let urlRequest = zz.rawReqeust {
+            request = session.request(urlRequest)
+
+        } else {
+            var httpHeaders: HTTPHeaders?
+            if let headers = zz.headers {
+                httpHeaders = HTTPHeaders(headers)
+            }
+
+            let (method, encoder) = zz.method.oldUnwrap()
+
+            request = session.request(zz.url, method: method, parameters: zz.parameters, encoding: encoder, headers: httpHeaders)
         }
 
-        let (method, encoder) = zz.method.oldUnwrap()
-
-        let request = session.request(zz.url, method: method, parameters: zz.parameters, encoding: encoder, headers: httpHeaders)
-        zz.rule = self
         zz.request = request
+        zz.rule = self
         return request
     }
 }

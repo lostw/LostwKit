@@ -13,13 +13,55 @@ public protocol IndicatorView: UIView {
     func stopAnimating()
 }
 
+class IndicatorManager {
+    static let shared = IndicatorManager()
+
+    var viewsToChange: [Indicator] = []
+
+    var observer: CFRunLoopObserver!
+    init() {
+        self.observer = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, CFRunLoopActivity.beforeWaiting.rawValue, true, 0, { [weak self] (_, _) in
+            for item in self!.viewsToChange {
+                item.makeChange()
+            }
+            self!.viewsToChange.removeAll()
+        })
+        CFRunLoopAddObserver(CFRunLoopGetMain(), self.observer, CFRunLoopMode.commonModes)
+    }
+
+    deinit {
+        CFRunLoopRemoveObserver(CFRunLoopGetMain(), self.observer, CFRunLoopMode.commonModes)
+    }
+
+    func add(_ item: Indicator) {
+        if let _ = viewsToChange.firstIndex { $0 === item } {
+            return
+        }
+        viewsToChange.append(item)
+    }
+
+    func remove(_ item: Indicator) {
+        if let index = viewsToChange.firstIndex { $0 === item } {
+            viewsToChange.remove(at: index)
+        }
+    }
+}
+
 public class Indicator {
     enum State {
         case hidden, fadeIn, showing, fadeOut
     }
 
     var prevCount: Int = 0
-    var count: Int = 0
+    var count: Int = 0 {
+        didSet {
+            if isNeedChange {
+                IndicatorManager.shared.add(self)
+            } else {
+                IndicatorManager.shared.remove(self)
+            }
+        }
+    }
 
     unowned var masterView: UIView
     lazy var slaveView: IndicatorView = {
@@ -84,14 +126,6 @@ public class Indicator {
 
     public init(withIn view: UIView) {
         self.masterView = view
-        self.observer = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, CFRunLoopActivity.beforeWaiting.rawValue, true, 0, { [weak self] (_, _) in
-            self?.makeChange()
-        })
-        CFRunLoopAddObserver(CFRunLoopGetMain(), self.observer, CFRunLoopMode.commonModes)
-    }
-
-    deinit {
-        CFRunLoopRemoveObserver(CFRunLoopGetMain(), self.observer, CFRunLoopMode.commonModes)
     }
 
     func makeChange() {

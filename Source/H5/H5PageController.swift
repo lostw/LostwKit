@@ -13,7 +13,7 @@ open class H5PageController: UIViewController, UINavigationBack {
     public var webView: WKWebView!
 
     // 初始化当前页面的manager, 可以传递相同的配置
-    public var session = WebManager.default
+    public var session: WebManager?
 
     var progressOb: NSKeyValueObservation?
     var pageOb: NSKeyValueObservation?
@@ -37,6 +37,7 @@ open class H5PageController: UIViewController, UINavigationBack {
         }
     }
 
+    public var allowBackGesture: Bool = false
     /// 替换http scheme, 用于hook相应的scheme做请求的捕获处理
     public var customScheme: String?
     /// 页面id, 方便查找相应的页面
@@ -51,6 +52,8 @@ open class H5PageController: UIViewController, UINavigationBack {
 
     var progressBar: UIProgressView?
     public var storageData: [String: Any]?
+
+    public var stateManager: PageStateManager!
 
     /// 初始化
     /// - Parameters:
@@ -73,6 +76,7 @@ open class H5PageController: UIViewController, UINavigationBack {
 
         if let webView = self.webView {
             webView.scrollView.removePullRefresh()
+            self.session?.reuseWebView(webView)
         }
     }
 
@@ -100,7 +104,8 @@ open class H5PageController: UIViewController, UINavigationBack {
         self.title = self.pageTitle ?? "加载中"
 
         self.commonInitView()
-        if session.allowBackGesture {
+
+        if allowBackGesture {
             enableBackGesture()
         }
         self.startLoadPage()
@@ -210,20 +215,20 @@ open class H5PageController: UIViewController, UINavigationBack {
         }
 
         if self.progressEnabled {
-            self.progressBar = UIProgressView()
-            self.progressBar!.progressTintColor = UIColor(hex: 0xFDAF3D)
-            self.progressBar!.trackTintColor = UIColor.clear
-            self.view.addSubview(self.progressBar!)
-            self.progressBar!.snp.makeConstraints({ (make) in
-                make.left.right.top.equalToSuperview()
-                make.height.equalTo(3)
-            })
-
-            progressOb = self.webView.observe(\WKWebView.estimatedProgress, options: [.new]) { [unowned self] (_, info) in
-                UIView.animate(withDuration: 0.5, animations: {
-                    self.progressBar?.progress = Float(info.newValue ?? 0)
-                })
-            }
+            self.stateManager = PageStateManager(config: .default(PageStateManager.globalConfig))
+            self.stateManager.masterView = self.view
+//            self.progressBar = UIProgressView()
+//            self.progressBar!.progressTintColor = UIColor(hex: 0xFDAF3D)
+//            self.progressBar!.trackTintColor = UIColor.clear
+//            self.view.addSubview(self.progressBar!)
+//            self.progressBar!.snp.makeConstraints({ (make) in
+//                make.left.right.top.equalToSuperview()
+//                make.height.equalTo(3)
+//            })
+//
+//            progressOb = self.webView.observe(\.estimatedProgress, options: [.new]) { [unowned self] (_, info) in
+//                self.stateManager.state = .loading(CGFloat(info.newValue ?? 0))
+//            }
         }
 
         pageOb = self.webView.observe(\.url, options: [.new]) { [unowned self] (_, info) in
@@ -274,13 +279,23 @@ open class H5PageController: UIViewController, UINavigationBack {
     }
 
     func addWebView() {
-        // 从session中获取webview
-        self.webView = self.session.getWebView()
+        // 从session中获取webview 或 自己初始化一个
+        self.webView = self.session?.getWebView() ?? WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
         self.webView.navigationDelegate = self
         self.webView.uiDelegate = self
         self.view.addSubview(self.webView)
         self.webView.snp.makeConstraints {
             $0.edges.equalToSuperview()
+        }
+    }
+}
+
+extension H5PageController {
+    public func createPageController(link: String, pageTitle: String? = nil, params: [String: String]? = nil) -> H5PageController {
+        if let session = session {
+            return session.getH5Page(link: link, name: pageTitle, params: params, h5Controller: nil)
+        } else {
+            return H5PageController(link: link, pageTitle: pageTitle, params: params)
         }
     }
 }
@@ -316,17 +331,21 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         self.startTime = CFAbsoluteTimeGetCurrent()
         self.jsBridge?.reload()
-        self.progressBar?.isHidden = false
-        self.progressBar?.progress = 0
+//        self.progressBar?.isHidden = false
+//        self.progressBar?.progress = 0
+        self.webView.isHidden = true
+        self.stateManager.state = .loading(0)
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         if self.progressEnabled {
-            UIView.animate(withDuration: 0.5, animations: {
-                self.progressBar!.progress = 1
-            }, completion: { (_) in
-                self.progressBar!.isHidden = true
-            })
+//            UIView.animate(withDuration: 0.5, animations: {
+//                self.progressBar!.progress = 1
+//            }, completion: { (_) in
+//                self.progressBar!.isHidden = true
+//            })
+            self.webView.isHidden = false
+            self.stateManager.state = .hidden
         }
 
         self.loadExtraLocalStorage()
@@ -336,6 +355,8 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
     }
 
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+//        self.webView.isHidden = false
+        self.stateManager.state = .error(error.localizedDescription)
         ZLog.info(error.localizedDescription)
     }
 

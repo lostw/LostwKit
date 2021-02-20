@@ -84,6 +84,7 @@ public class H5BridgeController {
         self.bridge = WebViewJavascriptBridge(webview)
         // bridge会变成webview的WKNavigationDelegate, 通过setWebViewDelegate将代理再转出来
         self.bridge.setWebViewDelegate(vc)
+        // WebViewJavascriptBridge框架保证了callback不为空，但callback是一次性的，使用过后js环境会丢弃掉
         self.bridge.registerHandler(configuration.entryName) { [weak self] (data, callback) in
             guard let self = self else { return }
             if let str = data as? String, let dict = str.toDict() {
@@ -130,7 +131,7 @@ public class H5BridgeController {
         }
     }
 
-    func dispatch(_ data: [String: Any], callback: @escaping WVJBResponseCallback) {
+    func dispatch(_ data: [String: Any], callback: @escaping H5CmdCallback) {
         guard let type = data[configuration.commandKey] as? String else {
             return
         }

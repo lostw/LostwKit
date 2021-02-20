@@ -8,8 +8,21 @@
 import UIKit
 
 public enum ImageResource {
-    case bundleImage(String)
-    case link(String, _ placeholder: UIImage?)
+    case buildin(String)    // lostwKit内置图片
+    case mainBundle(String) // 主项目图片
+    case link(String, _ placeholder: UIImage?) // 网络图片
+
+    /// 注意：对于网络图片，只会返回占位图
+    public var image: UIImage? {
+        switch self {
+        case .buildin(let name):
+            return UIImage.bundleImage(named: name)
+        case .mainBundle(let name):
+            return UIImage(named: name)
+        case .link(_, let placeholder):
+            return placeholder
+        }
+    }
 }
 
 public class InfoRow: UIView {
@@ -131,10 +144,13 @@ class IconMenuInfoRow: InfoRow {
         }
 
         switch resource {
-        case .bundleImage(let name):
+        case .mainBundle(let name):
             iconView.image = UIImage(named: name)
         case .link(let link, let placeholder):
             iconView.loadImage(link, placeholderImage: placeholder)
+        case .buildin(let name):
+            iconView.image = UIImage.bundleImage(named: name)
+            break
         }
     }
 

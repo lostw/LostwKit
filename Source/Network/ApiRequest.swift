@@ -47,6 +47,7 @@ public class ApiRequest {
 
     var request: DataRequest?
     weak var rule: ApiRule?
+    var rawReqeust: URLRequest?
 
     public init(url: String, method: Method = .get, parameters: [String: Any] = [:], headers: [String: String]? = nil) {
         self.url = url
@@ -65,6 +66,10 @@ public class ApiRequest {
 
     public func suspend() {
         request?.suspend()
+    }
+
+    public func useRawRequest(_ request: URLRequest) {
+        rawReqeust = request
     }
 
     func send(_ r: DataRequest, callback: @escaping (Swift.Result<Data, Error>) -> Void) {

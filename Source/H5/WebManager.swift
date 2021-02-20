@@ -10,71 +10,72 @@ import UIKit
 import WebKit
 
 public class WebManager {
-    public static let `default`: WebManager = {
-        let manager = WebManager(configuration: WKWebViewConfiguration())
-        manager.prepare()
-        return manager
-    }()
+    public struct Configuration {
+        public var viewConfig: WKWebViewConfiguration
+        /// 是否激活原生的返回手势（只后退/不前进）
+        public var allowBackGesture: Bool = false
+        /// jsBridge配置
+        public var jsBridgeConfig: H5BridgeConfiguration?
+        /// 监测到URL变化后重置页面状态，当前用于SPA
+        public var resetPageStateOnURLChange: Bool = true
+        /// 自定义User Agent（会抹掉其他信息）, 如果是为了增加标记，使用WKWebViewConfiguration.applicationNameForUserAgent
+        public var customUserAgent: String?
+        /// 是否重复利用webView
+        public var reuseWebView = false
 
-    var reusable: Set<WKWebView> = Set()
-    public var configuration: WKWebViewConfiguration
-    public var allowBackGesture = false
-    public var bridgeConfig: H5BridgeConfiguration?
-    var urlScheme: String?
-    var urlMatch: ((String) -> Bool)?
-    public var resetOnURLChange = true
+        /// 记录注册的自定义URLScheme
+        var resourceScheme: String?
+        /// 记录自定义URLScheme时的触发条件;在新打开一个H5PageController时可以校验URL是否符合要求
+        var resourceCondition: ((_ url: String) -> Bool)?
 
-    public var controllerBuilder: (() -> H5PageController)?
-//    public var debug = false {
-//        didSet {
-//            if debug {
-//                enableDebugJS()
-//
-//                if !reusable.isEmpty {
-//                    reusable.removeAll()
-//                    prepare()
-//                }
-//            }
-//        }
-//    }
+        public init(viewConfig: WKWebViewConfiguration, jsBridgeConfig: H5BridgeConfiguration? = nil) {
+            self.viewConfig = viewConfig
+            self.jsBridgeConfig = jsBridgeConfig
+        }
 
-    public var customUserAgent: String?
-
-    public init(configuration: WKWebViewConfiguration, isDebug: Bool = false) {
-        self.configuration = configuration
-        if isDebug {
-            enableDebugJS()
+        @available(iOS 12.0, *)
+        public mutating func enableResourceHandler(_ handler: WKURLSchemeHandler, in condition: ((String) -> Bool)? = nil) {
+            let customScheme = "zzscheme"
+            self.resourceScheme = customScheme
+            self.resourceCondition = condition
+            // 同时处理http跟https的资源
+            self.viewConfig.setURLSchemeHandler(handler, forURLScheme: customScheme)
+            self.viewConfig.setURLSchemeHandler(handler, forURLScheme: customScheme + "s")
         }
     }
+    private var pool: WebViewPool
 
-    @available(iOS 11, *)
-    public func enableNativeCache(with handler: WKURLSchemeHandler, match: ((String) -> Bool)? = nil) {
-        let customScheme = "zzscheme"
-        self.urlScheme = customScheme
-        self.urlMatch = match
-        // 同时处理http跟https的资源
-        self.configuration.setURLSchemeHandler(handler, forURLScheme: customScheme)
-        self.configuration.setURLSchemeHandler(handler, forURLScheme: customScheme + "s")
+    /// webView在初始化的时候会copy configuration,
+    /// 初始化后不要再修改configuration，保证session的一致性
+    let configuration: Configuration
+//    public var allowBackGesture = false
+//    public var bridgeConfig: H5BridgeConfiguration?
+//
+//    public var resetOnURLChange = true
+
+    public var pageBuilder: (() -> H5PageController) = {
+        return H5PageController()
+    }
+
+    public init(configuration: Configuration, isDebug: Bool = false) {
+        if isDebug {
+            Self.enableDebug(configuration.viewConfig)
+        }
+        self.configuration = configuration
+        self.pool = WebViewPool(configuration: configuration.viewConfig)
     }
 
     public func getH5Page(link: String, name: String? = nil, params: [String: String]? = nil, h5Controller: H5PageController? = nil) -> H5PageController {
-        var h5: H5PageController!
-
-        if let vc = h5Controller {
-            h5 = vc
-        } else {
-            h5 = controllerBuilder?() ?? H5PageController()
-        }
-
+        var h5: H5PageController = h5Controller ?? pageBuilder()
         h5.setupLink(link, params: params)
         h5.pageTitle = name
         h5.session = self
-        h5.configuration = self.bridgeConfig
-        h5.resetOnURLChange = resetOnURLChange
+        h5.configuration = configuration.jsBridgeConfig
+        h5.resetOnURLChange = configuration.resetPageStateOnURLChange
 
-        if let customScheme = self.urlScheme {
-            if let match = self.urlMatch {
-                if match(link) {
+        if let customScheme = configuration.resourceScheme {
+            if let condition = configuration.resourceCondition {
+                if condition(link) {
                     h5.customScheme = customScheme
                 }
             } else {
@@ -85,10 +86,23 @@ public class WebManager {
         return h5
     }
 
-    func enableDebugJS() {
-        let userContentController = configuration.userContentController
-//        configuration.userContentController = userContentController
+    func getWebView() -> WKWebView {
+        let view = self.pool.get()
+        view.customUserAgent = configuration.customUserAgent
+        return view
+    }
 
+    func reuseWebView(_ webView: WKWebView) {
+        if configuration.reuseWebView {
+            self.pool.put(webView)
+        }
+    }
+}
+
+extension WebManager {
+    /// 加载debug.js
+    static func enableDebug(_ configuration: WKWebViewConfiguration) {
+        let userContentController = configuration.userContentController
         let frameworkBundle = Bundle(for: Theme.self)
         // h5日志
         let filePath = frameworkBundle.path(forResource: "debug", ofType: "js")
@@ -98,33 +112,48 @@ public class WebManager {
         let h5Script = WKUserScript(source: jsContent, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
         userContentController.addUserScript(h5Script)
     }
+}
 
-    // MAKR: - 预加载webview
-    public func prepare() {
-        if self.reusable.isEmpty {
-            self.reusable.insert(self.buildWebView())
-        }
+final class WebViewPool {
+    private let count = 1
+    private var reusable: Set<WKWebView> = Set()
+    private let configuration: WKWebViewConfiguration
+
+    init(configuration: WKWebViewConfiguration) {
+        self.configuration = configuration
+        self.fillPool()
     }
 
-    public func getWebView(configure: ((WKWebView) -> Void)? = nil) -> WKWebView {
-        if let item = reusable.popFirst() {
+    func get() -> WKWebView {
+        defer {
+            self.fillPool()
+        }
+        if let view = reusable.popFirst() {
+            return view
+        }
+        return create()
+    }
 
-            DispatchQueue.main.async {
-                self.prepare()
+    func put(_ webView: WKWebView) {
+        webView.stopLoading()
+        if webView.canGoBack {
+            webView.go(to: webView.backForwardList.backList.first!)
+        }
+
+        webView.evaluateJavaScript("location.replace('about:blank')")
+        reusable.insert(webView)
+    }
+
+    func fillPool() {
+        DispatchQueue.main.async {
+            for _ in self.reusable.count..<self.count {
+                let webView = self.create()
+                self.reusable.insert(webView)
             }
-
-            return item
         }
-
-        let webview = self.buildWebView()
-        configure?(webview)
-        self.prepare()
-        return webview
     }
 
-    private func buildWebView() -> WKWebView {
-        let webview = WKWebView(frame: .zero, configuration: self.configuration)
-        webview.customUserAgent = customUserAgent
-        return webview
+    func create() -> WKWebView {
+        return WKWebView(frame: .zero, configuration: configuration)
     }
 }

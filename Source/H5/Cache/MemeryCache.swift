@@ -11,8 +11,7 @@ import Foundation
 /*
  使用双链表（逻辑） + hashMap（存储） 实现 LRU 缓存淘汰。三个维度：缓存时长、缓存数量、缓存大小。增删改查都是 O(1) 时间复杂度
  1. 缓存新增：
-     1. 缓存未满，将新的缓存节点插入到链表的头结点位置。
-     2. 缓存已满，删除尾节点，将新缓存节点插入到头结点位置。
+     1. 将新的缓存节点插入到链表的头结点位置。
  2. 缓存删除：
     1. 根据缓存时长、缓存数量、缓存大小三个维度，从尾节点向前删除缓存
  3. 缓存查询：
@@ -22,16 +21,21 @@ import Foundation
      2. 将节点移动到链表头部
  */
 /// 链表节点
-class LinkedNode: NSObject {
+class LinkedNode {
     /// 链表前驱节点
     var prev: LinkedNode?
     /// 链表后继节点
     var next: LinkedNode?
 
-    var key: AnyHashable!
-    var value: Any!
-    var cost: UInt!
-    var time: TimeInterval!
+    var key: AnyHashable
+    var value: Any
+    var cost: UInt = 0
+    var time: TimeInterval = 0
+
+    init(key: AnyHashable, value: Any) {
+        self.key = key
+        self.value = value
+    }
 }
 
 /// 链表对象
@@ -52,26 +56,44 @@ class LinkedNodeMap {
     /// 为节点
     var tail: LinkedNode?
 
+    subscript(key: AnyHashable) -> Any? {
+        get {
+            object(for: key)
+        }
+        set {
+            if let obj = newValue {
+                setObject(obj, for: key)
+            } else {
+                removeObject(for: key)
+            }
+        }
+    }
+
     func object(for key: AnyHashable) -> Any? {
         guard let node = dict[key] else {
             return nil
         }
 
+        /// 更新访问时间、节点位置
         update(node)
 
         return node.value
     }
 
-    func saveObject(_ object: Any, for key: AnyHashable) {
+    func setObject(_ object: Any, for key: AnyHashable) {
         if let node = dict[key] {
             update(node, with: object)
         } else {
-            let node = LinkedNode()
+            let node = LinkedNode(key: key, value: object)
             node.cost = UInt(MemoryLayout.size(ofValue: object))
             node.time = CACurrentMediaTime()
-            node.key = key
-            node.value = object
             insert(node)
+        }
+    }
+
+    func removeObject(for key: AnyHashable) {
+        if let node = dict[key] {
+            remove(node)
         }
     }
 
@@ -85,6 +107,7 @@ class LinkedNodeMap {
             head!.prev = node
             head = node
         } else {
+            // 链表为空
             head = node
             tail = node
         }
@@ -94,19 +117,21 @@ class LinkedNodeMap {
     ///
     /// - Parameter node:
     func bringNodeToHead(_ node: LinkedNode) {
-        if head == node { return }
+        // 已经是头节点，不做处理
+        if head === node { return }
 
-        if tail == node {
+        if tail === node {
+            // 尾节点的情况，需要重置尾节点指针
             tail = node.prev
-            tail?.next = nil
+            tail!.next = nil
         } else {
-            node.next?.prev = node.prev
-            node.prev?.next = node.next
+            node.next!.prev = node.prev
+            node.prev!.next = node.next
         }
 
         node.next = head
         node.prev = nil
-        head?.prev = node
+        head!.prev = node
         head = node
     }
 
@@ -116,23 +141,28 @@ class LinkedNodeMap {
     func remove(_ node: LinkedNode) {
         delete(node)
 
-        if node.next != nil { node.next!.prev = node.prev }
-        if node.prev != nil { node.prev!.next = node.next }
-        if head == node { head = node.next }
-        if tail == node { tail = node.prev }
+        if let next = node.next {
+            next.prev = node.prev
+        }
+        if let prev = node.prev {
+            prev.next = node.next
+        }
+        if head === node { head = node.next }
+        if tail === node { tail = node.prev }
     }
 
     /// 删除尾节点
     func trimTail() {
-        guard let tempTail = tail else { return }
+        guard let node = tail else { return }
 
-        delete(tempTail)
-        if head == tempTail {
+        delete(node)
+        if let prev = node.prev {
+            prev.next = nil
+            tail = prev
+        } else {
+            // 尾节点没有前置节点，说明只有一个节点
             head = nil
             tail = nil
-        } else {
-            tail = tempTail.prev
-            tail?.next = nil
         }
     }
 
@@ -149,9 +179,9 @@ class LinkedNodeMap {
         // 从尾部开始检查node是否满足要求
         let now = CACurrentMediaTime()
         var node = tail
-        while node != nil && (totalCount > countLimit || totalCost > costLimit || (now - node!.time) > ageLimit) {
-            delete(node!)
-            node = node!.prev
+        while let current = node, (totalCount > countLimit || totalCost > costLimit || (now - current.time) > ageLimit) {
+            delete(current)
+            node = current.prev
         }
 
         if node == nil {
@@ -168,10 +198,7 @@ class LinkedNodeMap {
         totalCost = 0
         head = nil
         tail = nil
-
-        if !dict.isEmpty {
-            dict.removeAll()
-        }
+        dict.removeAll()
     }
 
     private func add(_ node: LinkedNode) {
@@ -200,24 +227,19 @@ class LinkedNodeMap {
 
 /// 内存缓存
 public class MemoryCache: Cacheable {
-    ///////////////////////////////////  public  //////////////////////////////////////////
     public static let shared = MemoryCache()
 
     /// 缓存总数量
     public var totalCount: UInt {
         pthread_mutex_lock(&lock)
-        let count = linedMap.totalCount
-        pthread_mutex_unlock(&lock)
-
-        return count
+        defer { pthread_mutex_unlock(&lock) }
+        return linedMap.totalCount
     }
     /// 缓存总大小
     public var totalCost: UInt {
         pthread_mutex_lock(&lock)
-        let cost = linedMap.totalCost
-        pthread_mutex_unlock(&lock)
-
-        return cost
+        defer { pthread_mutex_unlock(&lock) }
+        return linedMap.totalCost
     }
 
     /// 缓存数量限制
@@ -228,29 +250,29 @@ public class MemoryCache: Cacheable {
     public var ageLimit: TimeInterval
 
     /// 自动清理缓存时间间隔
-    public var autoTrimInterval: TimeInterval
+    public var autoTrimInterval: TimeInterval {
+        didSet {
+            if autoTrimInterval > 0 {
+                trimRecursively()
+            }
+        }
+    }
 
-    ///////////////////////////////////  private  //////////////////////////////////////////
     /// 双链表对象
     private var linedMap: LinkedNodeMap
-    /// 串行队列
-    private var queue: DispatchQueue
     private var lock: pthread_mutex_t
 
     // MARK: - lifeCycle
     init() {
         lock = pthread_mutex_t()
         linedMap = LinkedNodeMap()
-        queue = DispatchQueue(label: String(describing: type(of: MemoryCache.self)))
         costLimit = UInt.max
         countLimit = UInt.max
         ageLimit = Double.greatestFiniteMagnitude
-        autoTrimInterval = 5
+        autoTrimInterval = 0
 
         NotificationCenter.default.addObserver(self, selector: #selector(didReceiveMemoryWarningNotification), name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackgroundNotification), name: UIApplication.didEnterBackgroundNotification, object: nil)
-
-        trimRecursively()
     }
 
     deinit {
@@ -274,22 +296,18 @@ public class MemoryCache: Cacheable {
     // MARK: - privateMethod
     // 定时器递归调用，在后台自动清理超出缓存
     private func trimRecursively() {
-        DispatchQueue.global(qos: DispatchQoS.QoSClass.background).asyncAfter(deadline: DispatchTime.now() + autoTrimInterval) {
-            self.trimInBackground()
-            self.trimRecursively()
+        guard autoTrimInterval > 0 else {
+            return
         }
-    }
-
-    private func trimInBackground() {
-        queue.async {
+        DispatchQueue.global(qos: DispatchQoS.QoSClass.background).asyncAfter(deadline: DispatchTime.now() + autoTrimInterval) {
             self.trim()
+            self.trimRecursively()
         }
     }
 }
 
 // MARK: - Acccess 公共访问接口
 extension MemoryCache {
-
     public func contain(forKey key: AnyHashable) -> Bool {
         pthread_mutex_lock(&lock)
         let contains = linedMap.dict.contains(where: {$0.key == key})
@@ -304,22 +322,18 @@ extension MemoryCache {
             pthread_mutex_unlock(&lock)
         }
 
-        return linedMap.object(for: key)
+        return linedMap[key]
     }
 
     public func setObject(_ object: Any, forKey key: AnyHashable, withCost cost: UInt) {
         locked {
-            linedMap.saveObject(object, for: key)
+            linedMap[key] = object
         }
     }
 
     public func removeObject(forKey key: AnyHashable) {
         locked {
-            guard let node = linedMap.dict[key] else {
-                return
-            }
-
-            linedMap.remove(node)
+            linedMap[key] = nil
         }
     }
 

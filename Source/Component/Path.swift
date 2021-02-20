@@ -8,6 +8,12 @@
 import Foundation
 
 public class Path {
+    static public let document: Path = {
+        // swiftlint:disable force_try
+        var cacheDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        return Path(fileURL: cacheDir)
+        // swiftlint:enable force_try
+    }()
     static public let cache: Path = {
         // swiftlint:disable force_try
         var cacheDir = try! FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)

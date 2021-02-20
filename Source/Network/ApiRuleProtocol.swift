@@ -23,7 +23,7 @@ extension ResponseHandler {
         throw ZZError.protocolMethodNotFound
     }
 
-    func convertToAnyDict(_ value: Data) throws -> [String: Any] {
+    public func convertToAnyDict(_ value: Data) throws -> [String: Any] {
         throw ZZError.protocolMethodNotFound
     }
 }

@@ -60,7 +60,7 @@ public class DiskFileCache: NSObject, Cacheable {
 
     // MARK: - lifeCycle
     init(cacheDirectoryName directoryName: String) {
-        let folder = lostw.mainPath.appendingPathComponent(directoryName)
+        let folder = lostw.cachePath.appendingPathComponent(directoryName)
         let exist = FileManager.default.fileExists(atPath: folder.path)
         if !exist {
             try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true, attributes: nil)
@@ -111,7 +111,7 @@ extension DiskFileCache {
 
             return data
         } catch let error {
-            print("缓存读取 error = \(error)")
+            ZLog.debug("缓存读取 error = \(error)")
             return nil
         }
     }
@@ -122,7 +122,7 @@ extension DiskFileCache {
             let dataString = String(data: object, encoding: .utf8)
             try dataString?.write(to: fileUrl, atomically: true, encoding: .utf8)
         } catch let error {
-            print("缓存写入 error = \(error)")
+            ZLog.debug("缓存写入 error = \(error)")
         }
 
         if totalCost > costLimit {
