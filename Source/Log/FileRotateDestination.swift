@@ -13,7 +13,7 @@ public class FileRotateDestination: BaseDestination {
     var maxFileNum: Int
 
     public init(directoryURL: URL? = nil, maxFileNum: Int = 5) {
-        let dir: URL = directoryURL ?? lostw.cachePath.appendingPathComponent("log")
+        let dir: URL = directoryURL ?? lostw.folder.cache.appendingPathComponent("log")
 
         var isDir: ObjCBool = false
         let result = FileManager.default.fileExists(atPath: dir.path, isDirectory: &isDir)

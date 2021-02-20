@@ -25,7 +25,7 @@ public let defaultCellIdentifier = "DefaultCell"
 
 @available(*, deprecated, message: "use lostw.cachePath")
 public struct LostwKitPath {
-    public static let main: URL = lostw.cachePath
+    public static let main: URL = lostw.folder.cache
 }
 
 public func isPhoneX() -> Bool {

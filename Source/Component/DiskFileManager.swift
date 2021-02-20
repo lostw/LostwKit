@@ -9,7 +9,7 @@ import Foundation
 
 /// 存储数据到文件，对key会先做sha256处理
 public final class DiskFileManager {
-    public static let shared = DiskFileManager(root: lostw.cachePath.appendingPathComponent("files", isDirectory: true))
+    public static let shared = DiskFileManager(root: lostw.folder.cache.appendingPathComponent("files", isDirectory: true))
 
     var root: URL
     public init(root: URL) {

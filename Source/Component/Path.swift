@@ -40,6 +40,13 @@ public class Path {
         return FileManager.default.fileExists(atPath: fileURL.path)
     }
 
+    public func createDirectory() {
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            return
+        }
+        try? FileManager.default.createDirectory(at: fileURL, withIntermediateDirectories: true, attributes: nil)
+    }
+
     /// 创建文件夹
 //    public func create() throws {
 //        if fileURL.path.hasSuffix("/") {
@@ -48,4 +55,10 @@ public class Path {
 //            try FileManager.default.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
 //        }
 //    }
+}
+
+extension URL {
+    var wrapped: Path {
+        return Path(fileURL: self)
+    }
 }

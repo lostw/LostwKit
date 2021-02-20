@@ -26,8 +26,8 @@ public struct ZZError: Error, LocalizedError {
 public extension ZZError {
     /// 数据结构不符合预期
     static let neFailToParse = ZZError(apiErrorCode: "1000")
-    /// 未找到错误代码
-    static let neNoErrorCode = ZZError(apiErrorCode: "1001")
+    /// 未找到错误描述
+    static let neNoErrorMessage = ZZError(apiErrorCode: "1001")
     /// 列表数据结构不符合预期
     static let neFailToParseList = ZZError(apiErrorCode: "1002")
     /// 转换模型数据失败
