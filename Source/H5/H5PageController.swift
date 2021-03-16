@@ -355,7 +355,13 @@ extension H5PageController: WKNavigationDelegate, WKUIDelegate {
     }
 
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-//        self.webView.isHidden = false
+        // 请求取消，恢复页面
+        if (error as NSError).code == NSURLErrorCancelled {
+            self.webView.isHidden = false
+            self.stateManager.state = .hidden
+            return
+        }
+
         self.stateManager.state = .error(error.localizedDescription)
         ZLog.info(error.localizedDescription)
     }
