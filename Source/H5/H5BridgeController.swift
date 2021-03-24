@@ -7,9 +7,9 @@
 //
 
 import UIKit
-import WebViewJavascriptBridge
+import WebKit
 
-public typealias H5CmdCallback = WVJBResponseCallback
+public typealias H5CmdCallback = WKWebViewJavascriptBridgeBase.Callback
 public protocol H5Command: AnyObject {
     init()
     func execute(_ data: [String: Any], callback: H5CmdCallback?, context: H5BridgeController)
@@ -81,16 +81,17 @@ public class H5BridgeController {
     public init(webview: WKWebView, configuration: H5BridgeConfiguration, vc: (H5PageController & WKNavigationDelegate)) {
         self.configuration = configuration
         self.vc = vc
-        self.bridge = WebViewJavascriptBridge(webview)
+        self.bridge = WebViewJavascriptBridge(webView: webview)
         // bridge会变成webview的WKNavigationDelegate, 通过setWebViewDelegate将代理再转出来
-        self.bridge.setWebViewDelegate(vc)
-        // WebViewJavascriptBridge框架保证了callback不为空，但callback是一次性的，使用过后js环境会丢弃掉
+        webview.navigationDelegate = vc
+//        self.bridge.setWebViewDelegate(vc)
+        // callback是一次性的，使用过后js环境会丢弃掉
         self.bridge.registerHandler(configuration.entryName) { [weak self] (data, callback) in
             guard let self = self else { return }
             if let str = data as? String, let dict = str.toDict() {
-                self.dispatch(dict, callback: callback!)
+                self.dispatch(dict, callback: callback)
             } else if let dict = data as? [String: Any] {
-                self.dispatch(dict, callback: callback!)
+                self.dispatch(dict, callback: callback)
             }
         }
         self.bridge.registerHandler("logMessage") { data, _ in
@@ -131,7 +132,7 @@ public class H5BridgeController {
         }
     }
 
-    func dispatch(_ data: [String: Any], callback: @escaping H5CmdCallback) {
+    func dispatch(_ data: [String: Any], callback: H5CmdCallback?) {
         guard let type = data[configuration.commandKey] as? String else {
             return
         }
@@ -145,7 +146,7 @@ public class H5BridgeController {
         configuration.didTriggerCommand(type: type, vc: self.vc)
     }
 
-    func executeCommand(named type: String, with data: [String: Any], callback: @escaping WVJBResponseCallback) {
+    func executeCommand(named type: String, with data: [String: Any], callback: @escaping H5CmdCallback) {
         guard let command = configuration.allCommands[type] else {
             return
         }
@@ -160,12 +161,11 @@ public class H5BridgeController {
         self.bridge.callHandler(name, data: data)
     }
 
-    public func triggerCallback(_ callback: WVJBResponseCallback?, data: Any?) {
+    public func triggerCallback(_ callback: H5CmdCallback?, data: Any?) {
         guard let callback = callback else {
             return
         }
-        let data = data ?? [:]
-        callback(ZZJson.stringify(data))
+        callback(data)
     }
 
     func createAction(type: String) -> H5Command? {

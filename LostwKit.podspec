@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name = "LostwKit"
-  s.version = "2.1.4"
+  s.version = "2.1.5"
   s.summary = "my personal kit for convience"
 
   s.description = <<-DESC
@@ -28,7 +28,6 @@ Pod::Spec.new do |s|
   s.dependency 'SnapKit', '~> 5.0'
   s.dependency 'Alamofire', '~> 5.0'
   s.dependency 'Kingfisher', '~> 5.0'
-  s.dependency 'WebViewJavascriptBridge'
   s.dependency 'KeychainAccess', '~> 4.1.0'
 #  s.subspec "ObjC" do |sp|
 #    sp.source_files = "Classes/*/*.{swift}"

@@ -16,6 +16,8 @@ public extension ZLog {
         console.format = "$DHH:mm:ss.SSS$d $C$N:$l - $M"
         let file = FileRotateDestination()
         file.fileDestination.minLevel = .debug
+
+        console.minLevel = .verbose
         SwiftyBeaver.addDestination(console)
         SwiftyBeaver.addDestination(file)
     }
