@@ -56,7 +56,7 @@ public class ConsoleDestination: BaseDestination {
 
         if let str = formattedString {
             if useOSLog {
-                os_log("%@", log: OSLog.LostwKit, type: level.osType, str)
+                os_log("%{public}@", log: OSLog.LostwKit, type: level.osType, str)
             } else {
                 print(str)
             }

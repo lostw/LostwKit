@@ -2,6 +2,11 @@
 
 ## 版本日志
 
+### 2.1.5
+
+1. 修改[WKWebViewJavascriptBridge](https://github.com/Lision/WKWebViewJavascriptBridge)并内置到LostwKit中，用于替换OC版的WebViewJavascriptBridge。修改是为了兼容WebViewJavascriptBridge的调用方式
+2. 修改H5BridgeConfiguration协议对调用入口方式做了统一
+
 ### 2.1.0
 
 1. 移除Mapable协议，方法迁移到Codable

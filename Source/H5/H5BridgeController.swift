@@ -15,12 +15,13 @@ public protocol H5Command: AnyObject {
     func execute(_ data: [String: Any], callback: H5CmdCallback?, context: H5BridgeController)
 }
 
-public protocol H5BridgeConfiguration {
-    var useMultipleEntry: Bool {get}
-    var entryName: String { get }
-    var allCommands: [String: H5Command] { get }
+public enum H5BridgeEntryType {
+    case single(_ entryName: String, _ commandName: String)
+    case independent(_ allCommandNames: [String])
+}
 
-    var commandKey: String {get}
+public protocol H5BridgeConfiguration {
+    var entryType: H5BridgeEntryType { get }
     func command(for type: String) -> H5Command?
     func didTriggerCommand(type: String, vc: UIViewController?)
     func didLoadPage(vc: UIViewController?)
@@ -85,15 +86,6 @@ public class H5BridgeController {
         // bridge会变成webview的WKNavigationDelegate, 通过setWebViewDelegate将代理再转出来
         webview.navigationDelegate = vc
 //        self.bridge.setWebViewDelegate(vc)
-        // callback是一次性的，使用过后js环境会丢弃掉
-        self.bridge.registerHandler(configuration.entryName) { [weak self] (data, callback) in
-            guard let self = self else { return }
-            if let str = data as? String, let dict = str.toDict() {
-                self.dispatch(dict, callback: callback)
-            } else if let dict = data as? [String: Any] {
-                self.dispatch(dict, callback: callback)
-            }
-        }
         self.bridge.registerHandler("logMessage") { data, _ in
             ZLog.info("[H5log]\(data!)")
         }
@@ -101,13 +93,23 @@ public class H5BridgeController {
             NotificationCenter.default.post(name: .LogResponse, object: nil, userInfo: data as? [String: Any])
             ZLog.info("[H5Request]\(data!)")
         }
-
-        if configuration.useMultipleEntry {
-            for (key, value) in configuration.allCommands {
-                self.bridge.registerHandler(key) { [weak self] (data, callback) in
+        // callback是一次性的，使用过后js环境会丢弃掉
+        switch configuration.entryType {
+        case let .single(entryName, commandKey):
+            self.bridge.registerHandler(entryName) { [weak self] (data, callback) in
+                guard let self = self else { return }
+                let dict = self.parseRawData(data)
+                guard let type = dict[commandKey] as? String else {
+                    return
+                }
+                self.executeCommand(named: type, with: dict, callback: callback)
+            }
+        case .independent(let names):
+            for name in names {
+                self.bridge.registerHandler(name) { [weak self] (data, callback) in
                     guard let self = self else { return }
                     let dict = self.parseRawData(data)
-                    self.executeCommand(named: key, with: dict, callback: callback!)
+                    self.executeCommand(named: name, with: dict, callback: callback)
                 }
             }
         }
@@ -132,22 +134,9 @@ public class H5BridgeController {
         }
     }
 
-    func dispatch(_ data: [String: Any], callback: H5CmdCallback?) {
-        guard let type = data[configuration.commandKey] as? String else {
-            return
-        }
-
+    func executeCommand(named type: String, with data: [String: Any], callback: H5CmdCallback?) {
         ZLog.info("[H5Command]\(type): \(data.toJsonString()!)")
-        guard let command = self.createAction(type: type) else {
-            return
-        }
-
-        command.execute(data, callback: callback, context: self)
-        configuration.didTriggerCommand(type: type, vc: self.vc)
-    }
-
-    func executeCommand(named type: String, with data: [String: Any], callback: @escaping H5CmdCallback) {
-        guard let command = configuration.allCommands[type] else {
+        guard let command = configuration.command(for: type) else {
             return
         }
         command.execute(data, callback: callback, context: self)
