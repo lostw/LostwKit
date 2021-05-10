@@ -228,18 +228,21 @@ class LinkedNodeMap {
 /// 内存缓存
 public class MemoryCache: Cacheable {
     public static let shared = MemoryCache()
-
     /// 缓存总数量
     public var totalCount: UInt {
-        pthread_mutex_lock(&lock)
-        defer { pthread_mutex_unlock(&lock) }
-        return linedMap.totalCount
+        var result: UInt = 0
+        queue.sync {
+            result = self.linedMap.totalCount
+        }
+        return result
     }
     /// 缓存总大小
     public var totalCost: UInt {
-        pthread_mutex_lock(&lock)
-        defer { pthread_mutex_unlock(&lock) }
-        return linedMap.totalCost
+        var result: UInt = 0
+        queue.sync {
+            result = self.linedMap.totalCost
+        }
+        return result
     }
 
     /// 缓存数量限制
@@ -258,13 +261,14 @@ public class MemoryCache: Cacheable {
         }
     }
 
+    private let queue: DispatchQueue
     /// 双链表对象
     private var linedMap: LinkedNodeMap
-    private var lock: pthread_mutex_t
 
     // MARK: - lifeCycle
     init() {
-        lock = pthread_mutex_t()
+        queue = DispatchQueue(label: "lostw-cache", attributes: .concurrent)
+
         linedMap = LinkedNodeMap()
         costLimit = UInt.max
         countLimit = UInt.max
@@ -279,8 +283,6 @@ public class MemoryCache: Cacheable {
         NotificationCenter.default.removeObserver(self, name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
         linedMap.removeAll()
-
-        pthread_mutex_destroy(&lock)
     }
 
     // MARK: - notification
@@ -309,52 +311,45 @@ public class MemoryCache: Cacheable {
 // MARK: - Acccess 公共访问接口
 extension MemoryCache {
     public func contain(forKey key: AnyHashable) -> Bool {
-        pthread_mutex_lock(&lock)
-        let contains = linedMap.dict.contains(where: {$0.key == key})
-        pthread_mutex_unlock(&lock)
-
-        return contains
+        var result: Bool = false
+        queue.sync {
+            result = self.linedMap.dict.contains(where: {$0.key == key})
+        }
+        return result
     }
 
     public func object(forKey key: AnyHashable) -> Any? {
-        pthread_mutex_lock(&lock)
-        defer {
-            pthread_mutex_unlock(&lock)
+        var result: Any?
+        queue.sync {
+            result = linedMap[key]
         }
-
-        return linedMap[key]
+        return result
     }
 
     public func setObject(_ object: Any, forKey key: AnyHashable, withCost cost: UInt) {
-        locked {
-            linedMap[key] = object
+        queue.async(flags: .barrier) {
+            self.linedMap[key] = object
         }
     }
 
     public func removeObject(forKey key: AnyHashable) {
-        locked {
-            linedMap[key] = nil
+        queue.async(flags: .barrier) {
+            self.linedMap[key] = nil
         }
     }
 
     public func removeAllObject() {
-        locked {
-            linedMap.removeAll()
+        queue.async(flags: .barrier) {
+            self.linedMap.removeAll()
         }
-    }
-
-    func locked(_ action: () -> Void) {
-        pthread_mutex_lock(&lock)
-        action()
-        pthread_mutex_unlock(&lock)
     }
 }
 
 // MARK: - trim 将缓存大小移除到规定大小
 extension MemoryCache {
     public func trim() {
-        locked {
-            linedMap.trimToLimit(countLimit: countLimit, costLimit: totalCost, ageLimit: ageLimit)
+        queue.async(flags: .barrier) {
+            self.linedMap.trimToLimit(countLimit: self.countLimit, costLimit: self.totalCost, ageLimit: self.ageLimit)
         }
     }
 

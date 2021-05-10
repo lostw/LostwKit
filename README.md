@@ -6,6 +6,8 @@
 
 1. 修改[WKWebViewJavascriptBridge](https://github.com/Lision/WKWebViewJavascriptBridge)并内置到LostwKit中，用于替换OC版的WebViewJavascriptBridge。修改是为了兼容WebViewJavascriptBridge的调用方式
 2. 修改H5BridgeConfiguration协议对调用入口方式做了统一
+3. 增加了线程安全的KeychainSafeDictWrapper
+4. 使用并行队列改写了MemoryCache(之前使用pthread_mutex_t), 意图解决并发闪退的问题【待验证】
 
 ### 2.1.0
 
