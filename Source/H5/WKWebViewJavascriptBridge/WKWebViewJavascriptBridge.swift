@@ -10,7 +10,7 @@ import Foundation
 import WebKit
 
 @available(iOS 9.0, *)
-public class WebViewJavascriptBridge: NSObject {
+public class WebViewJSBridge: NSObject {
     public var isLogEnable: Bool {
         get {
             return self.base!.isLogEnable
@@ -81,13 +81,13 @@ public class WebViewJavascriptBridge: NSObject {
     }
 }
 
-extension WebViewJavascriptBridge: WKWebViewJavascriptBridgeBaseDelegate {
+extension WebViewJSBridge: WKWebViewJavascriptBridgeBaseDelegate {
     func evaluateJavascript(javascript: String, completion: CompletionHandler) {
         webView?.evaluateJavaScript(javascript, completionHandler: completion)
     }
 }
 
-extension WebViewJavascriptBridge: WKScriptMessageHandler {
+extension WebViewJSBridge: WKScriptMessageHandler {
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == iOS_Native_InjectJavascript {
             base.injectJavascriptFile()

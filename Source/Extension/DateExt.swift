@@ -17,6 +17,11 @@ public extension DateFormatter {
 }
 
 public extension Date {
+    static func fromString(_ dateStr: String, in format: String) -> Date? {
+        let formatter = DateFormatter.default
+        formatter.dateFormat = format
+        return formatter.date(from: dateStr)
+    }
     public enum FormatStyle: String {
         case date = "yyyy-MM-dd"
         case time = "HH:mm:ss"

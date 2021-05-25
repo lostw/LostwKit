@@ -72,7 +72,7 @@ public extension Notification.Name {
 }
 
 public class H5BridgeController {
-    var bridge: WebViewJavascriptBridge
+    var bridge: WebViewJSBridge
     var configuration: H5BridgeConfiguration
     public weak var vc: H5PageController?
 
@@ -82,7 +82,7 @@ public class H5BridgeController {
     public init(webview: WKWebView, configuration: H5BridgeConfiguration, vc: (H5PageController & WKNavigationDelegate)) {
         self.configuration = configuration
         self.vc = vc
-        self.bridge = WebViewJavascriptBridge(webView: webview)
+        self.bridge = WebViewJSBridge(webView: webview)
         // bridge会变成webview的WKNavigationDelegate, 通过setWebViewDelegate将代理再转出来
         webview.navigationDelegate = vc
 //        self.bridge.setWebViewDelegate(vc)

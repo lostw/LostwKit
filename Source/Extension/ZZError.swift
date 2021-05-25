@@ -38,6 +38,8 @@ public extension ZZError {
     static let neNoResponseHandler = ZZError(apiErrorCode: "1100")
     /// 不是json数据
     static let neInvalidJson = ZZError(apiErrorCode: "1004")
+    /// 不是合法的URL
+    static let neInvalidURL = ZZError(apiErrorCode: "1010")
 
     public init(apiErrorCode: String, message: String? = nil) {
         let networkCode = "NE\(apiErrorCode)"
