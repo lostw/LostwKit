@@ -349,7 +349,7 @@ extension MemoryCache {
 extension MemoryCache {
     public func trim() {
         queue.async(flags: .barrier) {
-            self.linedMap.trimToLimit(countLimit: self.countLimit, costLimit: self.totalCost, ageLimit: self.ageLimit)
+            self.linedMap.trimToLimit(countLimit: self.countLimit, costLimit: self.countLimit, ageLimit: self.ageLimit)
         }
     }
 

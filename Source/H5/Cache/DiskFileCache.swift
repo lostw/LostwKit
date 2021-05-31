@@ -60,7 +60,7 @@ public class DiskFileCache: NSObject, Cacheable {
 
     // MARK: - lifeCycle
     init(cacheDirectoryName directoryName: String) {
-        let folder = lostw.folder.cache.appendingPathComponent(directoryName)
+        let folder = Lostw.Folder().cache.appendingPathComponent(directoryName)
         let exist = FileManager.default.fileExists(atPath: folder.path)
         if !exist {
             try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true, attributes: nil)
