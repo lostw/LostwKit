@@ -9,6 +9,7 @@ import Foundation
 
 public typealias ZZApiError = ZZError
 public struct ZZError: Error, LocalizedError {
+    public static let `default` = ZZError(message: "未知错误")
     public static let silence = ZZError(code: "-", message: "")
     public var code: String
     public var message: String
@@ -16,6 +17,14 @@ public struct ZZError: Error, LocalizedError {
     public init(code: String = "-1", message: String) {
         self.code = code
         self.message = message
+    }
+
+    public init(error: Error) {
+        if let error = error as? ZZError {
+            self = error
+        } else {
+            self.init(message: error.localizedDescription)
+        }
     }
 
     public var errorDescription: String? {

@@ -15,12 +15,10 @@ public struct Lostw {
     public let app = App()
 
     public let folder = Folder()
-    public lazy var diskCache = DiskFileManager.shared
-
-    @available(iOS, deprecated, message: "do not use this")
-    public var cacheURL: URL {
-        return self.folder.cache
-    }
+    /// 用于缓存
+    public lazy var cache: Cache = Cache()
+    /// 用户本地存储
+    public lazy var diskStorage: Storage = DiskFileManager.shared
 
     init() {}
 }

@@ -9,7 +9,7 @@
 import Foundation
 
 /// h5 页面资源缓存
-public final class Cache {
+public final class Cache: Storage {
     /// 内存缓存大小：10M
     private let kMemoryCacheCostLimit: UInt = 10 * 1024 * 1024
     /// 磁盘文件缓存大小： 10M
@@ -29,17 +29,18 @@ public final class Cache {
         diskCache.ageLimit = kDiskCacheAgeLimit
     }
 
-    public func contain(forKey key: String) -> Bool {
+    public func exist(for key: String) -> Bool {
         return memoryCache.contain(forKey: key) || diskCache.contain(forKey: key)
     }
 
-    public func setData(data: Data, forKey key: String) {
-        guard let dataString = String(data: data, encoding: .utf8) else { return }
-        memoryCache.setObject(dataString.data(using: .utf8) as Any, forKey: key, withCost: UInt(data.count))
-        diskCache.setObject(dataString.data(using: .utf8)!, forKey: key, withCost: UInt(data.count))
+    @discardableResult
+    public func setData(_ data: Data, for key: String) -> Bool {
+        memoryCache.setObject(data, forKey: key, withCost: UInt(data.count))
+        diskCache.setObject(data, forKey: key, withCost: UInt(data.count))
+        return true
     }
 
-    public func data(forKey key: String) -> Data? {
+    public func data(for key: String) -> Data? {
         if let data = memoryCache.object(forKey: key) {
             return data as? Data
         } else {
@@ -49,9 +50,11 @@ public final class Cache {
         }
     }
 
-    public func removeData(forKey key: String) {
+    @discardableResult
+    public func remove(for key: String) -> Bool {
         memoryCache.removeObject(forKey: key)
         diskCache.removeObject(forKey: key)
+        return true
     }
 
     public func removeAll() {

@@ -1,6 +1,11 @@
 # lostwKit
 
 ## 版本日志
+### 2.2.0
+1. 完善ZZError类
+2. 统一文件持久化存储与缓存的方法
+3. 加入PreCacheResrouce，并且包内文件不再必须
+4. 调整了WebViewJavascriptBridge的文字
 
 ### 2.1.5
 

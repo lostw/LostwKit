@@ -215,3 +215,27 @@ extension DiskFileCache {
         }
     }
 }
+
+extension DiskFileCache: Storage {
+    public func exist(for key: String) -> Bool {
+        return contain(forKey: key)
+    }
+
+    public func data(for key: String) -> Data? {
+        return object(forKey: key)
+    }
+
+    @discardableResult
+    public func setData(_ data: Data, for key: String) -> Bool {
+        setObject(data, forKey: key, withCost: UInt(data.count))
+        return true
+    }
+
+    @discardableResult
+    public func remove(for key: String) -> Bool {
+        remove(for: key)
+        return true
+    }
+
+
+}
