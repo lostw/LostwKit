@@ -23,11 +23,6 @@ public let ONE_PX_ADJUST = ONE_PX / 2.0
 
 public let defaultCellIdentifier = "DefaultCell"
 
-@available(*, deprecated, message: "use lostw.cachePath")
-public struct LostwKitPath {
-    public static let main: URL = lostw.folder.cache
-}
-
 public func isPhoneX() -> Bool {
      let width = UIScreen.main.bounds.width
      let height = UIScreen.main.bounds.height

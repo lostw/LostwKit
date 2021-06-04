@@ -31,6 +31,8 @@ public class WebViewJSBridge: NSObject {
         self.webView = webView
         base = WKWebViewJavascriptBridgeBase()
         base.delegate = self
+        // 预防未正确释放的情况下，重复添加messagehandler的闪退
+        removeScriptMessageHandlers()
         addScriptMessageHandlers()
 
         let script = WKUserScript(source: WKWebViewJavascriptBridgeJS, injectionTime: .atDocumentStart, forMainFrameOnly: true)

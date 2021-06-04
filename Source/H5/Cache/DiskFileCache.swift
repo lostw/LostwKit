@@ -60,7 +60,7 @@ public class DiskFileCache: NSObject, Cacheable {
 
     // MARK: - lifeCycle
     init(cacheDirectoryName directoryName: String) {
-        let folder = Lostw.Folder().cache.appendingPathComponent(directoryName)
+        let folder = _lostw.folder.cache.appendingPathComponent(directoryName)
         let exist = FileManager.default.fileExists(atPath: folder.path)
         if !exist {
             try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true, attributes: nil)
@@ -217,25 +217,26 @@ extension DiskFileCache {
 }
 
 extension DiskFileCache: Storage {
+    func hashedKey(_ key: String) -> String {
+        return Hash.sha256(key)
+    }
     public func exist(for key: String) -> Bool {
-        return contain(forKey: key)
+        return contain(forKey: hashedKey(key))
     }
 
     public func data(for key: String) -> Data? {
-        return object(forKey: key)
+        return object(forKey: hashedKey(key))
     }
 
     @discardableResult
     public func setData(_ data: Data, for key: String) -> Bool {
-        setObject(data, forKey: key, withCost: UInt(data.count))
+        setObject(data, forKey: hashedKey(key), withCost: UInt(data.count))
         return true
     }
 
     @discardableResult
     public func remove(for key: String) -> Bool {
-        remove(for: key)
+        remove(for: hashedKey(key))
         return true
     }
-
-
 }

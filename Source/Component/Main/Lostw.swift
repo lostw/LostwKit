@@ -7,18 +7,25 @@
 
 import Foundation
 
+var _lostw = Lostw.Inner()
 public var lostw = Lostw.shared
 
-public struct Lostw {
+
+final public class Lostw {
+    class Inner {
+        let folder = Folder()
+    }
     public static let shared = Lostw()
     /// 应用基本信息
     public let app = App()
 
-    public let folder = Folder()
+    public let folder = _lostw.folder
     /// 用于缓存
     public lazy var cache: Cache = Cache()
     /// 用户本地存储
-    public lazy var diskStorage: Storage = DiskFileManager.shared
+    public lazy var diskStorage: Storage = DiskFileManager(root: _lostw.folder.persist.appendingPathComponent("files", isDirectory: true))
+    /// 用户本地缓存
+    public lazy var diskCache: Storage = DiskFileManager(root: _lostw.folder.cache.appendingPathComponent("files", isDirectory: true))
 
     init() {}
 }

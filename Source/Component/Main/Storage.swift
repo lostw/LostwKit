@@ -25,6 +25,7 @@ public extension Storage {
         return nil
     }
 
+    @discardableResult
     func setImage(_ image: UIImage, for key: String) -> Bool {
         return setData(image.pngData()!, for: key)
     }
@@ -37,6 +38,7 @@ public extension Storage {
         return nil
     }
 
+    @discardableResult
     func setDict(_ dict: [String: Any], for key: String) -> Bool {
         if let jsonData = ZZJson.toData(dict) {
             return setData(jsonData, for: key)
