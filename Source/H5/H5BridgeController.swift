@@ -87,11 +87,18 @@ public class H5BridgeController {
         webview.navigationDelegate = vc
 //        self.bridge.setWebViewDelegate(vc)
         self.bridge.registerHandler("logMessage") { data, _ in
-            ZLog.info("[H5log]\(data!)")
+            if let data = data {
+                ZLog.info("[H5log]\(data)")
+            } else {
+                ZLog.info("[H5log]Empty")
+            }
+
         }
         self.bridge.registerHandler("logResponse") { data, _ in
             NotificationCenter.default.post(name: .LogResponse, object: nil, userInfo: data as? [String: Any])
-            ZLog.info("[H5Request]\(data!)")
+            if let data = data {
+                ZLog.info("[H5Request]\(data)")
+            }
         }
         // callback是一次性的，使用过后js环境会丢弃掉
         switch configuration.entryType {
