@@ -8,7 +8,11 @@
 
 import UIKit
 
-public typealias ZZCounterdownStart = (Bool) -> Void
+public enum ZZCounterdownSMSSendingState {
+    case success(_ interval: Int?)
+    case failure
+}
+public typealias ZZCounterdownStart = (ZZCounterdownSMSSendingState) -> Void
 public protocol ZZCounterdownButton: UIButton {
     var counterController: ZZCounterdownController {get set}
     func onStateChange(_ state: ZZCounterdownController.CounterState)
@@ -20,7 +24,7 @@ public protocol ZZCounterdownButton: UIButton {
 
 public extension ZZCounterdownButton {
     func start() {
-        self.counterController.start()
+        self.counterController.start(nil)
     }
 
     func resume(_ remain: Int) {
@@ -35,6 +39,10 @@ public extension ZZCounterdownButton {
 public class ZZCounterdownController {
     public enum CounterState {
         case ready, loading, counting(Int), done
+    }
+    public enum SMSSendingState {
+        case success(_ interval: Int?)
+        case failure
     }
 
     public weak var slaver: ZZCounterdownButton? {
@@ -57,16 +65,17 @@ public class ZZCounterdownController {
     public func willStart(_ action:  (( @escaping ZZCounterdownStart) -> Void)) {
         state = .loading
         action({
-            if $0 {
-                self.start()
-            } else {
+            switch $0 {
+            case .success(let countdown):
+                self.start(countdown)
+            case .failure:
                 self.state = .ready
             }
         })
     }
 
-    func start() {
-        self.remain = self.duration
+    func start(_ interval: Int?) {
+        self.remain = interval ?? self.duration
 
         if let timer = self.timer {
             timer.invalidate()
