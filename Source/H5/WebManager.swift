@@ -22,11 +22,14 @@ public class WebManager {
         public var customUserAgent: String?
         /// 是否重复利用webView
         public var reuseWebView = false
+        /// 设置为true会内置JSBridge对象到JS环境，通过new JSBridge().postMessage()测试交互
+        public var isDebug = false
 
         /// 记录注册的自定义URLScheme
         var resourceScheme: String?
         /// 记录自定义URLScheme时的触发条件;在新打开一个H5PageController时可以校验URL是否符合要求
         var resourceCondition: ((_ url: String) -> Bool)?
+
 
         public init(viewConfig: WKWebViewConfiguration, jsBridgeConfig: H5BridgeConfiguration? = nil) {
             self.viewConfig = viewConfig
@@ -57,10 +60,7 @@ public class WebManager {
         return H5PageController()
     }
 
-    public init(configuration: Configuration, isDebug: Bool = false) {
-        if isDebug {
-            Self.enableDebug(configuration.viewConfig)
-        }
+    public init(configuration: Configuration) {
         self.configuration = configuration
         self.pool = WebViewPool(configuration: configuration.viewConfig)
     }
@@ -118,9 +118,11 @@ final class WebViewPool {
     private let count = 1
     private var reusable: Set<WKWebView> = Set()
     private let configuration: WKWebViewConfiguration
+    private var isDebug = false
 
-    init(configuration: WKWebViewConfiguration) {
+    init(configuration: WKWebViewConfiguration, isDebug: Bool = false) {
         self.configuration = configuration
+        self.isDebug = isDebug
         self.fillPool()
     }
 
@@ -154,6 +156,11 @@ final class WebViewPool {
     }
 
     func create() -> WKWebView {
+        // userContentController是引用，同一
+        configuration.userContentController = WKUserContentController()
+        if isDebug {
+            WebManager.enableDebug(configuration)
+        }
         return WKWebView(frame: .zero, configuration: configuration)
     }
 }
